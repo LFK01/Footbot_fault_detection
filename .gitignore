@@ -1,0 +1,8 @@
+#IntelliJ
+.idea
+
+#Virtual Environment
+venv
+
+#position log files
+csv_log_files
