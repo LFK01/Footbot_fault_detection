@@ -30,6 +30,7 @@ class Parser:
     @staticmethod
     def create_swarm(filename: str, neighborhood_radius: float, time_window_size: int) -> list:
         """
+        Method to parse the positions file and return the list of footbots.
 
         Parameters
         ----------
@@ -44,6 +45,7 @@ class Parser:
         swarm : list
             List of all FootBot instances found in the parsed file
         """
+
         # list to store the robots of the swarm
         footbot_swarm = []
 
@@ -54,33 +56,34 @@ class Parser:
         number_of_robots = len(footbots_unique_ids)
         number_of_timesteps = len(df_footbot_positions['timestep'].unique())
 
-        # list to store all the positions of the grouped by bot
+        # list to store all the positions of the swarm grouped by bot
         all_robots_positions = []
-
         for footbot_id in footbots_unique_ids:
-            # create new FootBot instance
-            new_footbot = FootBot(identifier=footbot_id,
-                                  number_of_robots=number_of_robots,
-                                  number_of_timesteps=number_of_timesteps,
-                                  neighborhood_radius=neighborhood_radius,
-                                  time_window_size=time_window_size)
-
             # retrieve positions of the current robots based on its ID
             positions = df_footbot_positions[df_footbot_positions['ID'] == footbot_id][['PosX', 'PosY']]
             # save the position of the robot on the instance of the robot
             positions = positions.to_numpy()
-            new_footbot.add_array_positions(positions)
 
             # Save the positions of the robot on the list of all the positions of the robots.
             # Now the positions are grouped by robot ID and not by timestep as in the csv file
             all_robots_positions.append(positions)
 
+        # create numpy array
+        all_robots_positions = np.asarray(all_robots_positions)
+
+        for footbot_id in footbots_unique_ids:
+            positions = all_robots_positions
+            # create new FootBot instance
+            new_footbot = FootBot(identifier=footbot_id,
+                                  number_of_robots=number_of_robots,
+                                  number_of_timesteps=number_of_timesteps,
+                                  neighborhood_radius=neighborhood_radius,
+                                  time_window_size=time_window_size,
+                                  single_robot_positions=all_robots_positions[footbot_id],
+                                  all_robots_positions=np.delete(all_robots_positions, footbot_id, axis=0))
+
             # save new FootBot instance in the swarm
             footbot_swarm.append(new_footbot)
-
-        # save the positions of all the remote robots in the all the robots instance
-        for robot in footbot_swarm:
-            robot.add_swarm_robots_positions(np.asarray(all_robots_positions))
 
         return footbot_swarm
 
@@ -94,6 +97,7 @@ class Parser:
         neighborhood_radius : float
             Value read in the file
         """
+
         neighborhood_radius = 0.0
 
         # open file
@@ -119,6 +123,7 @@ class Parser:
         time_window : int
             Value read in the file
         """
+
         time_window = 0
 
         # open file
