@@ -83,3 +83,26 @@ class Plotter:
         plt.xlabel("Timestep")
         plt.ylabel("Number of Neighbors")
         plt.show()
+
+    @staticmethod
+    def plot_faulty_robots(swarm: list[FootBot]) -> None:
+        """
+        Method to plot neighbors of each robot. Shows the plot.
+
+        Parameters
+        ----------
+        swarm : list
+            List of FootBot instances
+        """
+
+        cumulative_faulty_bots = []
+
+        plt.figure()
+        for timestep in range(len(swarm[0].fault_time_series)):
+            cumulative_faulty_bots.append(
+                sum(bot.fault_time_series[timestep] for bot in swarm)
+            )
+        plt.plot(cumulative_faulty_bots)
+        plt.xlabel("Timestep")
+        plt.ylabel("Number of falty bots")
+        plt.show()

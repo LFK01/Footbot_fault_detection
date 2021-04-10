@@ -61,7 +61,6 @@ class Parser:
         for footbot_id in footbots_unique_ids:
             # retrieve positions of the current robots based on its ID
             positions = df_footbot_positions[df_footbot_positions['ID'] == footbot_id][['PosX', 'PosY']]
-            # save the position of the robot on the instance of the robot
             positions = positions.to_numpy()
 
             # Save the positions of the robot on the list of all the positions of the robots.
@@ -72,7 +71,10 @@ class Parser:
         all_robots_positions = np.asarray(all_robots_positions)
 
         for footbot_id in footbots_unique_ids:
-            positions = all_robots_positions
+            # retrieve faults of the current robots based on its ID
+            faults = df_footbot_positions[df_footbot_positions['ID'] == footbot_id]['Fault']
+            faults = faults.to_numpy()
+
             # create new FootBot instance
             new_footbot = FootBot(identifier=footbot_id,
                                   number_of_robots=number_of_robots,
@@ -80,7 +82,8 @@ class Parser:
                                   neighborhood_radius=neighborhood_radius,
                                   time_window_size=time_window_size,
                                   single_robot_positions=all_robots_positions[footbot_id],
-                                  all_robots_positions=np.delete(all_robots_positions, footbot_id, axis=0))
+                                  all_robots_positions=np.delete(all_robots_positions, footbot_id, axis=0),
+                                  fault_time_series=faults)
 
             # save new FootBot instance in the swarm
             footbot_swarm.append(new_footbot)

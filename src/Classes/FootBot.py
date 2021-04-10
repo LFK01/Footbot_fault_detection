@@ -55,7 +55,8 @@ class FootBot:
                  neighborhood_radius: float,
                  time_window_size: int,
                  single_robot_positions: np.ndarray,
-                 all_robots_positions: np.ndarray):
+                 all_robots_positions: np.ndarray,
+                 fault_time_series: np.ndarray):
         """
         Constructor method
 
@@ -77,6 +78,8 @@ class FootBot:
             Numpy array of the trajectory of the current robot
         all_robots_positions: np.ndarray
             Numpy array of the trajectories of all the other robots
+        fault_time_series: np.ndarray
+            Numpy array of functioning status of the bot
         """
 
         self.identifier: int = identifier
@@ -89,6 +92,7 @@ class FootBot:
         self.cumulative_traversed_distance = [0.0]
         self.swarm_robots_positions = all_robots_positions
         self.neighbors_time_series = []
+        self.fault_time_series = fault_time_series
 
         self.compute_traversed_space()
         self.compute_cumulative_traversed_distance()
@@ -136,7 +140,7 @@ class FootBot:
         for i in range(len(self.traversed_distance_time_series))[1:]:
             if i < self.time_window:
                 self.cumulative_traversed_distance.append(
-                    sum(self.cumulative_traversed_distance[:i]))
+                    sum(self.traversed_distance_time_series[:i]))
 
             else:
                 self.cumulative_traversed_distance.append(

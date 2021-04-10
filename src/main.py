@@ -15,3 +15,5 @@ if __name__ == "__main__":
     Plotter.plot_trajectories(swarm)
     # noinspection PyTypeChecker
     Plotter.plot_cumulative_traversed_distance(swarm)
+    # noinspection PyTypeChecker
+    Plotter.plot_faulty_robots(swarm)
