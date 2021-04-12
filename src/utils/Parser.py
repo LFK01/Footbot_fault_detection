@@ -28,7 +28,7 @@ class Parser:
         pass
 
     @staticmethod
-    def create_swarm(filename: str, neighborhood_radius: float, time_window_size: int) -> list:
+    def create_swarm(filename: str, neighborhood_radius: float, time_window_size: int) -> list[FootBot]:
         """
         Method to parse the positions file and return the list of footbots.
 
