@@ -202,17 +202,14 @@ class FootBot:
         self.swarm_cohesion_time_series = np.asarray(self.swarm_cohesion_time_series)
 
     def compute_distance_from_centroid(self, trajectory: np.ndarray):
-        for position in trajectory:
+        for timestep in range(len(trajectory)):
+            distance_x, distance_y = trajectory[timestep] - self.single_robot_positions[timestep]
             self.distance_from_centroid_time_series.append(
-                np.sqrt(
-                    (position[0] - self.single_robot_positions[np.where(trajectory == position)][0])**2
-                    + (position[1] - self.single_robot_positions[np.where(trajectory == position)][1])**2
-                )
+                np.sqrt(distance_x**2 + distance_y**2)
             )
-        self.distance_from_centroid_time_series = np.asarray(self.distance_from_centroid_time_series)
 
     def compute_cumulative_distance_from_centroid(self):
-        for i in range(self.distance_from_centroid_time_series.shape[0]):
+        for i in range(len(self.distance_from_centroid_time_series)):
             if i < self.time_window:
                 self.cumulative_distance_from_centroid_time_series.append(
                     sum(self.distance_from_centroid_time_series[:i]))

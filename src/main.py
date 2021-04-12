@@ -5,7 +5,7 @@ from src.Classes.Swarm import Swarm
 if __name__ == "__main__":
     neighborhood_radius = Parser.read_neighborhood_radius()
     time_window_size = Parser.read_time_window()
-    footbots_list = Parser.create_swarm('positions.csv',
+    footbots_list = Parser.create_swarm('positions_diffusion_10.csv',
                                         neighborhood_radius=neighborhood_radius,
                                         time_window_size=time_window_size)
     # noinspection PyTypeChecker
@@ -16,15 +16,13 @@ if __name__ == "__main__":
     # noinspection PyTypeChecker
     Plotter.plot_speeds(footbots_list)
     # noinspection PyTypeChecker
-    Plotter.plot_trajectories(footbots_list)
+    Plotter.plot_trajectories(footbots_list, swarm)
     # noinspection PyTypeChecker
     Plotter.plot_cumulative_traversed_distance(footbots_list)
     # noinspection PyTypeChecker
     Plotter.plot_swarm_cohesion(footbots_list)
     # noinspection PyTypeChecker
     Plotter.plot_faulty_robots(footbots_list)
-    # noinspection PyTypeChecker
-    Plotter.plot_swarm_trajectory(swarm)
     # noinspection PyTypeChecker
     Plotter.plot_swarm_speed(swarm)
     # noinspection PyTypeChecker

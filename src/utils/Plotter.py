@@ -15,24 +15,32 @@ class Plotter:
         pass
 
     @staticmethod
-    def plot_trajectories(swarm: list[FootBot]) -> None:
+    def plot_trajectories(footbot_list: list[FootBot], swarm: Swarm) -> None:
         """
         Method to plot trajectories of each robot. Shows the plot.
 
         Parameters
         ----------
-        swarm : list
+        swarm: Swarm
+            Swarm object to retrieve cluster features
+        footbot_list : list
             List of FootBot instances
         """
 
         plt.figure()
-        for bot in swarm:
-            pos_x = [pos[0] for pos in bot.single_robot_positions]
-            pos_y = [pos[1] for pos in bot.single_robot_positions]
-            plt.scatter(pos_x, pos_y, s=0.1)
+        for bot in footbot_list:
+            plt.scatter(
+                [pos[0] for pos in bot.single_robot_positions],
+                [pos[1] for pos in bot.single_robot_positions],
+                s=0.1)
+        plt.scatter(
+            [pos[0] for pos in swarm.trajectory],
+            [pos[1] for pos in swarm.trajectory],
+            facecolors='none', edgecolors='r', s=0.2
+        )
         plt.xlabel("X")
         plt.ylabel("Y")
-        plt.title("Trajectory of each bot")
+        plt.title("Trajectory of each bot and centroid of cluster")
         plt.show()
 
     @staticmethod
@@ -50,7 +58,7 @@ class Plotter:
             plt.plot(bot.traversed_distance_time_series)
         plt.xlabel("Timestep")
         plt.ylabel("Traversed Distance")
-        plt.title("Instantaneous Traversed for each bot")
+        plt.title("Instantaneous Traversed Distance for each bot")
         plt.show()
 
     @staticmethod
@@ -127,26 +135,6 @@ class Plotter:
         plt.xlabel("Timestep")
         plt.ylabel("Average Distance")
         plt.title("Average distance from all bots for each bot")
-        plt.show()
-
-    @staticmethod
-    def plot_swarm_trajectory(swarm: Swarm) -> None:
-        """
-        Method to plot trajectory of swarm. Shows the plot.
-
-        Parameters
-        ----------
-        swarm : Swarm
-            instance of the swarm of bots
-        """
-
-        plt.figure()
-        pos_x = [pos[0] for pos in swarm.trajectory]
-        pos_y = [pos[1] for pos in swarm.trajectory]
-        plt.scatter(pos_x, pos_y, s=0.1)
-        plt.xlabel("X")
-        plt.ylabel("Y")
-        plt.title("Trajectory of cluster")
         plt.show()
 
     @staticmethod
