@@ -1,6 +1,7 @@
 from src.utils.Parser import Parser
 from src.utils.Plotter import Plotter
 from src.Classes.Swarm import Swarm
+from src.utils.DataTools import DataWizard
 
 if __name__ == "__main__":
     neighborhood_radius = Parser.read_neighborhood_radius()
@@ -11,7 +12,8 @@ if __name__ == "__main__":
                                         time_window_size=time_window_size)
     # noinspection PyTypeChecker
     swarm = Swarm(footbots_list)
-
+    data = DataWizard.prepare_input(swarm=swarm)
+    target = DataWizard.prepare_target(swarm=swarm)
     # noinspection PyTypeChecker
     Plotter.plot_neighbors(footbots_list)
     # noinspection PyTypeChecker
