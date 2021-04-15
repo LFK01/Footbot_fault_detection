@@ -1,4 +1,5 @@
 import numpy as np
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
 from src.Classes.Swarm import Swarm
 
@@ -8,7 +9,23 @@ class DataWizard:
         pass
 
     @staticmethod
-    def prepare_input(swarm: Swarm):
+    def prepare_raw_input(swarm: Swarm):
+        return DataWizard.build_data_vector(swarm=swarm)
+
+    @staticmethod
+    def prepare_normalized_data(swarm: Swarm):
+        vector = DataWizard.build_data_vector(swarm=swarm)
+        scaler = MinMaxScaler(feature_range=(-1, 1))
+        return scaler.fit_transform(vector)
+
+    @staticmethod
+    def prepare_standardized_data(swarm: Swarm):
+        data_vector = DataWizard.build_data_vector(swarm=swarm)
+        scaler = StandardScaler()
+        return scaler.fit_transform(X=data_vector)
+
+    @staticmethod
+    def build_data_vector(swarm: Swarm):
         data_vector = []
         # append all robots features
         for bot in swarm.list_of_footbots:
@@ -26,7 +43,7 @@ class DataWizard:
         data_vector.append(swarm.trajectory[:, 1])
         data_vector.append(swarm.traversed_distance_time_series)
 
-        return np.asarray(data_vector)
+        return data_vector
 
     @staticmethod
     def prepare_target(swarm: Swarm):

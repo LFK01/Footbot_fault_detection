@@ -12,7 +12,7 @@ if __name__ == "__main__":
                                         time_window_size=time_window_size)
     # noinspection PyTypeChecker
     swarm = Swarm(footbots_list)
-    data = DataWizard.prepare_input(swarm=swarm)
+    data = DataWizard.prepare_raw_input(swarm=swarm)
     target = DataWizard.prepare_target(swarm=swarm)
     # noinspection PyTypeChecker
     Plotter.plot_neighbors(footbots_list)
