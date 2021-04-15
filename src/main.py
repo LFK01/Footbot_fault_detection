@@ -5,7 +5,8 @@ from src.Classes.Swarm import Swarm
 if __name__ == "__main__":
     neighborhood_radius = Parser.read_neighborhood_radius()
     time_window_size = Parser.read_time_window()
-    footbots_list = Parser.create_swarm('positions_diffusion_10.csv',
+    filename = Parser.read_filename(3)
+    footbots_list = Parser.create_swarm(filename=filename,
                                         neighborhood_radius=neighborhood_radius,
                                         time_window_size=time_window_size)
     # noinspection PyTypeChecker

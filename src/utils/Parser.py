@@ -141,3 +141,31 @@ class Parser:
 
         # return value
         return time_window
+
+    @staticmethod
+    def read_filename(file_number: int) -> str:
+        """
+        Method to read the name of csv files
+        Parameters
+        ----------
+        file_number: int
+            Number of filename in parameters_and_settings.txt
+        Returns
+        -------
+        filename: str
+            String of the file name
+        """
+        filename = ""
+
+        # open file
+        parameters_files = open('../txt_files/parameters_and_settings')
+
+        # parse file
+        for line in parameters_files:
+            # fine parameter
+            if 'Filename' + str(file_number) in line:
+                # retrieve parameter value
+                filename = line.split('=')[1].strip()
+
+        # return value
+        return filename
