@@ -13,13 +13,13 @@ class DataWizard:
         return DataWizard.build_data_vector(swarm=swarm)
 
     @staticmethod
-    def prepare_normalized_data(swarm: Swarm):
+    def prepare_normalized_input(swarm: Swarm):
         vector = DataWizard.build_data_vector(swarm=swarm)
         scaler = MinMaxScaler(feature_range=(-1, 1))
         return scaler.fit_transform(vector)
 
     @staticmethod
-    def prepare_standardized_data(swarm: Swarm):
+    def prepare_standardized_input(swarm: Swarm):
         data_vector = DataWizard.build_data_vector(swarm=swarm)
         scaler = StandardScaler()
         return scaler.fit_transform(X=data_vector)
@@ -43,7 +43,7 @@ class DataWizard:
         data_vector.append(swarm.trajectory[:, 1])
         data_vector.append(swarm.traversed_distance_time_series)
 
-        return data_vector
+        return np.asarray(data_vector)
 
     @staticmethod
     def prepare_target(swarm: Swarm):

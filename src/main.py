@@ -6,7 +6,7 @@ from src.utils.DataTools import DataWizard
 if __name__ == "__main__":
     neighborhood_radius = Parser.read_neighborhood_radius()
     time_window_size = Parser.read_time_window()
-    filename = Parser.read_filename(3)
+    filename = 'positions_flocking_10_bot0_lock_at100_pos4.csv'
     footbots_list = Parser.create_swarm(filename=filename,
                                         neighborhood_radius=neighborhood_radius,
                                         time_window_size=time_window_size)
