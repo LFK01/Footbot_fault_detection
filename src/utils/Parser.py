@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+from os import listdir
+from os.path import isfile, join
 from src.Classes.FootBot import FootBot
 
 
@@ -17,8 +19,6 @@ class Parser:
             [[PosX_1, PosY_1], ..., [PosX_n, PosY_n]]
         ]
     """
-
-    all_robots_positions = []
 
     def __init__(self):
         """
@@ -50,7 +50,11 @@ class Parser:
         footbot_swarm = []
 
         # open file in a pandas dataframe
-        df_footbot_positions = pd.read_csv('../csv_log_files/' + filename)
+        # open file
+        try:
+            df_footbot_positions = pd.read_csv(filename)
+        except FileNotFoundError:
+            df_footbot_positions = pd.read_csv('../' + filename)
         # retrieve all the ids of the bot
         footbots_unique_ids = df_footbot_positions['ID'].unique()
         number_of_robots = len(footbots_unique_ids)
@@ -104,7 +108,10 @@ class Parser:
         neighborhood_radius = 0.0
 
         # open file
-        parameters_files = open('../txt_files/parameters_and_settings')
+        try:
+            parameters_files = open('../txt_files/parameters_and_settings')
+        except FileNotFoundError:
+            parameters_files = open('../../txt_files/parameters_and_settings')
 
         # parse file
         for line in parameters_files:
@@ -130,7 +137,10 @@ class Parser:
         time_window = 0
 
         # open file
-        parameters_files = open('../txt_files/parameters_and_settings')
+        try:
+            parameters_files = open('../txt_files/parameters_and_settings')
+        except FileNotFoundError:
+            parameters_files = open('../../txt_files/parameters_and_settings')
 
         # parse file
         for line in parameters_files:
@@ -158,7 +168,10 @@ class Parser:
         filename = ""
 
         # open file
-        parameters_files = open('../txt_files/parameters_and_settings')
+        try:
+            parameters_files = open('../txt_files/parameters_and_settings')
+        except FileNotFoundError:
+            parameters_files = open('../../txt_files/parameters_and_settings')
 
         # parse file
         for line in parameters_files:
@@ -169,3 +182,8 @@ class Parser:
 
         # return value
         return filename
+
+    @staticmethod
+    def read_files_in_directory() -> list:
+        return ['../csv_log_files/' + f for f in listdir('../csv_log_files')
+                if isfile(join('../csv_log_files', f))]

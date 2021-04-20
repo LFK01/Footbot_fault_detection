@@ -2,11 +2,10 @@ Constants
 
 NEIGHBORHOOD_RADIUS=2.0
 
-TIME_WINDOW=100
+TIME_WINDOW=50
 
 File Names
-Filename1 = positions_flocking_10_pos1_nominal.csv
-Filename2 = positions_diffusion_10_724_1_fault.csv
-Filename3 = positions_flocking_3093_no_faults.csv
-Filename4 = positions_flocking_3773_2_faults.csv
-Filename5 = positions_flocking_10_pos4_nominal.csv
+Filename1 = ../csv_log_files/positions_flocking_10_nominal_pos1.csv
+Filename2 = ../csv_log_files/positions_flocking_10_bot0_lock_at1500_pos2.csv
+Filename3 = ../csv_log_files/positions_flocking_10_bot1_lock_at500_bot4_lock_at1200_bot8_lock_at2000_pos1.csv
+Filename4 = ../diffusion_log_files/positions_diffusion_10_1_fault.csv

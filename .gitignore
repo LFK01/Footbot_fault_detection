@@ -6,3 +6,7 @@ venv
 
 #position log files
 csv_log_files
+diffusion_log_files
+
+#MacOS stuff
+.DS_Store
