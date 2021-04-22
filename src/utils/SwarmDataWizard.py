@@ -2,53 +2,14 @@ import numpy as np
 import tensorflow as tf
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from src.Classes.Swarm import Swarm
+from src.utils.DataWizard import DataWizard
 
 
-class DataWizard:
-    def __init__(self, timesteps: int,
-                 time_window: int,
-                 label_size: int,
-                 experiments: list[Swarm],
-                 splitting: list[int] = None,
-                 preprocessing_type: str = 'raw',
-                 data_format: str = 'numpy'):
+class SwarmDataWizard(DataWizard):
+    def __init__(self, timesteps: int, time_window: int, label_size: int, experiments: list[Swarm],
+                 splitting: list[int] = None, preprocessing_type: str = 'raw', data_format: str = 'numpy'):
 
-        if splitting is None:
-            splitting = [0.7, 0.2, 0.1]
-        self.timesteps = timesteps - 1
-        self.time_window = time_window
-        self.label_size = label_size
-        self.splitting = splitting
-        self.preprocessing_type = preprocessing_type
-        self.experiments = experiments
-        training_experiments = experiments[:int(self.splitting[0] * len(experiments))]
-        validation_experiments = experiments[int(self.splitting[0] * len(experiments)):
-                                             int((self.splitting[0] + self.splitting[1]) * len(experiments))]
-        test_experiments = experiments[int((self.splitting[0] + self.splitting[1]) * len(experiments)):]
-        if data_format == 'numpy':
-            self.train_ds = self.create_train_numpy_array(training_experiments)
-            self.train_target_ds = self.create_target_train_numpy_array(training_experiments)
-
-            self.validation_ds = self.create_val_numpy_array(validation_experiments)
-            self.validation_target_ds = self.create_target_val_numpy_array(validation_experiments)
-
-            self.test_ds = self.create_test_numpy_array(test_experiments)
-            self.test_target_ds = self.create_test_target_numpy_array(test_experiments)
-        else:
-            self.train_ds = self.create_train_dataset(training_experiments)
-            self.train_target_ds = self.create_target_train_dataset(training_experiments)
-
-            self.validation_ds = self.create_val_dataset(validation_experiments)
-            self.validation_target_ds = self.create_target_val_dataset(validation_experiments)
-
-            self.test_ds = self.create_test_dataset(test_experiments)
-            self.test_target_ds = self.create_test_target_dataset(test_experiments)
-
-    @staticmethod
-    def shortest_experiment_timesteps(experiment_list: list[Swarm]) -> int:
-        return min(
-            experiment.list_of_footbots[0].number_of_timesteps for experiment in experiment_list
-        )
+        super().__init__(timesteps, time_window, label_size, experiments, splitting, preprocessing_type, data_format)
 
     @staticmethod
     def build_dataset_vector(timesteps, preprocessing_type, experiments) -> list[list[np.ndarray]]:
@@ -57,15 +18,7 @@ class DataWizard:
             data_vector = []
             # append all robots features
             for bot in swarm.list_of_footbots:
-                data_vector.append(bot.single_robot_positions[:, 0])
-                data_vector.append(bot.single_robot_positions[:, 1])
-                data_vector.append(bot.traversed_distance_time_series)
-                data_vector.append(bot.direction_time_series[:, 0])
-                data_vector.append(bot.direction_time_series[:, 1])
-                data_vector.append(bot.cumulative_traversed_distance)
-                data_vector.append(bot.neighbors_time_series)
-                data_vector.append(bot.swarm_cohesion_time_series)
-                data_vector.append(bot.distance_from_centroid_time_series)
+                data_vector.append(SwarmDataWizard.retrieve_bot_features(bot))
 
             data_vector.append(swarm.trajectory[:, 0])
             data_vector.append(swarm.trajectory[:, 1])
@@ -85,9 +38,9 @@ class DataWizard:
 
     @staticmethod
     def build_numpy_array(timesteps: int, time_window: int, preprocessing_type: str, experiments: list[Swarm]):
-        datasets_vector = DataWizard.build_dataset_vector(timesteps=timesteps,
-                                                          preprocessing_type=preprocessing_type,
-                                                          experiments=experiments)
+        datasets_vector = SwarmDataWizard.build_dataset_vector(timesteps=timesteps,
+                                                               preprocessing_type=preprocessing_type,
+                                                               experiments=experiments)
         datasets_vector = np.asarray(datasets_vector)
         windowed_vector = []
         for exp in range(datasets_vector.shape[0]):
@@ -99,9 +52,9 @@ class DataWizard:
 
     @staticmethod
     def build_tensor_datasets(timesteps: int, preprocessing_type: str, experiments: list[Swarm]):
-        datasets_vector = DataWizard.build_dataset_vector(timesteps=timesteps,
-                                                          preprocessing_type=preprocessing_type,
-                                                          experiments=experiments)
+        datasets_vector = SwarmDataWizard.build_dataset_vector(timesteps=timesteps,
+                                                               preprocessing_type=preprocessing_type,
+                                                               experiments=experiments)
         ds = tf.data.Dataset.from_tensors(datasets_vector)
         return ds
 

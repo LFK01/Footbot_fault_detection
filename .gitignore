@@ -10,3 +10,7 @@ diffusion_log_files
 
 #MacOS stuff
 .DS_Store
+
+#stuff
+cached_objects
+NN_performance

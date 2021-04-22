@@ -2,7 +2,7 @@ Constants
 
 NEIGHBORHOOD_RADIUS=2.0
 
-TIME_WINDOW=50
+TIME_WINDOW=10
 
 File Names
 Filename1 = ../csv_log_files/positions_flocking_10_nominal_pos1.csv
