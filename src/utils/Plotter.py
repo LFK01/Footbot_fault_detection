@@ -185,7 +185,7 @@ class Plotter:
 if __name__ == "__main__":
     neighborhood_radius = Parser.read_neighborhood_radius()
     time_window_size = Parser.read_time_window()
-    file = Parser.read_filename(4)
+    file = Parser.read_filename(3)
     footbots_list = Parser.create_swarm(filename=file,
                                         neighborhood_radius=neighborhood_radius,
                                         time_window_size=time_window_size)
@@ -193,18 +193,19 @@ if __name__ == "__main__":
     main_swarm = Swarm(footbots_list)
 
     # noinspection PyTypeChecker
-    Plotter.plot_neighbors(footbots_list)
+    Plotter.plot_trajectories(footbots_list, main_swarm)
     # noinspection PyTypeChecker
     Plotter.plot_speeds(footbots_list)
     # noinspection PyTypeChecker
-    Plotter.plot_trajectories(footbots_list, main_swarm)
+    Plotter.plot_neighbors(footbots_list)
     # noinspection PyTypeChecker
     Plotter.plot_cumulative_traversed_distance(footbots_list)
     # noinspection PyTypeChecker
     Plotter.plot_swarm_cohesion(footbots_list)
     # noinspection PyTypeChecker
-    Plotter.plot_faulty_robots(footbots_list)
+    Plotter.plot_distances_from_centroid(footbots_list)
     # noinspection PyTypeChecker
     Plotter.plot_swarm_speed(main_swarm)
     # noinspection PyTypeChecker
-    Plotter.plot_distances_from_centroid(footbots_list)
+    Plotter.plot_faulty_robots(footbots_list)
+

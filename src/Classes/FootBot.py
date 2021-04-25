@@ -121,36 +121,36 @@ class FootBot:
         """
         Method which computes the distance traversed in each timestep.
         """
-
+        tmp = []
         previous_position = self.single_robot_positions[0]
         for current_position in self.single_robot_positions[1:]:
             distance_x = previous_position[0] - current_position[0]
             distance_y = previous_position[1] - current_position[1]
-            traversed_distance = np.sqrt(distance_x**2 + distance_y**2)
-            self.traversed_distance_time_series.append(traversed_distance)
+            traversed_distance = np.sqrt(distance_x ** 2 + distance_y ** 2)
+            tmp.append(traversed_distance)
             previous_position = current_position
 
-        self.traversed_distance_time_series = np.asarray(self.traversed_distance_time_series)
+        self.traversed_distance_time_series = np.asarray(tmp)
 
     def compute_directions(self) -> None:
         """
         Method which computes the distance traversed in each timestep.
         """
-
+        tmp = []
         previous_position = self.single_robot_positions[0]
         for current_position in self.single_robot_positions[1:]:
             comp_x = previous_position[0] - current_position[0]
             comp_y = previous_position[1] - current_position[1]
-            self.direction_time_series.append([comp_x, comp_y])
+            tmp.append([comp_x, comp_y])
             previous_position = current_position
 
-        self.direction_time_series = np.asarray(self.direction_time_series)
+        self.direction_time_series = np.asarray(tmp)
 
     def compute_neighbors(self) -> None:
         """
         Computes the number of robot within the neighborhood radius at each timestep
         """
-
+        tmp = []
         # get all positions of the first robot and iterate over the timesteps of the positions time series
         for timestep in range(self.swarm_robots_positions.shape[1]):
             # initialize the number of neighbors variable to zero for each time step
@@ -160,61 +160,59 @@ class FootBot:
                 # compute distance from remote robot
                 distance_x = remote_robot_positions[timestep, 0] - self.single_robot_positions[timestep, 0]
                 distance_y = remote_robot_positions[timestep, 1] - self.single_robot_positions[timestep, 1]
-                distance_between_robots = np.sqrt(distance_x**2 + distance_y**2)
+                distance_between_robots = np.sqrt(distance_x ** 2 + distance_y ** 2)
                 # if the distance is below the neighborhood radius then the remote robot is considered as a neighbor
                 if distance_between_robots <= self.neighborhood_radius:
                     number_of_neighbors += 1
             # store the collected number of neighbors for the current timestep
-            self.neighbors_time_series.append(number_of_neighbors)
+            tmp.append(number_of_neighbors)
 
-        self.neighbors_time_series = np.asarray(self.neighbors_time_series)
+        self.neighbors_time_series = np.asarray(tmp)
 
     def compute_cumulative_traversed_distance(self) -> None:
         """
         Method to compute the cumulative distance traversed from bot in each time step according to time window
         """
-
+        tmp = []
         for i in range(len(self.traversed_distance_time_series))[1:]:
             if i < self.time_window:
-                self.cumulative_traversed_distance.append(
-                    sum(self.traversed_distance_time_series[:i]))
+                tmp.append(sum(self.traversed_distance_time_series[:i]))
             else:
-                self.cumulative_traversed_distance.append(
-                    sum(self.traversed_distance_time_series[i-self.time_window:i]))
-        self.cumulative_traversed_distance = np.asarray(self.cumulative_traversed_distance)
+                tmp.append(sum(self.traversed_distance_time_series[i - self.time_window:i]))
+        self.cumulative_traversed_distance = np.asarray(tmp)
 
     def compute_swarm_cohesion(self) -> None:
         """
         Method to compute the average distance of the bot from all the other bots for each timestep
         """
-
+        tmp = []
         for timestep in range(self.single_robot_positions.shape[0]):
             distances = []
             for remote_bot_positions in self.swarm_robots_positions:
                 distance_x = self.single_robot_positions[timestep][0] - remote_bot_positions[timestep][0]
                 distance_y = self.single_robot_positions[timestep][1] - remote_bot_positions[timestep][1]
                 distances.append(
-                    np.sqrt(distance_x**2 + distance_y**2)
+                    np.sqrt(distance_x ** 2 + distance_y ** 2)
                 )
-            self.swarm_cohesion_time_series.append(
-                1/(self.swarm_robots_positions.shape[1]) * sum(distances)
+            tmp.append(
+                1 / (self.swarm_robots_positions.shape[1]) * sum(distances)
             )
-        self.swarm_cohesion_time_series = np.asarray(self.swarm_cohesion_time_series)
+        self.swarm_cohesion_time_series = np.asarray(tmp)
 
     def compute_distance_from_centroid(self, trajectory: np.ndarray):
         for timestep in range(len(trajectory)):
             distance_x, distance_y = trajectory[timestep] - self.single_robot_positions[timestep]
             self.distance_from_centroid_time_series.append(
-                np.sqrt(distance_x**2 + distance_y**2)
+                np.sqrt(distance_x ** 2 + distance_y ** 2)
             )
 
     def compute_cumulative_distance_from_centroid(self):
+        tmp = []
         for i in range(len(self.distance_from_centroid_time_series)):
             if i < self.time_window:
-                self.cumulative_distance_from_centroid_time_series.append(
+                tmp.append(
                     sum(self.distance_from_centroid_time_series[:i]))
             else:
-                self.cumulative_distance_from_centroid_time_series.append(
-                    sum(self.distance_from_centroid_time_series[i-self.time_window:i]))
-        self.cumulative_distance_from_centroid_time_series = np.asarray(
-            self.cumulative_distance_from_centroid_time_series)
+                tmp.append(
+                    sum(self.distance_from_centroid_time_series[i - self.time_window:i]))
+        self.cumulative_distance_from_centroid_time_series = np.asarray(tmp)

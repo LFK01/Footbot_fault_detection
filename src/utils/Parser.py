@@ -77,7 +77,7 @@ class Parser:
         for footbot_id in footbots_unique_ids:
             # retrieve faults of the current robots based on its ID
             faults = df_footbot_positions[df_footbot_positions['ID'] == footbot_id]['Fault']
-            faults = faults.to_numpy()
+            faults = faults.to_numpy(dtype=bool)
 
             # create new FootBot instance
             new_footbot = FootBot(identifier=footbot_id,
@@ -151,6 +151,35 @@ class Parser:
 
         # return value
         return time_window
+
+    @staticmethod
+    def read_seed() -> int:
+        """
+        Method to retrieve the seed in the parameters file.
+
+        Returns
+        -------
+        seed : int
+            Value read in the file
+        """
+
+        seed = 0
+
+        # open file
+        try:
+            parameters_files = open('../txt_files/parameters_and_settings')
+        except FileNotFoundError:
+            parameters_files = open('../../txt_files/parameters_and_settings')
+
+        # parse file
+        for line in parameters_files:
+            # fine parameter
+            if 'SEED' in line:
+                # retrieve parameter value
+                seed = int(line.split('=')[1].replace(' ', ''))
+
+        # return value
+        return seed
 
     @staticmethod
     def read_filename(file_number: int) -> str:

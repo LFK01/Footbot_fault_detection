@@ -2,14 +2,14 @@ import numpy as np
 import tensorflow as tf
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from src.Classes.Swarm import Swarm
-from src.utils.DataWizard import DataWizard
+from src.utils.data_utils.DataWizard import DataWizard
 
 
 class SwarmDataWizard(DataWizard):
     def __init__(self, timesteps: int, time_window: int, label_size: int, experiments: list[Swarm],
                  splitting: list[int] = None, preprocessing_type: str = 'raw', data_format: str = 'numpy'):
 
-        super().__init__(timesteps, time_window, label_size, experiments, splitting, preprocessing_type, data_format)
+        super().__init__(timesteps, time_window, label_size, experiments)
 
     @staticmethod
     def build_dataset_vector(timesteps, preprocessing_type, experiments) -> list[list[np.ndarray]]:
