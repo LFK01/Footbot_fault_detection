@@ -68,7 +68,7 @@ class FaultDetectionModel:
                           )(x)
         x = layers.MaxPooling1D(pool_size=2,
                                 padding='valid')(x)
-        x = layers.LSTM(10)(x)
+        x = layers.LSTM(3)(x)
         x = layers.Dense(128, activation='relu')(x)
         x = layers.Dense(64, activation='relu')(x)
         outputs = layers.Dense(1, activation='sigmoid')(x)
@@ -81,6 +81,7 @@ class FaultDetectionModel:
         return model
 
     def train_model(self):
+        callback = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=3, min_delta=0.05)
 
         for bot in range(len(self.bot_datasets)):
             print('bot: ' + str(bot) + ' Training')
@@ -107,8 +108,9 @@ class FaultDetectionModel:
             )
 
             self.model.fit(train_ds,
-                           batch_size=10,
                            epochs=3,
+                           batch_size=10,
+                           callbacks=[callback],
                            validation_data=validation_ds,
                            class_weight=class_weights,
                            shuffle=False,
