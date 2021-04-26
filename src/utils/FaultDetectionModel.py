@@ -83,6 +83,8 @@ class FaultDetectionModel:
     def train_model(self):
         callback = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=3, min_delta=0.05)
 
+        batch_size = 256
+
         for bot in range(len(self.bot_datasets)):
             print('bot: ' + str(bot) + ' Training')
 
@@ -102,14 +104,18 @@ class FaultDetectionModel:
                      np.expand_dims(self.bot_datasets[bot].target_train_dataset, -1))
                 )
 
+            train_ds.prefetch(batch_size)
+
             validation_ds = tf.data.Dataset.from_tensor_slices(
                 (np.expand_dims(self.bot_datasets[bot].validation_dataset, 1),
                  np.expand_dims(self.bot_datasets[bot].target_validation_dataset, -1))
             )
 
+            validation_ds.prefetch(batch_size)
+
             self.model.fit(train_ds,
                            epochs=3,
-                           batch_size=10,
+                           batch_size=batch_size,
                            callbacks=[callback],
                            validation_data=validation_ds,
                            class_weight=class_weights,
@@ -121,6 +127,9 @@ class FaultDetectionModel:
                 (np.expand_dims(self.bot_datasets[bot].test_dataset, 1),
                  np.expand_dims(self.bot_datasets[bot].target_test_dataset, -1))
             )
+
+            test_ds.prefetch(batch_size)
+
             # returns loss and metrics
             loss, tp, fp, tn, fn, accuracy, precision, recall, auc, prc = self.model.evaluate(test_ds)
             output = "loss: %.2f" % loss + " tp: %.2f" % tp + " fp: %.2f" % fp + " tn: %.2f" % tn + " fn: %.2f" % fn
