@@ -6,6 +6,8 @@ TIME_WINDOW=10
 
 SEED = 123
 
+LSTM_length = 10
+
 File Names
 Filename1 = ../csv_log_files/positions_flocking_10_nominal_pos1.csv
 Filename2 = ../csv_log_files/positions_flocking_10_bot0_lock_at1500_pos2.csv

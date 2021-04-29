@@ -50,11 +50,11 @@ class Parser:
         footbot_swarm = []
 
         # open file in a pandas dataframe
-        # open file
         try:
             df_footbot_positions = pd.read_csv(filename)
         except FileNotFoundError:
             df_footbot_positions = pd.read_csv('../' + filename)
+
         # retrieve all the ids of the bot
         footbots_unique_ids = df_footbot_positions['ID'].unique()
         number_of_robots = len(footbots_unique_ids)
@@ -111,7 +111,10 @@ class Parser:
         try:
             parameters_files = open('../txt_files/parameters_and_settings')
         except FileNotFoundError:
-            parameters_files = open('../../txt_files/parameters_and_settings')
+            try:
+                parameters_files = open('../../txt_files/parameters_and_settings')
+            except FileNotFoundError:
+                parameters_files = open('txt_files/parameters_and_settings')
 
         # parse file
         for line in parameters_files:
@@ -140,7 +143,10 @@ class Parser:
         try:
             parameters_files = open('../txt_files/parameters_and_settings')
         except FileNotFoundError:
-            parameters_files = open('../../txt_files/parameters_and_settings')
+            try:
+                parameters_files = open('../../txt_files/parameters_and_settings')
+            except FileNotFoundError:
+                parameters_files = open('txt_files/parameters_and_settings')
 
         # parse file
         for line in parameters_files:
@@ -169,7 +175,10 @@ class Parser:
         try:
             parameters_files = open('../txt_files/parameters_and_settings')
         except FileNotFoundError:
-            parameters_files = open('../../txt_files/parameters_and_settings')
+            try:
+                parameters_files = open('../../txt_files/parameters_and_settings')
+            except FileNotFoundError:
+                parameters_files = open('txt_files/parameters_and_settings')
 
         # parse file
         for line in parameters_files:
@@ -194,13 +203,16 @@ class Parser:
         filename: str
             String of the file name
         """
-        filename = ""
+        filename = ''
 
         # open file
         try:
             parameters_files = open('../txt_files/parameters_and_settings')
         except FileNotFoundError:
-            parameters_files = open('../../txt_files/parameters_and_settings')
+            try:
+                parameters_files = open('../../txt_files/parameters_and_settings')
+            except FileNotFoundError:
+                parameters_files = open('txt_files/parameters_and_settings')
 
         # parse file
         for line in parameters_files:
@@ -211,6 +223,38 @@ class Parser:
 
         # return value
         return filename
+
+    @staticmethod
+    def read_lstm_length() -> int:
+        """
+        Method to retrieve the LSTM length in the parameters file.
+
+        Returns
+        -------
+        seed : int
+            Value read in the file
+        """
+
+        lstm_length = 0
+
+        # open file
+        try:
+            parameters_files = open('../txt_files/parameters_and_settings')
+        except FileNotFoundError:
+            try:
+                parameters_files = open('../../txt_files/parameters_and_settings')
+            except FileNotFoundError:
+                parameters_files = open('txt_files/parameters_and_settings')
+
+        # parse file
+        for line in parameters_files:
+            # fine parameter
+            if 'LSTM_length' in line:
+                # retrieve parameter value
+                lstm_length = int(line.split('=')[1].replace(' ', ''))
+
+        # return value
+        return lstm_length
 
     @staticmethod
     def read_files_in_directory() -> list:

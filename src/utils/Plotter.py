@@ -185,7 +185,7 @@ class Plotter:
 if __name__ == "__main__":
     neighborhood_radius = Parser.read_neighborhood_radius()
     time_window_size = Parser.read_time_window()
-    file = Parser.read_filename(3)
+    file = Parser.read_filename(1)
     footbots_list = Parser.create_swarm(filename=file,
                                         neighborhood_radius=neighborhood_radius,
                                         time_window_size=time_window_size)
