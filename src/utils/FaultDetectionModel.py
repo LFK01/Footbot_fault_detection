@@ -159,7 +159,6 @@ class FaultDetectionModel:
                            callbacks=[callback],
                            validation_data=validation_ds,
                            shuffle=False,
-                           class_weight=class_weights,
                            verbose=1)
 
             print('bot: ' + str(bot) + ' Testing')
