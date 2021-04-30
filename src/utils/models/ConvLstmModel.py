@@ -7,7 +7,7 @@ from src.utils.Parser import Parser
 from src.utils.data_utils.BotDataset import BotDataset
 
 
-class FaultDetectionModel:
+class ConvLstmModel:
     def __init__(self, bot_datasets: list[BotDataset]):
         self.LSTM_length = Parser.read_lstm_length()
         self.time_window = Parser.read_time_window()
@@ -148,14 +148,14 @@ class FaultDetectionModel:
 
             train_ds, validation_ds, test_ds = self.datasets_preparation(bot, batch_size)
 
-            train_samples = train_ds.element_spec[0].shape[1]
+            train_samples = train_ds.cardinality()
             train_steps = int(np.ceil(train_samples / batch_size))
-            validation_samples = int(validation_ds.element_spec[0].shape[1])
-            validation_steps = np.ceil(validation_samples / batch_size)
+            validation_samples = validation_ds.cardinality()
+            validation_steps = int(np.ceil(validation_samples / batch_size))
 
             self.model.fit(train_ds,
                            epochs=10,
-                           batch_size=16,
+                           batch_size=2048,
                            callbacks=[callback],
                            validation_data=validation_ds,
                            shuffle=False,

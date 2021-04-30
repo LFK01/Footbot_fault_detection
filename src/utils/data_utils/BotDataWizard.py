@@ -12,6 +12,7 @@ class BotDataWizard(DataWizard):
                  time_window: int,
                  label_size: int,
                  experiments: list[Swarm],
+                 down_sampling_steps: int = 1,
                  splitting: list[int] = None,
                  preprocessing_type: str = 'raw',
                  data_format: str = 'numpy'):
@@ -19,11 +20,15 @@ class BotDataWizard(DataWizard):
                          time_window=time_window,
                          label_size=label_size,
                          experiments=experiments,
+                         down_sampling_steps=down_sampling_steps,
                          preprocessing_type=preprocessing_type)
 
         if data_format == 'numpy':
             self.datasets: list[BotDataset] = DataWizard.create_balanced_bot_train_val_test_set(
-                experiments=experiments, splitting=splitting)
+                experiments=experiments,
+                splitting=splitting,
+                down_sampling_steps=self.down_sampling_steps
+            )
             self.normalize_dataset(self.datasets)
             self.window_and_trim_datasets()
         else:

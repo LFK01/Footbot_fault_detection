@@ -99,17 +99,17 @@ class FootBot:
         self.number_of_timesteps: int = number_of_timesteps
         self.neighborhood_radius: float = neighborhood_radius
         self.time_window: int = time_window_size
-        self.single_robot_positions = single_robot_positions
-        self.traversed_distance_time_series = [0.0]
-        self.direction_time_series = [[0.0, 0.0]]
-        self.cumulative_traversed_distance = [0.0]
-        self.swarm_robots_positions = all_robots_positions
-        self.swarm_cohesion_time_series = []
-        self.distance_from_centroid_time_series = []
-        self.cumulative_distance_from_centroid_time_series = []
-        self.neighbors_time_series = []
+        self.single_robot_positions: np.ndarray = single_robot_positions
+        self.traversed_distance_time_series: np.ndarray = np.asarray(0.0)
+        self.direction_time_series: np.ndarray = np.asarray([[0.0, 0.0]])
+        self.cumulative_traversed_distance: np.ndarray = np.asarray(0.0)
+        self.swarm_robots_positions: np.ndarray = all_robots_positions
+        self.swarm_cohesion_time_series: np.ndarray = np.asarray([])
+        self.distance_from_centroid_time_series: np.ndarray = np.asarray([])
+        self.cumulative_distance_from_centroid_time_series: np.ndarray = np.asarray([])
+        self.neighbors_time_series: np.ndarray = np.asarray([])
 
-        self.fault_time_series = fault_time_series
+        self.fault_time_series: np.ndarray = fault_time_series
 
         self.compute_traversed_space()
         self.compute_directions()
@@ -200,11 +200,13 @@ class FootBot:
         self.swarm_cohesion_time_series = np.asarray(tmp)
 
     def compute_distance_from_centroid(self, trajectory: np.ndarray):
+        tmp = []
         for timestep in range(len(trajectory)):
             distance_x, distance_y = trajectory[timestep] - self.single_robot_positions[timestep]
-            self.distance_from_centroid_time_series.append(
+            tmp.append(
                 np.sqrt(distance_x ** 2 + distance_y ** 2)
             )
+        self.distance_from_centroid_time_series = np.asarray(tmp)
 
     def compute_cumulative_distance_from_centroid(self):
         tmp = []
