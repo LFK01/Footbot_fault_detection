@@ -18,8 +18,10 @@ if __name__ == "__main__":
         swarm = Swarm(footbots_list)
         experiment_list.append(swarm)
 
+    timesteps = SwarmDataWizard.shortest_experiment_timesteps(experiment_list=experiment_list)
+
     data_wizard_datasets = BotDataWizard(
-        timesteps=SwarmDataWizard.shortest_experiment_timesteps(experiment_list=experiment_list),
+        timesteps=timesteps,
         time_window=time_window_size,
         label_size=1,
         experiments=experiment_list,

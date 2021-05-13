@@ -166,10 +166,10 @@ class ConvLstmModel:
             test_sample = test_ds.element_spec[0].shape[1]
             test_step_per_epoch = int(np.ceil(test_sample / batch_size))
             # returns loss and metrics
-            loss, tp, fp, tn, fn, accuracy, precision, recall, auc, prc = self.model.evaluate(test_ds,
-                                                                                              batch_size=batch_size,
-                                                                                              steps_per_epoch=
-                                                                                              test_step_per_epoch)
+            loss, tp, fp, tn, fn, accuracy, precision, recall, auc, prc = self.\
+                model.evaluate(test_ds,
+                               batch_size=batch_size,
+                               steps_per_epoch=test_step_per_epoch)
             output = "loss: %.2f" % loss + " tp: %.2f" % tp + " fp: %.2f" % fp + " tn: %.2f" % tn + " fn: %.2f" % fn
             output += " accuracy: %.2f" % accuracy + " precision: %.2f" % precision + " recall: %.2f" % recall
             output += " auc: %.2f" % auc + " prc: %.2f" % prc

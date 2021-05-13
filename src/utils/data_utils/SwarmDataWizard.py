@@ -6,8 +6,7 @@ from src.utils.data_utils.DataWizard import DataWizard
 
 
 class SwarmDataWizard(DataWizard):
-    def __init__(self, timesteps: int, time_window: int, label_size: int, experiments: list[Swarm],
-                 splitting: list[int] = None, preprocessing_type: str = 'raw', data_format: str = 'numpy'):
+    def __init__(self, timesteps: int, time_window: int, label_size: int, experiments: list[Swarm]):
 
         super().__init__(timesteps, time_window, label_size, experiments)
 

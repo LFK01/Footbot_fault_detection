@@ -20,13 +20,14 @@ class Swarm:
         return np.mean(all_bot_trajectory, axis=0)
 
     def compute_cluster_speed(self):
+        tmp = []
         current_position = self.trajectory[0]
         for next_position in self.trajectory[1:]:
             distance_x = current_position[0] - next_position[0]
             distance_y = current_position[1] - next_position[1]
             traversed_distance = np.sqrt(distance_x**2 + distance_y**2)
-            self.traversed_distance_time_series.append(traversed_distance)
-        self.traversed_distance_time_series = np.asarray(self.traversed_distance_time_series)
+            tmp.append(traversed_distance)
+        self.traversed_distance_time_series = np.asarray(tmp)
 
     def compute_distances_from_centroid(self):
         for bot in self.list_of_footbots:
