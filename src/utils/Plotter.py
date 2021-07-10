@@ -45,6 +45,135 @@ class Plotter:
         plt.show()
 
     @staticmethod
+    def plot_trajectory_entropy(swarm: list[FootBot]) -> None:
+        """
+        Method to plot the entropy of the trajectory. Shows the plot.
+
+        Parameters
+        ----------
+        swarm : list
+            List of FootBot instances
+        """
+        plt.figure()
+        for bot in swarm:
+            plt.plot(bot.positions_entropy, alpha=0.5)
+        plt.xlabel("Timestep")
+        plt.ylabel("Entropy")
+        plt.title("Entropy for each bot")
+        plt.show()
+
+    @staticmethod
+    def plot_state_time_series(swarm: list[FootBot]) -> None:
+        """
+        Method to plot state of each robot. Shows the plot.
+
+        Parameters
+        ----------
+        swarm : list
+            List of FootBot instances
+        """
+        plt.figure()
+        for bot in swarm:
+            plt.plot(bot.state_time_series)
+        plt.xlabel("Timestep")
+        plt.ylabel("State")
+        plt.title("State for each bot")
+        plt.text(0, 0, 'STATE = Resting')
+        plt.text(0, 1, 'STATE = Exploring')
+        plt.text(0, 2, 'STATE = Returning to nest')
+        plt.show()
+
+    @staticmethod
+    def plot_time_rested_time_series(swarm: list[FootBot]) -> None:
+        """
+        Method to plot rested_time of each robot. Shows the plot.
+
+        Parameters
+        ----------
+        swarm : list
+            List of FootBot instances
+        """
+        plt.figure()
+        for bot in swarm:
+            plt.plot(bot.TimeRested_time_series)
+        plt.xlabel("Timestep")
+        plt.ylabel("Rested Time")
+        plt.title("Rested Time for each bot")
+        plt.show()
+
+    @staticmethod
+    def plot_has_food_time_series(swarm: list[FootBot]) -> None:
+        """
+        Method to plot if each robot has food. Shows the plot.
+
+        Parameters
+        ----------
+        swarm : list
+            List of FootBot instances
+        """
+        plt.figure()
+        for bot in swarm:
+            plt.plot(bot.HasFood_time_series)
+        plt.xlabel("Timestep")
+        plt.ylabel("Does it have food?")
+        plt.title("Has food info for each bot")
+        plt.show()
+
+    @staticmethod
+    def plot_total_food_time_series(swarm: list[FootBot]) -> None:
+        """
+        Method to plot total food collected from each bot. Shows the plot.
+
+        Parameters
+        ----------
+        swarm : list
+            List of FootBot instances
+        """
+        plt.figure()
+        for bot in swarm:
+            plt.plot(bot.TotalFood_time_series)
+        plt.xlabel("Timestep")
+        plt.ylabel("Collected food")
+        plt.title("Collected food for each bot")
+        plt.show()
+
+    @staticmethod
+    def plot_time_searching_for_nest_time_series(swarm: list[FootBot]) -> None:
+        """
+        Method to plot if each robot has food. Shows the plot.
+
+        Parameters
+        ----------
+        swarm : list
+            List of FootBot instances
+        """
+        plt.figure()
+        for bot in swarm:
+            plt.plot(bot.TimeSearchingForNest_time_series)
+        plt.xlabel("Timestep")
+        plt.ylabel("Nest Time")
+        plt.title("Time to search space in nest")
+        plt.show()
+
+    @staticmethod
+    def plot_exploring_unsuccessfully_time_series(swarm: list[FootBot]) -> None:
+        """
+        Method to plot if each robot has food. Shows the plot.
+
+        Parameters
+        ----------
+        swarm : list
+            List of FootBot instances
+        """
+        plt.figure()
+        for bot in swarm:
+            plt.plot(bot.TimeExploringUnsuccessfully_time_series)
+        plt.xlabel("Timestep")
+        plt.ylabel("Exploration time")
+        plt.title("Unsuccessful exploration time")
+        plt.show()
+
+    @staticmethod
     def plot_speeds(swarm: list[FootBot]) -> None:
         """
         Method to plot speeds of each robot. Shows the plot.
@@ -127,7 +256,7 @@ class Plotter:
 
         Parameters
         ----------
-        swarm : list
+        swarm : list[FootBot]
             List of FootBot instances
         """
         plt.figure()
@@ -182,30 +311,90 @@ class Plotter:
         plt.show()
 
 
-if __name__ == "__main__":
+def build_swarm(file_number: int):
     neighborhood_radius = Parser.read_neighborhood_radius()
     time_window_size = Parser.read_time_window()
-    file = Parser.read_filename(1)
-    footbots_list = Parser.create_swarm(filename=file,
-                                        neighborhood_radius=neighborhood_radius,
-                                        time_window_size=time_window_size)
-    # noinspection PyTypeChecker
-    main_swarm = Swarm(footbots_list)
+    file = Parser.read_filename(file_number)
+    footbots_list = Parser.create_flocking_swarm(filename=file,
+                                                 neighborhood_radius=neighborhood_radius,
+                                                 time_window_size=time_window_size)
+    return footbots_list, Swarm(footbots_list)
 
-    # noinspection PyTypeChecker
+
+def build_foraging_swarm(file_number: int):
+    neighborhood_radius = Parser.read_neighborhood_radius()
+    time_window_size = Parser.read_time_window()
+    file = Parser.read_filename(file_number)
+    footbots_list = Parser.create_foraging_swarm(filename=file,
+                                                 neighborhood_radius=neighborhood_radius,
+                                                 time_window_size=time_window_size)
+    return footbots_list, Swarm(footbots_list)
+
+
+def main_foraging():
+    footbots_list, main_swarm = build_foraging_swarm(6)
+
     Plotter.plot_trajectories(footbots_list, main_swarm)
-    # noinspection PyTypeChecker
     Plotter.plot_speeds(footbots_list)
-    # noinspection PyTypeChecker
-    Plotter.plot_neighbors(footbots_list)
-    # noinspection PyTypeChecker
     Plotter.plot_cumulative_traversed_distance(footbots_list)
-    # noinspection PyTypeChecker
-    Plotter.plot_swarm_cohesion(footbots_list)
-    # noinspection PyTypeChecker
-    Plotter.plot_distances_from_centroid(footbots_list)
-    # noinspection PyTypeChecker
-    Plotter.plot_swarm_speed(main_swarm)
-    # noinspection PyTypeChecker
+
+    Plotter.plot_state_time_series(footbots_list)
+    Plotter.plot_has_food_time_series(footbots_list)
+    Plotter.plot_time_rested_time_series(footbots_list)
+    Plotter.plot_total_food_time_series(footbots_list)
+    Plotter.plot_time_searching_for_nest_time_series(footbots_list)
+    Plotter.plot_exploring_unsuccessfully_time_series(footbots_list)
+
     Plotter.plot_faulty_robots(footbots_list)
+
+
+def main_homing():
+    footbots_list, main_swarm = build_swarm(1)
+
+    Plotter.plot_trajectories(footbots_list, main_swarm)
+    Plotter.plot_speeds(footbots_list)
+    Plotter.plot_cumulative_traversed_distance(footbots_list)
+
+    Plotter.plot_swarm_cohesion(footbots_list)
+    Plotter.plot_neighbors(footbots_list)
+
+    Plotter.plot_faulty_robots(footbots_list)
+
+
+def main_dispersion():
+    footbots_list, main_swarm = build_swarm(7)
+
+    Plotter.plot_trajectories(footbots_list, main_swarm)
+    Plotter.plot_speeds(footbots_list)
+    Plotter.plot_cumulative_traversed_distance(footbots_list)
+    Plotter.plot_trajectory_entropy(footbots_list)
+
+    Plotter.plot_swarm_cohesion(footbots_list)
+    Plotter.plot_neighbors(footbots_list)
+
+    Plotter.plot_faulty_robots(footbots_list)
+
+
+def plot_model_performances():
+
+    x_values = [0, 1, 2, 3, 4, 5]
+    y_values = [0.8700, 0.9840, 0.7904, 0.9994, 0.9920, 0.8335]
+    bot_labels = ['Bot 0', 'Bot 1', 'Bot 3', 'Bot 4', 'Bot 7', 'Bot 8']
+
+    plt.figure()
+    plt.scatter(x=x_values, y=y_values, label='single bot', alpha=0.7)
+    for x_val, y_val in zip(x_values, y_values):
+        plt.text(x_val+0.03, y_val+0.03, str(y_val)[:4])
+    plt.xticks(ticks=x_values, labels=bot_labels)
+    plt.axis([-0.5, 5.5, -0.1, 1.1])
+    plt.ylabel("Performance")
+    plt.title("Gradient Boosting Performance")
+    plt.hlines(0.9427457141610229, xmin=0, xmax=5, color='r', linestyles='dashed', label='merged bots')
+    plt.text(5, 0.97, str(0.94))
+    plt.legend()
+    plt.show()
+
+
+if __name__ == "__main__":
+    main_dispersion()
 

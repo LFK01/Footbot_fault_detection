@@ -11,10 +11,10 @@ if __name__ == "__main__":
     experiment_list = []
     for file in Parser.read_files_in_directory():
         print(file.split('/')[-1])
-        footbots_list = Parser.create_swarm(filename=file,
-                                            neighborhood_radius=neighborhood_radius,
-                                            time_window_size=time_window_size)
-        # noinspection PyTypeChecker
+        footbots_list = Parser.create_flocking_swarm(filename=file,
+                                                     neighborhood_radius=neighborhood_radius,
+                                                     time_window_size=time_window_size)
+
         swarm = Swarm(footbots_list)
         experiment_list.append(swarm)
 

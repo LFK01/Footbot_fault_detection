@@ -26,35 +26,32 @@ class Parser:
         """
 
         pass
+    
+    @staticmethod
+    def open_parameters_file():
+        # open file
+        try:
+            parameters_files = open('../txt_files/parameters_and_settings')
+        except FileNotFoundError:
+            try:
+                parameters_files = open('../../txt_files/parameters_and_settings')
+            except FileNotFoundError:
+                parameters_files = open('txt_files/parameters_and_settings')
+
+        return parameters_files
 
     @staticmethod
-    def create_swarm(filename: str, neighborhood_radius: float, time_window_size: int) -> list[FootBot]:
-        """
-        Method to parse the positions file and return the list of footbots.
-
-        Parameters
-        ----------
-        filename : str
-            String which specifies the name of the file to read
-        neighborhood_radius : float
-            Float value which specifies the maximum distance allowed to identify a robot in the neighborhood
-        time_window_size : int
-            Integer value to identify the maximum number of timesteps to be considered in a window of time
-        Returns
-        -------
-        swarm : list
-            List of all FootBot instances found in the parsed file
-        """
-
-        # list to store the robots of the swarm
-        footbot_swarm = []
-
+    def open_pandas_dataframe(filename: str) -> pd.DataFrame:
         # open file in a pandas dataframe
         try:
             df_footbot_positions = pd.read_csv(filename)
         except FileNotFoundError:
             df_footbot_positions = pd.read_csv('../' + filename)
 
+        return df_footbot_positions
+
+    @staticmethod
+    def retrieve_dataframe_info(df_footbot_positions: pd.DataFrame) -> tuple[list[int], int, int, np.ndarray]:
         # retrieve all the ids of the bot
         footbots_unique_ids = df_footbot_positions['ID'].unique()
         number_of_robots = len(footbots_unique_ids)
@@ -74,7 +71,38 @@ class Parser:
         # create numpy array
         all_robots_positions = np.asarray(all_robots_positions)
 
+        return footbots_unique_ids, number_of_robots, number_of_timesteps, all_robots_positions
+
+    @staticmethod
+    def create_flocking_swarm(filename: str, neighborhood_radius: float, time_window_size: int) -> list[FootBot]:
+        """
+        Method to parse the positions file and return the list of footbots.
+
+        Parameters
+        ----------
+        filename : str
+            String which specifies the name of the file to read
+        neighborhood_radius : float
+            Float value which specifies the maximum distance allowed to identify a robot in the neighborhood
+        time_window_size : int
+            Integer value to identify the maximum number of timesteps to be considered in a window of time
+        Returns
+        -------
+        swarm : list[FootBot]
+            List of all FootBot instances found in the parsed file
+        """
+
+        # list to store the robots of the swarm
+        footbot_swarm = []
+
+        df_footbot_positions = Parser.open_pandas_dataframe(filename=filename)
+
+        # retrieve infos
+        footbots_unique_ids, number_of_robots, number_of_timesteps, all_robots_positions = Parser.\
+            retrieve_dataframe_info(df_footbot_positions)
+
         for footbot_id in footbots_unique_ids:
+            print('parsing bot: ' + str(footbot_id))
             # retrieve faults of the current robots based on its ID
             faults = df_footbot_positions[df_footbot_positions['ID'] == footbot_id]['Fault']
             faults = faults.to_numpy(dtype=bool)
@@ -95,6 +123,67 @@ class Parser:
         return footbot_swarm
 
     @staticmethod
+    def create_foraging_swarm(filename: str, neighborhood_radius: float, time_window_size: int) -> list[FootBot]:
+        # list to store the robots of the swarm
+        footbot_swarm = []
+
+        # open file in a pandas dataframe
+        try:
+            df_footbot_positions = pd.read_csv(filename)
+        except FileNotFoundError:
+            df_footbot_positions = pd.read_csv('../' + filename)
+
+        # retrieve infos
+        footbots_unique_ids, number_of_robots, number_of_timesteps, all_robots_positions = Parser. \
+            retrieve_dataframe_info(df_footbot_positions)
+
+        for footbot_id in footbots_unique_ids:
+            # retrieve faults of the current robots based on its ID
+            faults = df_footbot_positions[df_footbot_positions['ID'] == footbot_id]['Fault'].to_numpy(dtype=bool)
+
+            # retrieve states of the current robots based on its ID
+            states = df_footbot_positions[df_footbot_positions['ID'] == footbot_id]['State'].to_numpy(dtype=int)
+
+            # retrieve HasFood information of the current robots based on its ID
+            food = df_footbot_positions[df_footbot_positions['ID'] == footbot_id]['HasFood'].to_numpy(dtype=bool)
+
+            # retrieve TotalFood information of the current robots based on its ID
+            total_food = df_footbot_positions[df_footbot_positions['ID'] == footbot_id]['TotalFood'].to_numpy(dtype=int)
+
+            # retrieve Time_Rested information of the current robots based on its ID
+            time_rested = df_footbot_positions[df_footbot_positions['ID'] == footbot_id][
+                'TimeRested'].to_numpy(dtype=int)
+
+            # retrieve Time_Exploring_Unsuccessfully information of the current robots based on its ID
+            exploration_time = df_footbot_positions[df_footbot_positions['ID'] == footbot_id][
+                'TimeExploringUnsuccessfully'].to_numpy(dtype=int)
+
+            # retrieve Time_Exploring_Unsuccessfully information of the current robots based on its ID
+            searching_space_in_nest_time = df_footbot_positions[df_footbot_positions['ID'] == footbot_id][
+                'TimeSearchingForNest'].to_numpy(dtype=int)
+
+            # create new FootBot instance
+            new_footbot = FootBot(identifier=footbot_id,
+                                  number_of_robots=number_of_robots,
+                                  number_of_timesteps=number_of_timesteps,
+                                  neighborhood_radius=neighborhood_radius,
+                                  time_window_size=time_window_size,
+                                  single_robot_positions=all_robots_positions[footbot_id],
+                                  all_robots_positions=np.delete(all_robots_positions, footbot_id, axis=0),
+                                  state_time_series=states,
+                                  has_food_time_series=food,
+                                  total_food_time_series=total_food,
+                                  time_rested_time_series=time_rested,
+                                  time_exploring_unsuccessfully_time_series=exploration_time,
+                                  time_searching_for_nest_time_series=searching_space_in_nest_time,
+                                  fault_time_series=faults)
+
+            # save new FootBot instance in the swarm
+            footbot_swarm.append(new_footbot)
+
+        return footbot_swarm
+
+    @staticmethod
     def read_neighborhood_radius() -> float:
         """
         Method to retrieve the neighborhood_radius in the parameters file.
@@ -107,14 +196,7 @@ class Parser:
 
         neighborhood_radius = 0.0
 
-        # open file
-        try:
-            parameters_files = open('../txt_files/parameters_and_settings')
-        except FileNotFoundError:
-            try:
-                parameters_files = open('../../txt_files/parameters_and_settings')
-            except FileNotFoundError:
-                parameters_files = open('txt_files/parameters_and_settings')
+        parameters_files = Parser.open_parameters_file()
 
         # parse file
         for line in parameters_files:
@@ -139,14 +221,7 @@ class Parser:
 
         time_window = 0
 
-        # open file
-        try:
-            parameters_files = open('../txt_files/parameters_and_settings')
-        except FileNotFoundError:
-            try:
-                parameters_files = open('../../txt_files/parameters_and_settings')
-            except FileNotFoundError:
-                parameters_files = open('txt_files/parameters_and_settings')
+        parameters_files = Parser.open_parameters_file()
 
         # parse file
         for line in parameters_files:
@@ -171,14 +246,7 @@ class Parser:
 
         seed = 0
 
-        # open file
-        try:
-            parameters_files = open('../txt_files/parameters_and_settings')
-        except FileNotFoundError:
-            try:
-                parameters_files = open('../../txt_files/parameters_and_settings')
-            except FileNotFoundError:
-                parameters_files = open('txt_files/parameters_and_settings')
+        parameters_files = Parser.open_parameters_file()
 
         # parse file
         for line in parameters_files:
@@ -205,14 +273,7 @@ class Parser:
         """
         filename = ''
 
-        # open file
-        try:
-            parameters_files = open('../txt_files/parameters_and_settings')
-        except FileNotFoundError:
-            try:
-                parameters_files = open('../../txt_files/parameters_and_settings')
-            except FileNotFoundError:
-                parameters_files = open('txt_files/parameters_and_settings')
+        parameters_files = Parser.open_parameters_file()
 
         # parse file
         for line in parameters_files:
@@ -237,14 +298,7 @@ class Parser:
 
         lstm_length = 0
 
-        # open file
-        try:
-            parameters_files = open('../txt_files/parameters_and_settings')
-        except FileNotFoundError:
-            try:
-                parameters_files = open('../../txt_files/parameters_and_settings')
-            except FileNotFoundError:
-                parameters_files = open('txt_files/parameters_and_settings')
+        parameters_files = Parser.open_parameters_file()
 
         # parse file
         for line in parameters_files:
@@ -257,6 +311,21 @@ class Parser:
         return lstm_length
 
     @staticmethod
-    def read_files_in_directory() -> list:
-        return ['../csv_log_files/' + f for f in listdir('../csv_log_files')
-                if isfile(join('../csv_log_files', f))]
+    def read_files_in_directory(experiment_name: str) -> list:
+        if experiment_name == 'flocking':
+            return ['../flocking_log_files/' + f for f in listdir('../flocking_log_files')
+                    if isfile(join('../flocking_log_files', f))]
+        elif experiment_name == 'foraging':
+            return ['../foraging_log_files/' + f for f in listdir('../foraging_log_files')
+                    if isfile(join('../foraging_log_files', f))]
+        elif experiment_name == 'diffusion':
+            return ['../diffusion_log_files/' + f for f in listdir('../diffusion_log_files')
+                    if isfile(join('../diffusion_log_files', f))]
+        elif experiment_name == 'dispersion':
+            return ['../dispersion_log_files/' + f for f in listdir('../dispersion_log_files')
+                    if isfile(join('../dispersion_log_files', f))]
+        elif experiment_name == 'homing':
+            return ['../homing_log_files/' + f for f in listdir('../homing_log_files')
+                    if isfile(join('../homing_log_files', f))]
+        else:
+            raise FileNotFoundError

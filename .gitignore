@@ -5,8 +5,11 @@
 venv
 
 #position log files
-csv_log_files
+flocking_log_files
 diffusion_log_files
+foraging_log_files
+dispersion_log_files
+homing_log_files
 
 #MacOS stuff
 .DS_Store

@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.stats import entropy
 
 
 class FootBot:
@@ -68,30 +69,37 @@ class FootBot:
                  time_window_size: int,
                  single_robot_positions: np.ndarray,
                  all_robots_positions: np.ndarray,
-                 fault_time_series: np.ndarray):
-        """
-        Constructor method
+                 fault_time_series: np.ndarray,
+                 state_time_series: np.ndarray = None,
+                 has_food_time_series: np.ndarray = None,
+                 total_food_time_series: np.ndarray = None,
+                 time_rested_time_series: np.ndarray = None,
+                 time_exploring_unsuccessfully_time_series: np.ndarray = None,
+                 time_searching_for_nest_time_series: np.ndarray = None):
 
-        Parameters
-        ----------
-        identifier: int
-            Numerical identifier for the robot
-        number_of_robots: int
-            Number of robots in the swarm
-        number_of_timesteps: int
-            Length of the time series
-        neighborhood_radius: float
-            Float radius to define the maximum distance to consider a neighbor. It is retrieved from the
-            parameters_and_settings.txt file
-        time_window_size: int
-            Number of timestep to consider in the window of time. It is retrieved from the
-            parameters_and_settings.txt file
-        single_robot_positions: np.ndarray
-            Numpy array of the trajectory of the current robot
-        all_robots_positions: np.ndarray
-            Numpy array of the trajectories of all the other robots
-        fault_time_series: np.ndarray
-            Numpy array of functioning status of the bot. It will be the target of the learning function
+        """
+            Constructor method
+
+            Parameters
+            ----------
+            identifier: int
+                Numerical identifier for the robot
+            number_of_robots: int
+                Number of robots in the swarm
+            number_of_timesteps: int
+                Length of the time series
+            neighborhood_radius: float
+                Float radius to define the maximum distance to consider a neighbor. It is retrieved from the
+                parameters_and_settings.txt file
+            time_window_size: int
+                Number of timestep to consider in the window of time. It is retrieved from the
+                parameters_and_settings.txt file
+            single_robot_positions: np.ndarray
+                Numpy array of the trajectory of the current robot
+            all_robots_positions: np.ndarray
+                Numpy array of the trajectories of all the other robots
+            fault_time_series: np.ndarray
+                Numpy array of functioning status of the bot. It will be the target of the learning function
         """
 
         self.identifier: int = identifier
@@ -99,23 +107,38 @@ class FootBot:
         self.number_of_timesteps: int = number_of_timesteps
         self.neighborhood_radius: float = neighborhood_radius
         self.time_window: int = time_window_size
+
         self.single_robot_positions: np.ndarray = single_robot_positions
         self.traversed_distance_time_series: np.ndarray = np.asarray(0.0)
+        self.positions_entropy: np.ndarray = np.asarray(0.0)
         self.direction_time_series: np.ndarray = np.asarray([[0.0, 0.0]])
         self.cumulative_traversed_distance: np.ndarray = np.asarray(0.0)
         self.swarm_robots_positions: np.ndarray = all_robots_positions
-        self.swarm_cohesion_time_series: np.ndarray = np.asarray([])
+
+        if state_time_series is None:
+            self.swarm_robots_positions: np.ndarray = all_robots_positions
+            self.swarm_cohesion_time_series: np.ndarray = np.asarray([])
+            self.neighbors_time_series: np.ndarray = np.asarray([])
+
+            self.compute_neighbors()
+            self.compute_swarm_cohesion()
+        else:
+            self.state_time_series: np.ndarray = state_time_series
+            self.HasFood_time_series: np.ndarray = has_food_time_series
+            self.TotalFood_time_series: np.ndarray = total_food_time_series
+            self.TimeRested_time_series: np.ndarray = time_rested_time_series
+            self.TimeExploringUnsuccessfully_time_series: np.ndarray = time_exploring_unsuccessfully_time_series
+            self.TimeSearchingForNest_time_series: np.ndarray = time_searching_for_nest_time_series
+
         self.distance_from_centroid_time_series: np.ndarray = np.asarray([])
         self.cumulative_distance_from_centroid_time_series: np.ndarray = np.asarray([])
-        self.neighbors_time_series: np.ndarray = np.asarray([])
 
         self.fault_time_series: np.ndarray = fault_time_series
 
         self.compute_traversed_space()
+        self.compute_trajectory_entropy()
         self.compute_directions()
         self.compute_cumulative_traversed_distance()
-        self.compute_neighbors()
-        self.compute_swarm_cohesion()
 
     def compute_traversed_space(self) -> None:
         """
@@ -131,6 +154,22 @@ class FootBot:
             previous_position = current_position
 
         self.traversed_distance_time_series = np.asarray(tmp)
+
+    def compute_trajectory_entropy(self, base=None):
+        tmp = []
+        for timestep in range(len(self.single_robot_positions)):
+            if timestep < self.time_window*10:
+                value, counts = np.unique(self.single_robot_positions[0:timestep],
+                                          return_counts=True,
+                                          axis=0)
+                tmp.append(entropy(counts, base=base))
+            else:
+                value, counts = np.unique(self.single_robot_positions[timestep-self.time_window*10:timestep],
+                                          return_counts=True,
+                                          axis=0)
+                tmp.append(entropy(counts, base=base))
+
+        self.positions_entropy = np.asarray(tmp)
 
     def compute_directions(self) -> None:
         """
@@ -173,7 +212,7 @@ class FootBot:
         """
         Method to compute the cumulative distance traversed from bot in each time step according to time window
         """
-        tmp = []
+        tmp = [self.traversed_distance_time_series[0]]
         for i in range(len(self.traversed_distance_time_series))[1:]:
             if i < self.time_window:
                 tmp.append(sum(self.traversed_distance_time_series[:i]))
@@ -195,7 +234,7 @@ class FootBot:
                     np.sqrt(distance_x ** 2 + distance_y ** 2)
                 )
             tmp.append(
-                1 / (self.swarm_robots_positions.shape[1]) * sum(distances)
+                (1 / (self.swarm_robots_positions.shape[1])) * sum(distances)
             )
         self.swarm_cohesion_time_series = np.asarray(tmp)
 
