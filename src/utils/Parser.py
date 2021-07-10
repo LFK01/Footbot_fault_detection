@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import tqdm
 from os import listdir
 from os.path import isfile, join
 from src.Classes.FootBot import FootBot
@@ -260,3 +261,48 @@ class Parser:
     def read_files_in_directory() -> list:
         return ['../csv_log_files/' + f for f in listdir('../csv_log_files')
                 if isfile(join('../csv_log_files', f))]
+
+    @staticmethod
+    def add_bot_id() -> pd.DataFrame:
+        #clean file
+        inputfile = 'diffusion_log_files/locationspolled.heat'
+        outputfile = '../../diffusion_log_files/locationspolled.csv'
+
+        try:
+            in_file = open(inputfile)
+        except FileNotFoundError:
+            in_file = open('../../' + inputfile)
+
+        for line in tqdm.tqdm(in_file):
+            if '#<PolledLocation>:' in line:
+                line = line.replace('#<PolledLocation>:', '')
+            line = line.replace(';', ',')
+            with open(outputfile, 'a+') as o_file:
+                o_file.write(line)
+
+        in_file.close()
+        o_file.close()
+
+        # list to store the robots of the swarm
+        bot_list = []
+
+        # open file in a pandas dataframe
+        try:
+            bot_dataframe = pd.read_csv(outputfile)
+        except FileNotFoundError:
+            bot_dataframe = pd.read_csv('../../' + outputfile)
+
+        unique_timesteps = bot_dataframe['TimeStamp'].unique()
+        bot_number = len(bot_dataframe['TimeStamp' == unique_timesteps[0]])
+
+        bot_IDs = list(range(0, bot_number-1))
+        bot_IDs = bot_IDs * len(unique_timesteps)
+
+        bot_dataframe.assign(bot_ID=bot_IDs)
+
+        return bot_dataframe
+
+
+if __name__ == "__main__":
+    df = Parser.add_bot_id()
+    print()
