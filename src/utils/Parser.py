@@ -332,46 +332,48 @@ class Parser:
             raise FileNotFoundError
 
     @staticmethod
-    def add_bot_id() -> pd.DataFrame:
-        #clean file
-        inputfile = 'diffusion_log_files/locationspolled.heat'
-        outputfile = '../../diffusion_log_files/locationspolled.csv'
+    def clean_heat_file():
+        # clean file
+        input_file = 'diffusion_log_files/locationspolled.heat'
+        output_file = '../../diffusion_log_files/locationspolled.csv'
 
         try:
-            in_file = open(inputfile)
+            in_file = open(input_file)
         except FileNotFoundError:
-            in_file = open('../../' + inputfile)
+            in_file = open('../../' + input_file)
 
         for line in tqdm.tqdm(in_file):
             if '#<PolledLocation>:' in line:
                 line = line.replace('#<PolledLocation>:', '')
             line = line.replace(';', ',')
-            with open(outputfile, 'a+') as o_file:
+            with open(output_file, 'a+') as o_file:
                 o_file.write(line)
 
         in_file.close()
         o_file.close()
 
-        # list to store the robots of the swarm
-        bot_list = []
+    @staticmethod
+    def add_bot_id():
+        csv_file = '../../diffusion_log_files/locationspolled.csv'
 
         # open file in a pandas dataframe
         try:
-            bot_dataframe = pd.read_csv(outputfile)
+            bot_dataframe = pd.read_csv(csv_file)
         except FileNotFoundError:
-            bot_dataframe = pd.read_csv('../../' + outputfile)
+            bot_dataframe = pd.read_csv('../../' + csv_file)
 
         unique_timesteps = bot_dataframe['TimeStamp'].unique()
-        bot_number = len(bot_dataframe['TimeStamp' == unique_timesteps[0]])
+        first_timestep = unique_timesteps[0]
+        bot_number = len(bot_dataframe.loc[bot_dataframe['TimeStamp'] == first_timestep])
 
-        bot_IDs = list(range(0, bot_number-1))
+        bot_IDs = list(range(0, bot_number))
         bot_IDs = bot_IDs * len(unique_timesteps)
 
-        bot_dataframe.assign(bot_ID=bot_IDs)
+        bot_dataframe.insert(0, 'bot_ID', bot_IDs)
 
-        return bot_dataframe
+        bot_dataframe.to_csv(csv_file)
 
 
 if __name__ == "__main__":
-    df = Parser.add_bot_id()
+    Parser.add_bot_id()
     print()
