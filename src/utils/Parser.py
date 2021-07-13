@@ -366,14 +366,20 @@ class Parser:
         first_timestep = unique_timesteps[0]
         bot_number = len(bot_dataframe.loc[bot_dataframe['TimeStamp'] == first_timestep])
 
+        faults = [0] * bot_number
+        faults[1] = 1
+        faults = faults * len(unique_timesteps)
+
         bot_IDs = list(range(0, bot_number))
         bot_IDs = bot_IDs * len(unique_timesteps)
 
         bot_dataframe.insert(0, 'bot_ID', bot_IDs)
+        bot_dataframe.insert(len(bot_dataframe.columns), 'Fault', faults)
 
         bot_dataframe.to_csv(csv_file)
 
 
 if __name__ == "__main__":
-    Parser.add_bot_id()
-    print()
+    csv_file = '../../warehouse_log_files/locationspolled.csv'
+    df = pd.read_csv(csv_file)
+    print(df['BotTask'].unique())

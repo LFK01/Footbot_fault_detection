@@ -311,7 +311,7 @@ class Plotter:
         plt.show()
 
 
-def build_swarm(file_number: int):
+def build_flocking_swarm(file_number: int):
     neighborhood_radius = Parser.read_neighborhood_radius()
     time_window_size = Parser.read_time_window()
     file = Parser.read_filename(file_number)
@@ -329,7 +329,6 @@ def build_foraging_swarm(file_number: int):
                                                  neighborhood_radius=neighborhood_radius,
                                                  time_window_size=time_window_size)
     return footbots_list, Swarm(footbots_list)
-
 
 def main_foraging():
     footbots_list, main_swarm = build_foraging_swarm(6)
@@ -349,7 +348,7 @@ def main_foraging():
 
 
 def main_homing():
-    footbots_list, main_swarm = build_swarm(1)
+    footbots_list, main_swarm = build_flocking_swarm(1)
 
     Plotter.plot_trajectories(footbots_list, main_swarm)
     Plotter.plot_speeds(footbots_list)
@@ -362,7 +361,21 @@ def main_homing():
 
 
 def main_dispersion():
-    footbots_list, main_swarm = build_swarm(7)
+    footbots_list, main_swarm = build_flocking_swarm(7)
+
+    Plotter.plot_trajectories(footbots_list, main_swarm)
+    Plotter.plot_speeds(footbots_list)
+    Plotter.plot_cumulative_traversed_distance(footbots_list)
+    Plotter.plot_trajectory_entropy(footbots_list)
+
+    Plotter.plot_swarm_cohesion(footbots_list)
+    Plotter.plot_neighbors(footbots_list)
+
+    Plotter.plot_faulty_robots(footbots_list)
+
+
+def main_warehouse():
+    footbots_list, main_swarm = build_flocking_swarm(10)
 
     Plotter.plot_trajectories(footbots_list, main_swarm)
     Plotter.plot_speeds(footbots_list)
@@ -396,5 +409,5 @@ def plot_model_performances():
 
 
 if __name__ == "__main__":
-    main_dispersion()
+    main_warehouse()
 

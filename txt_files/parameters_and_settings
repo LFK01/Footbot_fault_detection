@@ -18,3 +18,4 @@ Filename6 = ../foraging_log_files/positions_foraging_20_fault.csv
 Filename7 = ../dispersion_log_files/dispersion_16_nominal.csv
 Filename8 = ../dispersion_log_files/dispersion_16_fault.csv
 Filename9 = ../dispersion_log_files/dispersion_16_stop_at100_fault.csv
+Filename10 = ../diffusion_log_files/locationspolled.csv

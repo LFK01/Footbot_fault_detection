@@ -257,3 +257,6 @@ class FootBot:
                 tmp.append(
                     sum(self.distance_from_centroid_time_series[i - self.time_window:i]))
         self.cumulative_distance_from_centroid_time_series = np.asarray(tmp)
+
+    def compute_area_coverage(self):
+        pass
