@@ -45,16 +45,26 @@ class Parser:
     def open_pandas_dataframe(filename: str) -> pd.DataFrame:
         # open file in a pandas dataframe
         try:
-            df_footbot_positions = pd.read_csv(filename)
+            df_footbot_positions = pd.read_csv(filename,
+                                               dtype={'timestep': float,
+                                                      'ID': int,
+                                                      'PosX': float,
+                                                      'PosY': float,
+                                                      'Fault': bool})
         except FileNotFoundError:
-            df_footbot_positions = pd.read_csv('../' + filename)
+            df_footbot_positions = pd.read_csv('../' + filename,
+                                               dtype={'timestep': float,
+                                                      'ID': int,
+                                                      'PosX': float,
+                                                      'PosY': float,
+                                                      'Fault': bool})
 
         return df_footbot_positions
 
     @staticmethod
     def retrieve_dataframe_info(df_footbot_positions: pd.DataFrame) -> tuple[list[int], int, int, np.ndarray]:
         # retrieve all the ids of the bot
-        footbots_unique_ids = df_footbot_positions['ID'].unique()
+        footbots_unique_ids = df_footbot_positions['ID'].unique().astype(int)
         number_of_robots = len(footbots_unique_ids)
         number_of_timesteps = len(df_footbot_positions['timestep'].unique())
 

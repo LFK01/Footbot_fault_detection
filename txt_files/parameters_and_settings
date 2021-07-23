@@ -1,6 +1,6 @@
 Constants
 
-NEIGHBORHOOD_RADIUS=2.0
+NEIGHBORHOOD_RADIUS=5.0
 
 TIME_WINDOW=10
 
@@ -18,5 +18,5 @@ Filename6 = ../foraging_log_files/positions_foraging_20_fault.csv
 Filename7 = ../dispersion_log_files/dispersion_16_nominal.csv
 Filename8 = ../dispersion_log_files/dispersion_16_fault.csv
 Filename9 = ../dispersion_log_files/dispersion_16_stop_at100_fault.csv
-Filename10 = ../warehouse_log_files/locationspolled_10percent_slow_bots.csv
-Filename11 = ../warehouse_log_files/locationspolled_1bot_fault.csv
+Filename10 = ../warehouse_log_files/warehouse_log_10_percent_slow_fault.csv
+Filename11 = ../warehouse_log_files/warehouse_log_10_percent_fault_short_sim.csv
