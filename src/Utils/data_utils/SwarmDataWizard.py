@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from src.Classes.Swarm import Swarm
-from src.Utils.data_utils.DataWizard import DataWizard
+from src.utils.data_utils.DataWizard import DataWizard
 
 
 class SwarmDataWizard(DataWizard):

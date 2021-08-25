@@ -1,10 +1,10 @@
 import os
+import datetime
 
 import matplotlib.pyplot as plt
-import winsound
 from src.Classes.FootBot import FootBot
 from src.Classes.Swarm import Swarm
-from src.Utils.Parser import Parser
+from src.utils.Parser import Parser
 
 
 class Plotter:
@@ -705,11 +705,12 @@ def plot_model_performances():
 if __name__ == "__main__":
     saving_folder_path = 'C:/Users/Luciano/OneDrive - Politecnico di Milano/00_TESI_directory/pdf_summaries/' \
                          'area_coverage_and_warehouse/' \
-                         'nominal_fault_dispersion_16bot_rotating_comparison_graphs'
+                         'nominal_fault_dispersion_16_rotating_at_100_comparison_graphs'
 
-    if not os.path.exists(saving_folder_path):
+    if os.path.exists(saving_folder_path):
+        os.makedirs(saving_folder_path + datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
+    else:
         os.makedirs(saving_folder_path)
 
     main_dispersion(saving_graphs_file_path=saving_folder_path,
-                    file_number=7)
-    winsound.PlaySound("SystemExclamation", winsound.SND_ALIAS)
+                    file_number=8)
