@@ -1,8 +1,8 @@
 import pickle
-from src.Utils.Parser import Parser
+from src.utils.Parser import Parser
 from src.Classes.Swarm import Swarm
-from src.Utils.data_utils.BotDataWizard import BotDataWizard
-from src.Utils.data_utils.SwarmDataWizard import SwarmDataWizard
+from src.utils.data_utils.BotDataWizard import BotDataWizard
+from src.utils.data_utils.SwarmDataWizard import SwarmDataWizard
 
 if __name__ == "__main__":
     neighborhood_radius = Parser.read_neighborhood_radius()
