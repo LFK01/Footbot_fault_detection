@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import tqdm
+import json
 from os import listdir
 from os.path import isfile, join
 from src.Classes.FootBot import FootBot
@@ -9,16 +9,6 @@ from src.Classes.FootBot import FootBot
 class Parser:
     """
     Class used to parse files.
-
-    Attributes
-    ----------
-    all_robots_positions : list
-        Numpy array of the trajectories of all the robots composed as:
-        [
-            [[PosX_1, PosY_1], ..., [PosX_n, PosY_n]]
-            ...
-            [[PosX_1, PosY_1], ..., [PosX_n, PosY_n]]
-        ]
     """
 
     def __init__(self):
@@ -29,17 +19,20 @@ class Parser:
         pass
 
     @staticmethod
-    def open_parameters_file():
+    def open_parameters_json_file():
         # open file
         try:
-            parameters_files = open('../txt_files/parameters_and_settings')
+            json_file = open('../txt_files/parameters_and_settings')
+            data = json.load(json_file)
         except FileNotFoundError:
             try:
-                parameters_files = open('../../txt_files/parameters_and_settings')
+                json_file = open('../../txt_files/parameters_and_settings')
+                data = json.load(json_file)
             except FileNotFoundError:
-                parameters_files = open('txt_files/parameters_and_settings')
+                json_file = open('txt_files/parameters_and_settings')
+                data = json.load(json_file)
 
-        return parameters_files
+        return data
 
     @staticmethod
     def open_pandas_dataframe(filename: str) -> pd.DataFrame:
@@ -205,19 +198,9 @@ class Parser:
             Value read in the file
         """
 
-        neighborhood_radius = 0.0
+        json_data = Parser.open_parameters_json_file()
 
-        parameters_files = Parser.open_parameters_file()
-
-        # parse file
-        for line in parameters_files:
-            # fine parameter
-            if 'NEIGHBORHOOD_RADIUS' in line:
-                # retrieve parameter value
-                neighborhood_radius = float(line.split('=')[1].replace(' ', ''))
-
-        # return value
-        return neighborhood_radius
+        return json_data["NEIGHBORHOOD_RADIUS"]
 
     @staticmethod
     def read_time_window() -> int:
@@ -230,19 +213,9 @@ class Parser:
             Value read in the file
         """
 
-        time_window = 0
+        json_data = Parser.open_parameters_json_file()
 
-        parameters_files = Parser.open_parameters_file()
-
-        # parse file
-        for line in parameters_files:
-            # fine parameter
-            if 'TIME_WINDOW' in line:
-                # retrieve parameter value
-                time_window = int(line.split('=')[1].replace(' ', ''))
-
-        # return value
-        return time_window
+        return json_data["TIME_WINDOW"]
 
     @staticmethod
     def read_seed() -> int:
@@ -255,19 +228,9 @@ class Parser:
             Value read in the file
         """
 
-        seed = 0
+        json_data = Parser.open_parameters_json_file()
 
-        parameters_files = Parser.open_parameters_file()
-
-        # parse file
-        for line in parameters_files:
-            # fine parameter
-            if 'SEED' in line:
-                # retrieve parameter value
-                seed = int(line.split('=')[1].replace(' ', ''))
-
-        # return value
-        return seed
+        return json_data["SEED"]
 
     @staticmethod
     def read_filename(file_number: int) -> str:
@@ -282,19 +245,9 @@ class Parser:
         filename: str
             String of the file name
         """
-        filename = ''
+        json_data = Parser.open_parameters_json_file()
 
-        parameters_files = Parser.open_parameters_file()
-
-        # parse file
-        for line in parameters_files:
-            # fine parameter
-            if 'Filename' + str(file_number) in line:
-                # retrieve parameter value
-                filename = line.split('=')[1].strip()
-
-        # return value
-        return filename
+        return json_data["File Names"][str(file_number)]
 
     @staticmethod
     def read_lstm_length() -> int:
@@ -307,19 +260,24 @@ class Parser:
             Value read in the file
         """
 
-        lstm_length = 0
+        json_data = Parser.open_parameters_json_file()
 
-        parameters_files = Parser.open_parameters_file()
+        return json_data["LSTM_length"]
 
-        # parse file
-        for line in parameters_files:
-            # fine parameter
-            if 'LSTM_length' in line:
-                # retrieve parameter value
-                lstm_length = int(line.split('=')[1].replace(' ', ''))
+    @staticmethod
+    def read_area_splits() -> list:
+        """
+        Method to retrieve the LSTM length in the parameters file.
 
-        # return value
-        return lstm_length
+        Returns
+        -------
+        seed : int
+            Value read in the file
+        """
+
+        json_data = Parser.open_parameters_json_file()
+
+        return json_data["Area_partitions"]
 
     @staticmethod
     def read_files_in_directory(experiment_name: str) -> list:
@@ -340,3 +298,7 @@ class Parser:
                     if isfile(join('../homing_log_files', f))]
         else:
             raise FileNotFoundError
+
+
+if __name__ == "__main__":
+    print(Parser.read_filename(2))

@@ -1,6 +1,7 @@
-from src.Classes.AreaPartition import AreaPartition
 import numpy as np
 from scipy.stats import entropy
+
+from src.Classes.AreaPartition import AreaPartition
 
 
 class FootBot:
@@ -133,9 +134,8 @@ class FootBot:
 
         self.distance_from_centroid_time_series: np.ndarray = np.asarray([])
         self.cumulative_distance_from_centroid_time_series: np.ndarray = np.asarray([])
-        self.split_2_area_coverage: np.ndarray = np.asarray([])
-        self.split_4_area_coverage: np.ndarray = np.asarray([])
-        self.split_8_area_coverage: np.ndarray = np.asarray([])
+        self.area_partitions = []
+        self.area_coverage = np.asarray([])
 
         self.fault_time_series: np.ndarray = fault_time_series
 
@@ -143,7 +143,6 @@ class FootBot:
         self.compute_trajectory_entropy()
         self.compute_directions()
         self.compute_cumulative_traversed_distance()
-        self.compute_area_coverage()
 
     def compute_traversed_space(self) -> None:
         """
@@ -263,47 +262,28 @@ class FootBot:
                     sum(self.distance_from_centroid_time_series[i - self.time_window:i]))
         self.cumulative_distance_from_centroid_time_series = np.asarray(tmp)
 
-    def compute_area_coverage(self):
-        left_bound = np.min(self.swarm_robots_positions[..., 0])
-        right_bound = np.max(self.swarm_robots_positions[..., 0])
-        low_bound = np.min(self.swarm_robots_positions[..., 1])
-        top_bound = np.max(self.swarm_robots_positions[..., 1])
+    def compute_area_coverage(self,
+                              area_subdivisions: list[list[AreaPartition]]):
+        self.initialize_area_partitions(area_subdivisions=area_subdivisions)
 
-        self.split_2_area_coverage = self.compute_split(split_number=2,
-                                                        left_bound=left_bound,
-                                                        right_bound=right_bound,
-                                                        low_bound=low_bound,
-                                                        top_bound=top_bound)
-        self.split_4_area_coverage = self.compute_split(split_number=4,
-                                                        left_bound=left_bound,
-                                                        right_bound=right_bound,
-                                                        low_bound=low_bound,
-                                                        top_bound=top_bound)
-        self.split_8_area_coverage = self.compute_split(split_number=8,
-                                                        left_bound=left_bound,
-                                                        right_bound=right_bound,
-                                                        low_bound=low_bound,
-                                                        top_bound=top_bound)
-
-    def compute_split(self,
-                      split_number: int,
-                      left_bound: float,
-                      right_bound: float,
-                      low_bound: float,
-                      top_bound: float) -> np.ndarray:
         area_coverage = []
-        horizontal_splits = [left_bound + abs(right_bound - left_bound) / split_number * repetitions for repetitions in
-                             range(split_number+1)]
-        vertical_splits = [low_bound + abs(top_bound - low_bound) / split_number * repetitions for repetitions in
-                           range(split_number+1)]
+        for area_subdivision in self.area_partitions:
+            area_coverage.append(self.compute_coverage_percentage(area_partitions=area_subdivision))
+        self.area_coverage = np.asarray(area_coverage)
 
-        area_partitions = [AreaPartition(left_bound=horizontal_splits[i],
-                                         right_bound=horizontal_splits[i + 1],
-                                         low_bound=vertical_splits[j],
-                                         top_bound=vertical_splits[j + 1])
-                           for i in range(len(horizontal_splits) - 1)
-                           for j in range(len(vertical_splits) - 1)
-                           ]
+    def initialize_area_partitions(self, area_subdivisions: list[list[AreaPartition]]):
+        for area_subdivision in area_subdivisions:
+            area_partitions_list = []
+            for area in area_subdivision:
+                area_partitions_list.append(AreaPartition(left_bound=area.left_bound,
+                                                          right_bound=area.right_bound,
+                                                          low_bound=area.low_bound,
+                                                          top_bound=area.top_bound))
+            self.area_partitions.append(area_partitions_list)
+
+    def compute_coverage_percentage(self, area_partitions: list[AreaPartition]) -> np.ndarray:
+
+        area_coverage = []
 
         positions_index = 0
 
@@ -319,6 +299,6 @@ class FootBot:
                                  / len(area_partitions))
             positions_index += 1
         if positions_index < len(self.single_robot_positions):
-            area_coverage.append(area_coverage[-1]*(len(self.single_robot_positions)-positions_index))
+            area_coverage.extend([area_coverage[-1]]*(len(self.single_robot_positions)-positions_index))
 
         return np.asarray(area_coverage)

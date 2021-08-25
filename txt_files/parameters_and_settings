@@ -1,22 +1,24 @@
-Constants
-
-NEIGHBORHOOD_RADIUS=5.0
-
-TIME_WINDOW=10
-
-SEED = 123
-
-LSTM_length = 10
-
-File Names
-Filename1 = ../homing_log_files/homing_100_nominal.csv
-Filename2 = ../homing_log_files/homing_100_fault_one_third_rotating_after_500.csv
-Filename3 = ../dispersion_log_files/dispersion_100_nominal.csv
-Filename4 = ../dispersion_log_files/dispersion_100_fault.csv
-Filename5 = ../foraging_log_files/positions_foraging_20_nominal.csv
-Filename6 = ../foraging_log_files/positions_foraging_20_fault.csv
-Filename7 = ../dispersion_log_files/dispersion_16_nominal.csv
-Filename8 = ../dispersion_log_files/dispersion_16_fault.csv
-Filename9 = ../dispersion_log_files/dispersion_16_stop_at100_fault.csv
-Filename10 = ../warehouse_log_files/warehouse_log_10_percent_slow_fault.csv
-Filename11 = ../warehouse_log_files/warehouse_log_10_percent_fault_short_sim.csv
+{
+    "NEIGHBORHOOD_RADIUS": 5.0,
+    "TIME_WINDOW": 10,
+    "SEED": 123,
+    "LSTM_length": 10,
+    "File Names": {"1": "../homing_log_files/homing_100_nominal.csv",
+                   "2": "../homing_log_files/homing_100_fault_one_third_rotating_after_500.csv",
+                   "3": "../dispersion_log_files/dispersion_100_nominal.csv",
+                   "4": "../dispersion_log_files/dispersion_100_fault.csv",
+                   "5": "../dispersion_log_files/dispersion_16_nominal.csv",
+                   "6": "../dispersion_log_files/dispersion_16_fault.csv",
+                   "7": "../dispersion_log_files/dispersion_16_stop_at100_fault.csv",
+                   "8": "../dispersion_log_files/dispersion_16bot_rotating_.csv",
+                   "9": "../foraging_log_files/positions_foraging_20_nominal.csv",
+                   "10": "../foraging_log_files/positions_foraging_20_fault.csv",
+                   "11": "../warehouse_log_files/warehouse_log_10_percent_slow_fault.csv",
+                   "12": "../warehouse_log_files/warehouse_log_10_percent_fault_short_sim.csv",
+                   "13": "../warehouse_log_files/warehouse_seed_test_1.csv",
+                   "14": "../warehouse_log_files/warehouse_seed_test_2.csv",
+                   "15": "../flocking_log_files/positions_flocking_10_bot1_4_8_lock_at1700_pos1.csv",
+                   "16": "../flocking_log_files/positions_flocking_10_bot0_lock_at100_pos1.csv"
+                   },
+    "Area_partitions": [2, 4, 8, 16]
+}

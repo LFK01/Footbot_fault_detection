@@ -1,7 +1,7 @@
 import pickle
-from src.utils.models.ConvLstmModel import ConvLstmModel
-from src.utils.models.GbModel import GbModel
-from src.utils.data_utils.BotDataset import BotDataset
+from src.Utils.models.ConvLstmModel import ConvLstmModel
+from src.Utils.models.GbModel import GbModel
+from src.Utils.data_utils.BotDataset import BotDataset
 
 
 if __name__ == "__main__":

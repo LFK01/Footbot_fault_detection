@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.ensemble import GradientBoostingClassifier
-from src.utils.data_utils.BotDataset import BotDataset
-from src.utils.Parser import Parser
+from src.Utils.data_utils.BotDataset import BotDataset
+from src.Utils.Parser import Parser
 
 
 class GbModel:

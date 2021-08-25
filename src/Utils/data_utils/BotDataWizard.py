@@ -1,8 +1,8 @@
 import numpy as np
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from src.Classes.Swarm import Swarm
-from src.utils.data_utils.DataWizard import DataWizard
-from src.utils.data_utils.BotDataset import BotDataset
+from src.Utils.data_utils.DataWizard import DataWizard
+from src.Utils.data_utils.BotDataset import BotDataset
 
 
 class BotDataWizard(DataWizard):
