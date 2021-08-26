@@ -55,14 +55,14 @@ class Parser:
         return df_footbot_positions
 
     @staticmethod
-    def retrieve_dataframe_info(df_footbot_positions: pd.DataFrame) -> tuple[list[int], int, int, np.ndarray]:
+    def retrieve_dataframe_info(df_footbot_positions: pd.DataFrame) -> tuple[list[int], int, int, dict]:
         # retrieve all the ids of the bot
         footbots_unique_ids = df_footbot_positions['ID'].unique().astype(int)
         number_of_robots = len(footbots_unique_ids)
         number_of_timesteps = len(df_footbot_positions['timestep'].unique())
 
         # list to store all the positions of the swarm grouped by bot
-        all_robots_positions = []
+        all_robots_positions = {}
         for footbot_id in footbots_unique_ids:
             # retrieve positions of the current robots based on its ID
             positions = df_footbot_positions[df_footbot_positions['ID'] == footbot_id][['PosX', 'PosY']]
@@ -70,10 +70,7 @@ class Parser:
 
             # Save the positions of the robot on the list of all the positions of the robots.
             # Now the positions are grouped by robot ID and not by timestep as in the csv file
-            all_robots_positions.append(positions)
-
-        # create numpy array
-        all_robots_positions = np.asarray(all_robots_positions)
+            all_robots_positions[footbot_id] = positions
 
         return footbots_unique_ids, number_of_robots, number_of_timesteps, all_robots_positions
 
@@ -117,8 +114,11 @@ class Parser:
                                   number_of_timesteps=number_of_timesteps,
                                   neighborhood_radius=neighborhood_radius,
                                   time_window_size=time_window_size,
-                                  single_robot_positions=all_robots_positions[footbot_id],
-                                  all_robots_positions=np.delete(all_robots_positions, footbot_id, axis=0),
+                                  single_robot_positions=np.asarray(all_robots_positions[footbot_id]),
+                                  all_robots_positions=np.asarray(
+                                      [all_robots_positions[key] for key in all_robots_positions.keys()
+                                       if int(key) != footbot_id]
+                                  ),
                                   fault_time_series=faults)
 
             # save new FootBot instance in the swarm
