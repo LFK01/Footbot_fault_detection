@@ -25,7 +25,7 @@ class FootBot:
             [
                 [[PosX_1, PosY_1], ..., [PosX_n, PosY_n]]
             ]
-        traversed_distance_time_series : np.ndarray
+        speed_time_series : np.ndarray
             Array of traversed distances, namely the path covered between each time step. It is initialized with a
             zero value in the first position because every robots starts in a steady state
         direction_time_series: np.ndarray
@@ -69,6 +69,7 @@ class FootBot:
                  number_of_timesteps: int,
                  neighborhood_radius: float,
                  time_window_size: int,
+                 timesteps: np.ndarray,
                  single_robot_positions: np.ndarray,
                  all_robots_positions: np.ndarray,
                  fault_time_series: np.ndarray,
@@ -96,6 +97,8 @@ class FootBot:
             time_window_size: int
                 Number of timestep to consider in the window of time. It is retrieved from the
                 parameters_and_settings.txt file
+            timesteps: np.ndarray
+                Numpy array of the timesteps at which the robot position is collected
             single_robot_positions: np.ndarray
                 Numpy array of the trajectory of the current robot
             all_robots_positions: np.ndarray
@@ -110,11 +113,12 @@ class FootBot:
         self.neighborhood_radius: float = neighborhood_radius
         self.time_window: int = time_window_size
 
+        self.timesteps = timesteps
         self.single_robot_positions: np.ndarray = single_robot_positions
-        self.traversed_distance_time_series: np.ndarray = np.asarray(0.0)
+        self.speed_time_series: np.ndarray = np.asarray(0.0)
         self.positions_entropy: np.ndarray = np.asarray(0.0)
         self.direction_time_series: np.ndarray = np.asarray([[0.0, 0.0]])
-        self.cumulative_traversed_distance: np.ndarray = np.asarray(0.0)
+        self.cumulative_speed: np.ndarray = np.asarray(0.0)
         self.swarm_robots_positions: np.ndarray = all_robots_positions
 
         if state_time_series is None:
@@ -139,25 +143,24 @@ class FootBot:
 
         self.fault_time_series: np.ndarray = fault_time_series
 
-        self.compute_traversed_space()
+        self.compute_speed()
         self.compute_trajectory_entropy()
         self.compute_directions()
-        self.compute_cumulative_traversed_distance()
+        self.compute_cumulative_speed()
 
-    def compute_traversed_space(self) -> None:
+    def compute_speed(self) -> None:
         """
         Method which computes the distance traversed in each timestep.
         """
         tmp = []
-        previous_position = self.single_robot_positions[0]
-        for current_position in self.single_robot_positions[1:]:
-            distance_x = previous_position[0] - current_position[0]
-            distance_y = previous_position[1] - current_position[1]
-            traversed_distance = np.sqrt(distance_x ** 2 + distance_y ** 2)
+        for time_iterator in range(len(self.timesteps)-1):
+            time_delta = self.timesteps[time_iterator+1] - self.timesteps[time_iterator]
+            distance_x = self.single_robot_positions[time_iterator][0] - self.single_robot_positions[time_iterator+1][0]
+            distance_y = self.single_robot_positions[time_iterator][1] - self.single_robot_positions[time_iterator+1][1]
+            traversed_distance = np.sqrt(distance_x ** 2 + distance_y ** 2) / time_delta
             tmp.append(traversed_distance)
-            previous_position = current_position
 
-        self.traversed_distance_time_series = np.asarray(tmp)
+        self.speed_time_series = np.asarray(tmp)
 
     def compute_trajectory_entropy(self, base=None):
         tmp = []
@@ -212,17 +215,17 @@ class FootBot:
 
         self.neighbors_time_series = np.asarray(tmp)
 
-    def compute_cumulative_traversed_distance(self) -> None:
+    def compute_cumulative_speed(self) -> None:
         """
         Method to compute the cumulative distance traversed from bot in each time step according to time window
         """
-        tmp = [self.traversed_distance_time_series[0]]
-        for i in range(len(self.traversed_distance_time_series))[1:]:
+        tmp = [self.speed_time_series[0]]
+        for i in range(len(self.speed_time_series))[1:]:
             if i < self.time_window:
-                tmp.append(sum(self.traversed_distance_time_series[:i]))
+                tmp.append(sum(self.speed_time_series[:i]))
             else:
-                tmp.append(sum(self.traversed_distance_time_series[i - self.time_window:i]))
-        self.cumulative_traversed_distance = np.asarray(tmp)
+                tmp.append(sum(self.speed_time_series[i - self.time_window:i]))
+        self.cumulative_speed = np.asarray(tmp)
 
     def compute_swarm_cohesion(self) -> None:
         """

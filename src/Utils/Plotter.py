@@ -1,10 +1,11 @@
 import os
+import sys
 import datetime
 
 import matplotlib.pyplot as plt
 from src.Classes.FootBot import FootBot
 from src.Classes.Swarm import Swarm
-from src.utils.Parser import Parser
+from src.Utils.Parser import Parser
 
 
 class Plotter:
@@ -272,7 +273,7 @@ class Plotter:
         """
         plt.figure()
         for bot in footbot_list:
-            plt.plot(bot.traversed_distance_time_series)
+            plt.plot(bot.speed_time_series)
         plt.xlabel("Timestep")
         plt.ylabel("Traversed Distance")
         plt.title(title)
@@ -299,7 +300,7 @@ class Plotter:
         """
         plt.figure()
         for bot in footbot_list:
-            plt.plot(bot.cumulative_traversed_distance)
+            plt.plot(bot.cumulative_speed)
         plt.xlabel("Timestep")
         plt.ylabel("Cumulative Traversed Distance")
         plt.title(title)
@@ -608,6 +609,8 @@ def main_dispersion(saving_graphs_file_path: str,
     Plotter.plot_footbot_area_coverage(footbot_list=faulty_bots,
                                        path=saving_graphs_file_path,
                                        additional_title_string="Fault")
+    Plotter.plot_swarm_area_coverage(main_swarm=main_swarm,
+                                     path=saving_graphs_file_path)
 
     Plotter.plot_swarm_cohesion(footbot_list=nominal_bots,
                                 path=saving_graphs_file_path,
@@ -704,12 +707,13 @@ def plot_model_performances():
 
 
 if __name__ == "__main__":
-    saving_folder_path = 'C:/Users/Luciano/OneDrive - Politecnico di Milano/00_TESI_directory/pdf_summaries/' \
-                         'area_coverage_and_warehouse/' \
-                         'nominal_fault_dispersion_100_fault_comparison_graphs'
+    new_folder_name = 'dispersion_100_fault'
+    # find project root
+    root = Parser.get_project_root()
+    saving_folder_path = os.path.join(root, 'images', new_folder_name)
 
     if os.path.exists(saving_folder_path):
-        os.makedirs(saving_folder_path + datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
+        os.makedirs(saving_folder_path + ' ' + datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
     else:
         os.makedirs(saving_folder_path)
 

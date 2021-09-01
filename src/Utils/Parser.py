@@ -3,6 +3,7 @@ import numpy as np
 import json
 from os import listdir
 from os.path import isfile, join
+from pathlib import Path
 from src.Classes.FootBot import FootBot
 
 
@@ -17,6 +18,10 @@ class Parser:
         """
 
         pass
+
+    @staticmethod
+    def get_project_root() -> Path:
+        return Path(__file__).parent.parent.parent
 
     @staticmethod
     def open_parameters_json_file():
@@ -55,11 +60,12 @@ class Parser:
         return df_footbot_positions
 
     @staticmethod
-    def retrieve_dataframe_info(df_footbot_positions: pd.DataFrame) -> tuple[list[int], int, int, dict]:
+    def retrieve_dataframe_info(df_footbot_positions: pd.DataFrame) -> tuple[list[int], int, int, np.ndarray, dict]:
         # retrieve all the ids of the bot
         footbots_unique_ids = df_footbot_positions['ID'].unique().astype(int)
         number_of_robots = len(footbots_unique_ids)
         number_of_timesteps = len(df_footbot_positions['timestep'].unique())
+        timesteps = df_footbot_positions['timestep'].unique()
 
         # list to store all the positions of the swarm grouped by bot
         all_robots_positions = {}
@@ -72,7 +78,7 @@ class Parser:
             # Now the positions are grouped by robot ID and not by timestep as in the csv file
             all_robots_positions[footbot_id] = positions
 
-        return footbots_unique_ids, number_of_robots, number_of_timesteps, all_robots_positions
+        return footbots_unique_ids, number_of_robots, number_of_timesteps, np.asarray(timesteps), all_robots_positions
 
     @staticmethod
     def create_flocking_swarm(filename: str, neighborhood_radius: float, time_window_size: int) -> list[FootBot]:
@@ -99,7 +105,7 @@ class Parser:
         df_footbot_positions = Parser.open_pandas_dataframe(filename=filename)
 
         # retrieve infos
-        footbots_unique_ids, number_of_robots, number_of_timesteps, all_robots_positions = Parser.\
+        footbots_unique_ids, number_of_robots, number_of_timesteps, timesteps, all_robots_positions = Parser.\
             retrieve_dataframe_info(df_footbot_positions)
 
         for footbot_id in footbots_unique_ids:
@@ -115,6 +121,7 @@ class Parser:
                                   neighborhood_radius=neighborhood_radius,
                                   time_window_size=time_window_size,
                                   single_robot_positions=np.asarray(all_robots_positions[footbot_id]),
+                                  timesteps=timesteps,
                                   all_robots_positions=np.asarray(
                                       [all_robots_positions[key] for key in all_robots_positions.keys()
                                        if int(key) != footbot_id]
@@ -138,7 +145,7 @@ class Parser:
             df_footbot_positions = pd.read_csv('../' + filename)
 
         # retrieve infos
-        footbots_unique_ids, number_of_robots, number_of_timesteps, all_robots_positions = Parser. \
+        footbots_unique_ids, number_of_robots, number_of_timesteps, timesteps, all_robots_positions = Parser. \
             retrieve_dataframe_info(df_footbot_positions)
 
         for footbot_id in footbots_unique_ids:
@@ -299,6 +306,25 @@ class Parser:
         else:
             raise FileNotFoundError
 
+    @staticmethod
+    def sanitize_warehouse_csv_file(file_number: int):
+        filename = Parser.read_filename(file_number=file_number)
+        try:
+            f = open(filename, "r")
+        except FileNotFoundError:
+            filename = '../' + filename
+            f = open(filename, "r")
+
+        print('sanitizing file...')
+        lines = f.readlines()
+        f.close()
+        with open(filename, "w") as f:
+            for line in lines:
+                if "|" not in line.strip("\n"):
+                    f.write(line)
+
+        print('finished sanitizing!')
+
 
 if __name__ == "__main__":
-    print(Parser.read_filename(2))
+    Parser.sanitize_warehouse_csv_file(file_number=20)

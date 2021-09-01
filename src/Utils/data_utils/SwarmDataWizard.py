@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from src.Classes.Swarm import Swarm
-from src.utils.data_utils.DataWizard import DataWizard
+from src.Utils.data_utils.DataWizard import DataWizard
 
 
 class SwarmDataWizard(DataWizard):
@@ -21,7 +21,7 @@ class SwarmDataWizard(DataWizard):
 
             data_vector.append(swarm.trajectory[:, 0])
             data_vector.append(swarm.trajectory[:, 1])
-            data_vector.append(swarm.traversed_distance_time_series)
+            data_vector.append(swarm.speed_time_series)
             data_vector = np.asarray(data_vector)
             data_vector = data_vector[..., :timesteps]
 

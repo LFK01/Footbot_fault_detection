@@ -12,6 +12,9 @@ dispersion_log_files
 homing_log_files
 warehouse_log_files
 
+#images
+images
+
 #MacOS stuff
 .DS_Store
 

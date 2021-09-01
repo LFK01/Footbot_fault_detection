@@ -1,10 +1,10 @@
 from abc import abstractmethod
 import numpy as np
 import random
-from src.utils.Parser import Parser
+from src.Utils.Parser import Parser
 from src.Classes.Swarm import Swarm
 from src.Classes.FootBot import FootBot
-from src.utils.data_utils.BotDataset import BotDataset
+from src.Utils.data_utils.BotDataset import BotDataset
 
 
 class DataWizard:
@@ -119,10 +119,10 @@ class DataWizard:
         vector = [
             bot.single_robot_positions[::down_sampling_steps, 0],
             bot.single_robot_positions[::down_sampling_steps, 1],
-            bot.traversed_distance_time_series[::down_sampling_steps],
+            bot.speed_time_series[::down_sampling_steps],
             bot.direction_time_series[::down_sampling_steps, 0],
             bot.direction_time_series[::down_sampling_steps, 1],
-            bot.cumulative_traversed_distance[::down_sampling_steps],
+            bot.cumulative_speed[::down_sampling_steps],
             bot.neighbors_time_series[::down_sampling_steps],
             bot.swarm_cohesion_time_series[::down_sampling_steps],
             bot.distance_from_centroid_time_series[::down_sampling_steps]
