@@ -707,7 +707,7 @@ def plot_model_performances():
 
 
 if __name__ == "__main__":
-    new_folder_name = 'dispersion_100_fault'
+    new_folder_name = 'homing_100_10_percent_rotating_fault_after_500'
     # find project root
     root = Parser.get_project_root()
     saving_folder_path = os.path.join(root, 'images', new_folder_name)
@@ -718,4 +718,4 @@ if __name__ == "__main__":
         os.makedirs(saving_folder_path)
 
     main_dispersion(saving_graphs_file_path=saving_folder_path,
-                    file_number=4)
+                    file_number=20)
