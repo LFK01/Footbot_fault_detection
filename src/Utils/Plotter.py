@@ -488,6 +488,22 @@ class Plotter:
             plt.savefig(path + title.strip().replace(" ", "_"))
             plt.show()
 
+        for percentage_index in range(len(area_splits)):
+            plt.figure()
+            for bot in footbot_list:
+                plt.plot(bot.coverage_speed[percentage_index])
+            plt.xlabel("Timestep")
+            plt.ylabel("Coverage Speed")
+            plt.ylim((-0.1, 1.1))
+            title = additional_title_string + " Single Bot Area Coverage Speed with " \
+                    + str(area_splits[percentage_index] ** 2) \
+                    + " subdivisions"
+            plt.title(title)
+            if path != "":
+                path += "/"
+            plt.savefig(path + title.strip().replace(" ", "_"))
+            plt.show()
+
     @staticmethod
     def plot_swarm_area_coverage(main_swarm: Swarm,
                                  path: str = "",
@@ -707,7 +723,8 @@ def plot_model_performances():
 
 
 if __name__ == "__main__":
-    new_folder_name = 'homing_100_50_percent_rotating_fault_after_100_gain_400'
+    file_number = 10
+    new_folder_name = 'dispersion_16_nominal'
     # find project root
     root = Parser.get_project_root()
     saving_folder_path = os.path.join(root, 'images', new_folder_name)
@@ -718,4 +735,4 @@ if __name__ == "__main__":
         os.makedirs(saving_folder_path)
 
     main_dispersion(saving_graphs_file_path=saving_folder_path,
-                    file_number=22)
+                    file_number=file_number)

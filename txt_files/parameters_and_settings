@@ -8,6 +8,7 @@
                    "20": "../homing_log_files/homing_100_10_percent_rotating_fault_after_500.csv",
                    "21": "../homing_log_files/Log_positions_homing_Thu_Sep__2_08-08-27_2021.csv",
                    "22": "../homing_log_files/homing_100_50_percent_rotating_fault_after_100_gain_400.csv",
+                   "23": "../homing_log_files/homing_100_50_percent_rotating_fault_after_100_gain_100.csv",
                    "3": "../dispersion_log_files/dispersion_100_nominal.csv",
                    "4": "../dispersion_log_files/dispersion_100_fault.csv",
                    "5": "../dispersion_log_files/dispersion_16_nominal.csv",

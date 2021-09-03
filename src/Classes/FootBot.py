@@ -140,6 +140,7 @@ class FootBot:
         self.cumulative_distance_from_centroid_time_series: np.ndarray = np.asarray([])
         self.area_partitions = []
         self.area_coverage = np.asarray([])
+        self.coverage_speed = np.asarray([])
 
         self.fault_time_series: np.ndarray = fault_time_series
 
@@ -273,6 +274,7 @@ class FootBot:
         for area_subdivision in self.area_partitions:
             area_coverage.append(self.compute_coverage_percentage(area_partitions=area_subdivision))
         self.area_coverage = np.asarray(area_coverage)
+        self.compute_coverage_speed()
 
     def initialize_area_partitions(self, area_subdivisions: list[list[AreaPartition]]):
         for area_subdivision in area_subdivisions:
@@ -305,3 +307,15 @@ class FootBot:
             area_coverage.extend([area_coverage[-1]]*(len(self.single_robot_positions)-positions_index))
 
         return np.asarray(area_coverage)
+
+    def compute_coverage_speed(self):
+        tmp_matrix = []
+        for area_partition in self.area_coverage:
+            tmp_vector = []
+            current_percentage = area_partition[0]
+            for next_percentage in area_partition[1:]:
+                coverage_speed = next_percentage - current_percentage
+                tmp_vector.append(coverage_speed)
+            tmp_matrix.append(tmp_vector)
+
+        self.coverage_speed = np.asarray(tmp_matrix)
