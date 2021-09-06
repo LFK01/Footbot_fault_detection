@@ -240,7 +240,8 @@ class Parser:
         return json_data["SEED"]
 
     @staticmethod
-    def read_filename(file_number: int) -> str:
+    def read_filename(task_name: str,
+                      file_number: int) -> str:
         """
         Method to read the name of csv files
         Parameters
@@ -254,7 +255,7 @@ class Parser:
         """
         json_data = Parser.open_parameters_json_file()
 
-        return json_data["File Names"][str(file_number)]
+        return json_data["File Names"][task_name][str(file_number)]
 
     @staticmethod
     def read_lstm_length() -> int:

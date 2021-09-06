@@ -3,29 +3,44 @@
     "TIME_WINDOW": 10,
     "SEED": 123,
     "LSTM_length": 10,
-    "File Names": {"1": "../homing_log_files/homing_100_nominal.csv",
-                   "2": "../homing_log_files/homing_100_fault_one_third_rotating_after_500.csv",
-                   "20": "../homing_log_files/homing_100_10_percent_rotating_fault_after_500.csv",
-                   "21": "../homing_log_files/Log_positions_homing_Thu_Sep__2_08-08-27_2021.csv",
-                   "22": "../homing_log_files/homing_100_50_percent_rotating_fault_after_100_gain_400.csv",
-                   "23": "../homing_log_files/homing_100_50_percent_rotating_fault_after_100_gain_100.csv",
-                   "3": "../dispersion_log_files/dispersion_100_nominal.csv",
-                   "4": "../dispersion_log_files/dispersion_100_fault.csv",
-                   "5": "../dispersion_log_files/dispersion_16_nominal.csv",
-                   "6": "../dispersion_log_files/dispersion_16_fault.csv",
-                   "7": "../dispersion_log_files/dispersion_16_stop_at100_fault.csv",
-                   "8": "../dispersion_log_files/dispersion_16_rotating_at_100.csv",
-                   "19": "../dispersion_log_files/dispersion_100_10percent_rotating_fault_after_500.csv",
-                   "9": "../foraging_log_files/positions_foraging_20_nominal.csv",
-                   "10": "../foraging_log_files/positions_foraging_20_fault.csv",
-                   "11": "../warehouse_log_files/warehouse_log_10_percent_slow_fault.csv",
-                   "12": "../warehouse_log_files/warehouse_log_10_percent_fault_short_sim.csv",
-                   "13": "../warehouse_log_files/warehouse_800steps_10_percent_stop_fault20210831_10_04.csv",
-                   "14": "../warehouse_log_files/warehouse_172800steps_10_percent_slowed_fault20210831_10_35.csv",
-                   "15": "../warehouse_log_files/warehouse_80000steps_10_percent_slowed_fault20210831_11_42.csv",
-                   "16": "../warehouse_log_files/warehouse_4000steps_10_percent_slowed_fault20210831_12_01.csv",
-                   "17": "../flocking_log_files/positions_flocking_10_bot1_4_8_lock_at1700_pos1.csv",
-                   "18": "../flocking_log_files/positions_flocking_10_bot0_lock_at100_pos1.csv"
-                   },
+    "File Names": {
+        "DISP": {
+            "1": "../dispersion_log_files/dispersion_100_nominal.csv",
+            "2": "../dispersion_log_files/dispersion_100_fault.csv",
+            "3": "../dispersion_log_files/dispersion_16_nominal.csv",
+            "4": "../dispersion_log_files/dispersion_16_fault.csv",
+            "5": "../dispersion_log_files/dispersion_16_stop_at100_fault.csv",
+            "6": "../dispersion_log_files/dispersion_16_rotating_at_100.csv",
+            "7": "../dispersion_log_files/dispersion_100_50_percent_rotating_fault_after_100_gain_400.csv",
+            "8": "../dispersion_log_files/dispersion_100_10percent_rotating_fault_after_500.csv",
+            "9": "../dispersion_log_files/dispersion_100_33_percent_rotating_fault_after_500_gain_1000.csv"
+        },
+        "HOME": {
+            "1": "../homing_log_files/homing_100_nominal.csv",
+            "2": "../homing_log_files/homing_100_fault_one_third_rotating_after_500.csv",
+            "3": "../homing_log_files/homing_100_10_percent_rotating_fault_after_500.csv",
+            "4": "../homing_log_files/Log_positions_homing_Thu_Sep__2_08-08-27_2021.csv",
+            "5": "../homing_log_files/homing_100_50_percent_rotating_fault_after_100_gain_400.csv",
+            "6": "../homing_log_files/homing_100_50_percent_rotating_fault_after_100_gain_100.csv",
+            "7": "../homing_log_files/homing_100_33_percent_rotating_fault_after_500_gain_400.csv",
+            "8": "../homing_log_files/homing_100_nominal.csv"
+        },
+        "FORE": {
+            "1": "../foraging_log_files/positions_foraging_20_nominal.csv",
+            "2": "../foraging_log_files/positions_foraging_20_fault.csv"
+        },
+        "WARE": {
+            "1": "../warehouse_log_files/warehouse_log_10_percent_slow_fault.csv",
+            "2": "../warehouse_log_files/warehouse_log_10_percent_fault_short_sim.csv",
+            "3": "../warehouse_log_files/warehouse_800steps_10_percent_stop_fault20210831_10_04.csv",
+            "4": "../warehouse_log_files/warehouse_172800steps_10_percent_slowed_fault20210831_10_35.csv",
+            "5": "../warehouse_log_files/warehouse_80000steps_10_percent_slowed_fault20210831_11_42.csv",
+            "6": "../warehouse_log_files/warehouse_4000steps_10_percent_slowed_fault20210831_12_01.csv"
+        },
+        "FLOCK": {
+            "1": "../flocking_log_files/positions_flocking_10_bot1_4_8_lock_at1700_pos1.csv",
+            "2": "../flocking_log_files/positions_flocking_10_bot0_lock_at100_pos1.csv"
+        }
+    },
     "Area_partitions": [2, 4, 8, 16]
 }

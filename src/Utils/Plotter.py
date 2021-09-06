@@ -534,10 +534,10 @@ class Plotter:
             plt.show()
 
 
-def build_flocking_swarm(file_number: int):
+def build_flocking_swarm(task_name: str, file_number: int):
     neighborhood_radius = Parser.read_neighborhood_radius()
     time_window_size = Parser.read_time_window()
-    file = Parser.read_filename(file_number)
+    file = Parser.read_filename(task_name=task_name, file_number=file_number)
     footbots_list = Parser.create_flocking_swarm(filename=file,
                                                  neighborhood_radius=neighborhood_radius,
                                                  time_window_size=time_window_size)
@@ -584,9 +584,20 @@ def main_homing():
     Plotter.plot_faulty_robots(footbots_list)
 
 
-def main_dispersion(saving_graphs_file_path: str,
+def main_dispersion(task_name: str,
                     file_number: int):
-    footbots_list, main_swarm = build_flocking_swarm(file_number=file_number)
+    new_folder_name = Parser.read_filename(task_name=task_name,
+                                           file_number=file_number).split('/')[-1].split('.')[0]
+    # find project root
+    root = Parser.get_project_root()
+    saving_graphs_file_path = os.path.join(root, 'images', new_folder_name)
+
+    if os.path.exists(saving_graphs_file_path):
+        saving_graphs_file_path = saving_graphs_file_path + ' ' + datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+    os.makedirs(saving_graphs_file_path)
+
+    footbots_list, main_swarm = build_flocking_swarm(task_name=task_name,
+                                                     file_number=file_number)
 
     faulty_bots = [bot for bot in footbots_list if any(bot.fault_time_series)]
     nominal_bots = [bot for bot in footbots_list if not any(bot.fault_time_series)]
@@ -723,16 +734,8 @@ def plot_model_performances():
 
 
 if __name__ == "__main__":
-    file_number = 10
-    new_folder_name = 'dispersion_16_nominal'
-    # find project root
-    root = Parser.get_project_root()
-    saving_folder_path = os.path.join(root, 'images', new_folder_name)
+    task_name = "HOME"
+    file_number = 8
 
-    if os.path.exists(saving_folder_path):
-        os.makedirs(saving_folder_path + ' ' + datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
-    else:
-        os.makedirs(saving_folder_path)
-
-    main_dispersion(saving_graphs_file_path=saving_folder_path,
+    main_dispersion(task_name=task_name,
                     file_number=file_number)
