@@ -308,8 +308,10 @@ class Parser:
             raise FileNotFoundError
 
     @staticmethod
-    def sanitize_warehouse_csv_file(file_number: int):
-        filename = Parser.read_filename(file_number=file_number)
+    def sanitize_warehouse_csv_file(task_name: str,
+                                    file_number: int):
+        filename = Parser.read_filename(task_name=task_name,
+                                        file_number=file_number)
         try:
             f = open(filename, "r")
         except FileNotFoundError:
@@ -328,4 +330,7 @@ class Parser:
 
 
 if __name__ == "__main__":
-    Parser.sanitize_warehouse_csv_file(file_number=20)
+    task_name = "WARE"
+    file_number = 9
+    Parser.sanitize_warehouse_csv_file(task_name=task_name,
+                                       file_number=file_number)
