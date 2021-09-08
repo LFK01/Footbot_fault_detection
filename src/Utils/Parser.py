@@ -273,7 +273,7 @@ class Parser:
         return json_data["LSTM_length"]
 
     @staticmethod
-    def read_area_splits() -> list:
+    def read_area_splits() -> list[int]:
         """
         Method to retrieve the LSTM length in the parameters file.
 

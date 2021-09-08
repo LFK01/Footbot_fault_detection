@@ -734,8 +734,8 @@ def plot_model_performances():
 
 
 if __name__ == "__main__":
-    task_name = "HOME"
-    file_number = 8
+    task_name = "WARE"
+    file_number = 6
 
     main_dispersion(task_name=task_name,
                     file_number=file_number)

@@ -30,7 +30,7 @@ class FootBot:
             zero value in the first position because every robots starts in a steady state
         direction_time_series: np.ndarray
             Array of the direction vectors composed as [CompX, CompY] for each timestep
-        cumulative_traversed_distance : np.ndarray
+        cumulative_speed : np.ndarray
             Array to store the time series of the cumulative traversed distance considering the timesteps in the time
             window before the considered timesteps. If there aren't enough timesteps to compute the cumulative
             distance, the historical data is assumed to be zero
@@ -122,7 +122,6 @@ class FootBot:
         self.swarm_robots_positions: np.ndarray = all_robots_positions
 
         if state_time_series is None:
-            self.swarm_robots_positions: np.ndarray = all_robots_positions
             self.swarm_cohesion_time_series: np.ndarray = np.asarray([])
             self.neighbors_time_series: np.ndarray = np.asarray([])
 
@@ -274,7 +273,6 @@ class FootBot:
         for area_subdivision in self.area_partitions:
             area_coverage.append(self.compute_coverage_percentage(area_partitions=area_subdivision))
         self.area_coverage = np.asarray(area_coverage)
-        self.compute_coverage_speed()
 
     def initialize_area_partitions(self, area_subdivisions: list[list[AreaPartition]]):
         for area_subdivision in area_subdivisions:

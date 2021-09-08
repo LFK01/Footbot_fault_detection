@@ -20,6 +20,7 @@ class Swarm:
         self.compute_cluster_speed()
         self.compute_distances_from_centroid()
         self.compute_single_bots_area_coverage()
+        self.compute_single_bots_coverage_speed()
 
     def compute_cluster_trajectory(self) -> np.ndarray:
         all_bot_trajectory = np.asarray([bot.single_robot_positions for bot in self.list_of_footbots])
@@ -101,3 +102,7 @@ class Swarm:
     def compute_single_bots_area_coverage(self):
         for bot in self.list_of_footbots:
             bot.compute_area_coverage(self.area_partitions)
+
+    def compute_single_bots_coverage_speed(self):
+        for bot in self.list_of_footbots:
+            bot.compute_coverage_speed()

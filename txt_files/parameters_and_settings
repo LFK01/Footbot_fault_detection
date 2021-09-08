@@ -13,7 +13,9 @@
             "6": "../dispersion_log_files/dispersion_16_rotating_at_100.csv",
             "7": "../dispersion_log_files/dispersion_100_50_percent_rotating_fault_after_100_gain_400.csv",
             "8": "../dispersion_log_files/dispersion_100_10percent_rotating_fault_after_500.csv",
-            "9": "../dispersion_log_files/dispersion_100_33_percent_rotating_fault_after_500_gain_1000.csv"
+            "9": "../dispersion_log_files/dispersion_100_33_percent_rotating_fault_after_500_gain_1000.csv",
+            "10": "../dispersion_log_files/dispersion_100_10_percent_rotating_fault_after_500_gain_1000.csv",
+            "11": "../dispersion_log_files/dispersion_100_50_percent_rotating_fault_after_500_gain_1000.csv"
         },
         "HOME": {
             "1": "../homing_log_files/homing_100_nominal.csv",
@@ -21,9 +23,10 @@
             "3": "../homing_log_files/homing_100_10_percent_rotating_fault_after_500.csv",
             "4": "../homing_log_files/Log_positions_homing_Thu_Sep__2_08-08-27_2021.csv",
             "5": "../homing_log_files/homing_100_50_percent_rotating_fault_after_100_gain_400.csv",
-            "6": "../homing_log_files/homing_100_50_percent_rotating_fault_after_100_gain_100.csv",
+            "6": "../homing_log_files/homing_100_50_percent_rotating_fault_after_500_gain_400.csv",
             "7": "../homing_log_files/homing_100_33_percent_rotating_fault_after_500_gain_400.csv",
-            "8": "../homing_log_files/homing_100_nominal.csv"
+            "8": "../homing_log_files/homing_100_nominal.csv",
+            "9": "../homing_log_files/homing_100_10_percent_rotating_fault_after_500_gain_400.csv"
         },
         "FORE": {
             "1": "../foraging_log_files/positions_foraging_20_nominal.csv",
