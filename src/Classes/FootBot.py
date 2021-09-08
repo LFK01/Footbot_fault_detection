@@ -308,12 +308,13 @@ class FootBot:
 
     def compute_coverage_speed(self):
         tmp_matrix = []
-        for area_partition in self.area_coverage:
-            tmp_vector = []
-            current_percentage = area_partition[0]
-            for next_percentage in area_partition[1:]:
+        for coverage_time_series in self.area_coverage:
+            tmp_vector = [0.0]
+            current_percentage = coverage_time_series[0]
+            for next_percentage in coverage_time_series[1:]:
                 coverage_speed = next_percentage - current_percentage
+                current_percentage = next_percentage
                 tmp_vector.append(coverage_speed)
-            tmp_matrix.append(tmp_vector)
+            tmp_matrix.append(np.asarray(tmp_vector))
 
         self.coverage_speed = np.asarray(tmp_matrix)

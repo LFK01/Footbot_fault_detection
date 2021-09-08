@@ -494,7 +494,6 @@ class Plotter:
                 plt.plot(bot.coverage_speed[percentage_index])
             plt.xlabel("Timestep")
             plt.ylabel("Coverage Speed")
-            plt.ylim((-0.1, 1.1))
             title = additional_title_string + " Single Bot Area Coverage Speed with " \
                     + str(area_splits[percentage_index] ** 2) \
                     + " subdivisions"
@@ -734,8 +733,8 @@ def plot_model_performances():
 
 
 if __name__ == "__main__":
-    task_name = "WARE"
-    file_number = 6
+    task_name = "DISP"
+    file_number = 4
 
     main_dispersion(task_name=task_name,
                     file_number=file_number)
