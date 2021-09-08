@@ -285,7 +285,7 @@ class FootBot:
             self.area_partitions.append(area_partitions_list)
 
     def compute_coverage_percentage(self, area_partitions: list[AreaPartition]) -> np.ndarray:
-
+        print('Computing Coverage bot:' + str(self.identifier))
         area_coverage = []
 
         positions_index = 0
@@ -307,6 +307,7 @@ class FootBot:
         return np.asarray(area_coverage)
 
     def compute_coverage_speed(self):
+        print('Computing Coverage Speed bot:' + str(self.identifier))
         tmp_matrix = []
         for coverage_time_series in self.area_coverage:
             tmp_vector = [0.0]

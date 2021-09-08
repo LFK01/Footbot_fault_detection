@@ -33,12 +33,8 @@
             "2": "../foraging_log_files/positions_foraging_20_fault.csv"
         },
         "WARE": {
-            "1": "../warehouse_log_files/warehouse_log_10_percent_slow_fault.csv",
-            "2": "../warehouse_log_files/warehouse_log_10_percent_fault_short_sim.csv",
-            "3": "../warehouse_log_files/warehouse_800steps_10_percent_stop_fault20210831_10_04.csv",
-            "4": "../warehouse_log_files/warehouse_172800steps_10_percent_slowed_fault20210831_10_35.csv",
-            "5": "../warehouse_log_files/warehouse_80000steps_10_percent_slowed_fault20210831_11_42.csv",
-            "6": "../warehouse_log_files/warehouse_4000steps_10_percent_slowed_fault20210831_12_01.csv"
+            "1": "../warehouse_log_files/warehouse_10_percent_slowed_fault.csv",
+            "2": "../warehouse_log_files/warehouse_10_percent_stop_fault.csv"
         },
         "FLOCK": {
             "1": "../flocking_log_files/positions_flocking_10_bot1_4_8_lock_at1700_pos1.csv",
