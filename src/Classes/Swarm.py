@@ -101,6 +101,7 @@ class Swarm:
 
     def compute_single_bots_area_coverage(self):
         for bot in self.list_of_footbots:
+            print('Computing Coverage Speed bot:' + str(bot.identifier))
             bot.compute_area_coverage(self.area_partitions)
 
     def compute_single_bots_coverage_speed(self):

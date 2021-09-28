@@ -121,13 +121,7 @@ class FootBot:
         self.cumulative_speed: np.ndarray = np.asarray(0.0)
         self.swarm_robots_positions: np.ndarray = all_robots_positions
 
-        if state_time_series is None:
-            self.swarm_cohesion_time_series: np.ndarray = np.asarray([])
-            self.neighbors_time_series: np.ndarray = np.asarray([])
-
-            self.compute_neighbors()
-            self.compute_swarm_cohesion()
-        else:
+        if state_time_series is not None:
             self.state_time_series: np.ndarray = state_time_series
             self.HasFood_time_series: np.ndarray = has_food_time_series
             self.TotalFood_time_series: np.ndarray = total_food_time_series
@@ -135,6 +129,8 @@ class FootBot:
             self.TimeExploringUnsuccessfully_time_series: np.ndarray = time_exploring_unsuccessfully_time_series
             self.TimeSearchingForNest_time_series: np.ndarray = time_searching_for_nest_time_series
 
+        self.swarm_cohesion_time_series: np.ndarray = np.asarray([])
+        self.neighbors_time_series: np.ndarray = np.asarray([])
         self.distance_from_centroid_time_series: np.ndarray = np.asarray([])
         self.cumulative_distance_from_centroid_time_series: np.ndarray = np.asarray([])
         self.area_partitions = []
@@ -143,6 +139,8 @@ class FootBot:
 
         self.fault_time_series: np.ndarray = fault_time_series
 
+        self.compute_neighbors()
+        self.compute_swarm_cohesion()
         self.compute_speed()
         self.compute_trajectory_entropy()
         self.compute_directions()
@@ -153,7 +151,7 @@ class FootBot:
         Method which computes the distance traversed in each timestep.
         """
         tmp = []
-        for time_iterator in range(len(self.timesteps)-1):
+        for time_iterator in range(len(self.timesteps[:-1])):
             time_delta = self.timesteps[time_iterator+1] - self.timesteps[time_iterator]
             distance_x = self.single_robot_positions[time_iterator][0] - self.single_robot_positions[time_iterator+1][0]
             distance_y = self.single_robot_positions[time_iterator][1] - self.single_robot_positions[time_iterator+1][1]
@@ -285,7 +283,6 @@ class FootBot:
             self.area_partitions.append(area_partitions_list)
 
     def compute_coverage_percentage(self, area_partitions: list[AreaPartition]) -> np.ndarray:
-        print('Computing Coverage bot:' + str(self.identifier))
         area_coverage = []
 
         positions_index = 0
@@ -307,7 +304,6 @@ class FootBot:
         return np.asarray(area_coverage)
 
     def compute_coverage_speed(self):
-        print('Computing Coverage Speed bot:' + str(self.identifier))
         tmp_matrix = []
         for coverage_time_series in self.area_coverage:
             tmp_vector = [0.0]

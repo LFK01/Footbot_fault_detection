@@ -24,17 +24,17 @@ class Parser:
         return Path(__file__).parent.parent.parent
 
     @staticmethod
-    def open_parameters_json_file():
+    def open_parameters_json_file() -> dict:
         # open file
         try:
-            json_file = open('../txt_files/parameters_and_settings')
+            json_file = open('../txt_files/parameters_and_settings.json')
             data = json.load(json_file)
         except FileNotFoundError:
             try:
-                json_file = open('../../txt_files/parameters_and_settings')
+                json_file = open('../../txt_files/parameters_and_settings.json')
                 data = json.load(json_file)
             except FileNotFoundError:
-                json_file = open('txt_files/parameters_and_settings')
+                json_file = open('txt_files/parameters_and_settings.json')
                 data = json.load(json_file)
 
         return data
@@ -149,6 +149,7 @@ class Parser:
             retrieve_dataframe_info(df_footbot_positions)
 
         for footbot_id in footbots_unique_ids:
+            print('parsing bot: ' + str(footbot_id))
             # retrieve faults of the current robots based on its ID
             faults = df_footbot_positions[df_footbot_positions['ID'] == footbot_id]['Fault'].to_numpy(dtype=bool)
 
@@ -175,12 +176,16 @@ class Parser:
 
             # create new FootBot instance
             new_footbot = FootBot(identifier=footbot_id,
+                                  timesteps=timesteps,
                                   number_of_robots=number_of_robots,
                                   number_of_timesteps=number_of_timesteps,
                                   neighborhood_radius=neighborhood_radius,
                                   time_window_size=time_window_size,
                                   single_robot_positions=all_robots_positions[footbot_id],
-                                  all_robots_positions=np.delete(all_robots_positions, footbot_id, axis=0),
+                                  all_robots_positions=np.asarray(
+                                      [all_robots_positions[key] for key in all_robots_positions.keys()
+                                       if int(key) != footbot_id]
+                                  ),
                                   state_time_series=states,
                                   has_food_time_series=food,
                                   total_food_time_series=total_food,
@@ -288,24 +293,50 @@ class Parser:
         return json_data["Area_partitions"]
 
     @staticmethod
+    def write_json_file_names(file_names: list[str], task: str) -> None:
+        json_data = Parser.open_parameters_json_file()
+        for index in range(len(file_names)):
+            json_data['File Names'][task][str(index)] = file_names[index]
+        with open('../../txt_files/parameters_and_settings.json', 'w', encoding='utf-8') as f:
+            json.dump(json_data, f, ensure_ascii=False, indent=4)
+
+    @staticmethod
     def read_files_in_directory(experiment_name: str) -> list:
-        if experiment_name == 'flocking':
-            return ['../flocking_log_files/' + f for f in listdir('../flocking_log_files')
-                    if isfile(join('../flocking_log_files', f))]
-        elif experiment_name == 'foraging':
-            return ['../foraging_log_files/' + f for f in listdir('../foraging_log_files')
-                    if isfile(join('../foraging_log_files', f))]
-        elif experiment_name == 'diffusion':
-            return ['../diffusion_log_files/' + f for f in listdir('../diffusion_log_files')
-                    if isfile(join('../diffusion_log_files', f))]
-        elif experiment_name == 'dispersion':
-            return ['../dispersion_log_files/' + f for f in listdir('../dispersion_log_files')
-                    if isfile(join('../dispersion_log_files', f))]
-        elif experiment_name == 'homing':
-            return ['../homing_log_files/' + f for f in listdir('../homing_log_files')
-                    if isfile(join('../homing_log_files', f))]
-        else:
-            raise FileNotFoundError
+        if experiment_name == 'FLOC':
+            try:
+                return ['../flocking_log_files/' + f for f in listdir('../flocking_log_files')
+                        if isfile(join('../flocking_log_files', f))]
+            except FileNotFoundError:
+                return ['../flocking_log_files/' + f for f in listdir('../../flocking_log_files')
+                        if isfile(join('../../flocking_log_files', f))]
+        elif experiment_name == 'FORE':
+            try:
+                return ['../foraging_log_files/' + f for f in listdir('../foraging_log_files')
+                        if isfile(join('../foraging_log_files', f))]
+            except FileNotFoundError:
+                return ['../../foraging_log_files/' + f for f in listdir('../foraging_log_files')
+                        if isfile(join('../foraging_log_files', f))]
+        elif experiment_name == 'DIFF':
+            try:
+                return ['../diffusion_log_files/' + f for f in listdir('../diffusion_log_files')
+                        if isfile(join('../diffusion_log_files', f))]
+            except FileNotFoundError:
+                return ['../../diffusion_log_files/' + f for f in listdir('../diffusion_log_files')
+                        if isfile(join('../diffusion_log_files', f))]
+        elif experiment_name == 'DISP':
+            try:
+                return ['../dispersion_log_files/' + f for f in listdir('../dispersion_log_files')
+                        if isfile(join('../dispersion_log_files', f))]
+            except FileNotFoundError:
+                return ['../../dispersion_log_files/' + f for f in listdir('../dispersion_log_files')
+                        if isfile(join('../dispersion_log_files', f))]
+        elif experiment_name == 'HOME':
+            try:
+                return ['../homing_log_files/' + f for f in listdir('../homing_log_files')
+                        if isfile(join('../homing_log_files', f))]
+            except FileNotFoundError:
+                return ['../../homing_log_files/' + f for f in listdir('../homing_log_files')
+                        if isfile(join('../homing_log_files', f))]
 
     @staticmethod
     def sanitize_warehouse_csv_file(task_name: str,
@@ -330,7 +361,8 @@ class Parser:
 
 
 if __name__ == "__main__":
-    task_name = "WARE"
-    file_number = 9
-    Parser.sanitize_warehouse_csv_file(task_name=task_name,
-                                       file_number=file_number)
+    task_name = 'FLOC'
+    file_names = Parser.read_files_in_directory(task_name)
+    file_names = [name for name in file_names if 'DS' not in name]
+    Parser.write_json_file_names(file_names=file_names,
+                                 task=task_name)
