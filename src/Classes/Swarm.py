@@ -84,8 +84,8 @@ class Swarm:
         area_partitions = []
 
         for split_number in Parser.read_area_splits():
-            horizontal_splits = [left_bound + abs(right_bound - left_bound) / split_number * repetitions for repetitions in
-                                 range(split_number + 1)]
+            horizontal_splits = [left_bound + abs(right_bound - left_bound) / split_number * repetitions
+                                 for repetitions in range(split_number + 1)]
             vertical_splits = [low_bound + abs(top_bound - low_bound) / split_number * repetitions for repetitions in
                                range(split_number + 1)]
 

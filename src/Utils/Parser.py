@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 import numpy as np
 import json
@@ -105,7 +107,7 @@ class Parser:
         df_footbot_positions = Parser.open_pandas_dataframe(filename=filename)
 
         # retrieve infos
-        footbots_unique_ids, number_of_robots, number_of_timesteps, timesteps, all_robots_positions = Parser.\
+        footbots_unique_ids, number_of_robots, number_of_timesteps, timesteps, all_robots_positions = Parser. \
             retrieve_dataframe_info(df_footbot_positions)
 
         for footbot_id in footbots_unique_ids:
@@ -361,8 +363,8 @@ class Parser:
 
 
 if __name__ == "__main__":
-    task_name = 'FLOC'
-    file_names = Parser.read_files_in_directory(task_name)
-    file_names = [name for name in file_names if 'DS' not in name]
-    Parser.write_json_file_names(file_names=file_names,
-                                 task=task_name)
+    log_files_root = '../../flocking_log_files'
+    files = listdir(log_files_root)
+    for file in files:
+        if 'DS' in file:
+            os.remove(join(log_files_root, file))

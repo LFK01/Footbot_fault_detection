@@ -511,8 +511,8 @@ class Plotter:
             plt.ylabel("Coverage Percentage")
             plt.ylim((-0.1, 1.1))
             title = additional_title_string + " Single Bot Area Coverage with " \
-                    + str(area_splits[percentage_index] ** 2) \
-                    + " subdivisions"
+                                            + str(area_splits[percentage_index] ** 2) \
+                                            + " subdivisions"
             plt.title(title)
             if path != "":
                 path += "/"
@@ -527,8 +527,8 @@ class Plotter:
             plt.xlabel("Timestep")
             plt.ylabel("Coverage Speed")
             title = additional_title_string + " Single Bot Area Coverage Speed with " \
-                    + str(area_splits[percentage_index] ** 2) \
-                    + " subdivisions"
+                                            + str(area_splits[percentage_index] ** 2) \
+                                            + " subdivisions"
             plt.title(title)
             if path != "":
                 path += "/"

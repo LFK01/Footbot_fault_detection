@@ -1,5 +1,4 @@
 import pickle
-from src.Utils.models.ConvLstmModel import ConvLstmModel
 from src.Utils.models.GbModel import GbModel
 from src.Utils.data_utils.BotDataset import BotDataset
 

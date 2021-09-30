@@ -8,8 +8,10 @@ if __name__ == "__main__":
     neighborhood_radius = Parser.read_neighborhood_radius()
     time_window_size = Parser.read_time_window()
 
+    task_name = 'FLOC'
+
     experiment_list = []
-    for file in Parser.read_files_in_directory():
+    for file in Parser.read_files_in_directory(experiment_name=task_name):
         print(file.split('/')[-1])
         footbots_list = Parser.create_flocking_swarm(filename=file,
                                                      neighborhood_radius=neighborhood_radius,
