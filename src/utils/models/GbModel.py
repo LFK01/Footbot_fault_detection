@@ -1,7 +1,11 @@
 import numpy as np
+import pickle
+from datetime import datetime
+import matplotlib.pyplot as plt
 from sklearn.ensemble import GradientBoostingClassifier
-from ..data_utils.BotDataset import BotDataset
-from ..Parser import Parser
+from sklearn.metrics import ConfusionMatrixDisplay
+from src.utils.Parser import Parser
+from src.utils.data_utils.BotDataset import BotDataset
 
 
 class GbModel:
@@ -25,9 +29,22 @@ class GbModel:
 
         self.model.fit(X=train_dataset, y=target_dataset)
 
+        with open('../cached_objects/gb_model' + datetime.now().strftime('%d-%m-%Y_%H-%M') + '.pkl', 'wb') as f:
+            pickle.dump(self.model, f)
+
         test_dataset, target_test_dataset = self.prepare_test_dataset()
 
+        test_prediciton = self.model.predict(X=test_dataset)
+
         score = self.model.score(X=test_dataset, y=target_test_dataset)
+
+        disp = ConfusionMatrixDisplay.from_predictions(test_prediciton, target_test_dataset)
+
+        disp.plot()
+
+        plt.title('Confusion Matrix Gradient Boosting Flocking Down Sampled x10')
+        plt.show()
+
         print('score: ' + str(score))
 
     @staticmethod
@@ -69,3 +86,21 @@ class GbModel:
         )
 
         return merged_test_dataset, merged_target_test_dataset
+
+    def saved_train_plot_performances(self):
+        with open('../cached_objects/gb_model30-09-2021_13-21.pkl', 'rb') as f:
+            self.model = pickle.load(f)
+
+        test_dataset, target_test_dataset = self.prepare_test_dataset()
+
+        test_prediciton = self.model.predict(X=test_dataset)
+
+        score = self.model.score(X=test_dataset, y=target_test_dataset)
+
+        disp = ConfusionMatrixDisplay.from_predictions(test_prediciton, target_test_dataset)
+
+        print(disp.confusion_matrix)
+
+        plt.show()
+
+        print('score: ' + str(score))

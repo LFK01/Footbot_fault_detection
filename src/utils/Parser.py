@@ -280,6 +280,21 @@ class Parser:
         return json_data["LSTM_length"]
 
     @staticmethod
+    def read_down_sampling_size() -> int:
+        """
+        Method to retrieve the down_sampling size in the parameters file.
+
+        Returns
+        -------
+        down_sampling : int
+            Value read in the file
+        """
+
+        json_data = Parser.open_parameters_json_file()
+
+        return json_data["Down_sampling"]
+
+    @staticmethod
     def read_area_splits() -> list[int]:
         """
         Method to retrieve the LSTM length in the parameters file.

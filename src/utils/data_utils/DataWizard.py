@@ -34,7 +34,7 @@ class DataWizard:
     @staticmethod
     def create_balanced_bot_train_val_test_set(experiments: list[Swarm],
                                                splitting=None,
-                                               down_sampling_steps=1) -> list[BotDataset]:
+                                               down_sampling_steps: int = 1) -> list[BotDataset]:
         random.seed(Parser.read_seed())
         if splitting is None:
             splitting = [0.7, 0.2, 0.1]

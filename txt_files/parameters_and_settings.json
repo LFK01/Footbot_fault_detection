@@ -3,6 +3,7 @@
     "TIME_WINDOW": 10,
     "SEED": 123,
     "LSTM_length": 10,
+    "Down_sampling": 100,
     "File Names": {
         "DISP": {
             "1": "../dispersion_log_files/dispersion_100_nominal.csv",

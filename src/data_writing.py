@@ -22,13 +22,15 @@ if __name__ == "__main__":
 
     timesteps = SwarmDataWizard.shortest_experiment_timesteps(experiment_list=experiment_list)
 
+    down_sampling = Parser.read_down_sampling_size()
+
     data_wizard_datasets = BotDataWizard(
         timesteps=timesteps,
         time_window=time_window_size,
         label_size=1,
         experiments=experiment_list,
-        down_sampling_steps=10,
+        down_sampling_steps=down_sampling,
         preprocessing_type='norm').datasets
 
-    with open('../cached_objects/bot_datasets_down_sampled.pkl', 'wb') as output_file:
+    with open('../cached_objects/bot_datasets_down_sampled_' + str(down_sampling) + '.pkl', 'wb') as output_file:
         pickle.dump(data_wizard_datasets, output_file)
