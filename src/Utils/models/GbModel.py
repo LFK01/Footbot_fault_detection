@@ -4,8 +4,8 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.metrics import ConfusionMatrixDisplay
-from src.utils.Parser import Parser
-from src.utils.data_utils.BotDataset import BotDataset
+from src.Utils.Parser import Parser
+from src.Utils.data_utils.BotDataset import BotDataset
 
 
 class GbModel:

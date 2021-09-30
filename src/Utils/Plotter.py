@@ -5,7 +5,7 @@ import datetime
 import matplotlib.pyplot as plt
 from src.classes.FootBot import FootBot
 from src.classes.Swarm import Swarm
-from src.utils.Parser import Parser
+from src.Utils.Parser import Parser
 
 
 class Plotter:

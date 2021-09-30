@@ -1,6 +1,6 @@
 import numpy as np
 
-from src.utils.Parser import Parser
+from src.Utils.Parser import Parser
 from src.classes.FootBot import FootBot
 from src.classes.AreaPartition import AreaPartition
 

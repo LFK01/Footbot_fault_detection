@@ -1,10 +1,10 @@
 from abc import abstractmethod
 import numpy as np
 import random
-from src.utils.Parser import Parser
+from src.Utils.Parser import Parser
 from src.classes.Swarm import Swarm
 from src.classes.FootBot import FootBot
-from src.utils.data_utils.BotDataset import BotDataset
+from src.Utils.data_utils.BotDataset import BotDataset
 
 
 class DataWizard:
