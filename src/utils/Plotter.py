@@ -3,9 +3,9 @@ import sys
 import datetime
 
 import matplotlib.pyplot as plt
-from src.Classes.FootBot import FootBot
-from src.Classes.Swarm import Swarm
-from src.Utils.Parser import Parser
+from src.classes.FootBot import FootBot
+from src.classes.Swarm import Swarm
+from src.utils.Parser import Parser
 
 
 class Plotter:

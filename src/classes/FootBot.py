@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.stats import entropy
 
-from src.Classes.AreaPartition import AreaPartition
+from src.classes.AreaPartition import AreaPartition
 
 
 class FootBot:

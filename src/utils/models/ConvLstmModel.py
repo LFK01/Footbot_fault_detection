@@ -3,8 +3,8 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
 from sklearn.utils import class_weight
-from src.Utils.Parser import Parser
-from src.Utils.data_utils.BotDataset import BotDataset
+from src.utils.Parser import Parser
+from src.utils.data_utils.BotDataset import BotDataset
 
 
 class ConvLstmModel:

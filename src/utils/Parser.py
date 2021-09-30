@@ -6,7 +6,7 @@ import json
 from os import listdir
 from os.path import isfile, join
 from pathlib import Path
-from src.Classes.FootBot import FootBot
+from src.classes.FootBot import FootBot
 
 
 class Parser:
