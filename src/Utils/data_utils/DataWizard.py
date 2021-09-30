@@ -125,8 +125,12 @@ class DataWizard:
             bot.cumulative_speed[::down_sampling_steps],
             bot.neighbors_time_series[::down_sampling_steps],
             bot.swarm_cohesion_time_series[::down_sampling_steps],
-            bot.distance_from_centroid_time_series[::down_sampling_steps]
+            bot.distance_from_centroid_time_series[::down_sampling_steps],
+            bot.cumulative_distance_from_centroid_time_series[::down_sampling_steps],
+            bot.positions_entropy[::down_sampling_steps]
         ]
+        vector.extend(area_coverage_slice[::down_sampling_steps] for area_coverage_slice in bot.area_coverage)
+        vector.extend(coverage_speed_slice[::down_sampling_steps] for coverage_speed_slice in bot.coverage_speed)
         # since some arrays may end up having different lengths, we short them to the maximum common length
         # which is the minimum among the length of all the features
         cut_max_common_length = min(feature.shape[0] for feature in vector)

@@ -5,12 +5,7 @@
 venv
 
 #position log files
-flocking_log_files
-diffusion_log_files
-foraging_log_files
-dispersion_log_files
-homing_log_files
-warehouse_log_files
+log_files
 
 #images
 images
@@ -19,5 +14,4 @@ images
 .DS_Store
 
 #stuff
-cached_objects
-NN_performance
+cached_files

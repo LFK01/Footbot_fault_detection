@@ -1,4 +1,5 @@
 import pickle
+from datetime import datetime
 from src.Utils.Parser import Parser
 from src.classes.Swarm import Swarm
 from src.Utils.data_utils.BotDataWizard import BotDataWizard
@@ -32,5 +33,6 @@ if __name__ == "__main__":
         down_sampling_steps=down_sampling,
         preprocessing_type='norm').datasets
 
-    with open('../cached_objects/bot_datasets_down_sampled_' + str(down_sampling) + '.pkl', 'wb') as output_file:
+    with open('../cached_files/cached_datasets/bot_datasets_down_sampled_' + str(down_sampling) + '_'
+              + datetime.now().strftime('%d-%m-%Y_%H-%M') + '.pkl', 'wb') as output_file:
         pickle.dump(data_wizard_datasets, output_file)

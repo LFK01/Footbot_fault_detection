@@ -320,40 +320,20 @@ class Parser:
     @staticmethod
     def read_files_in_directory(experiment_name: str) -> list:
         if experiment_name == 'FLOC':
-            try:
-                return ['../flocking_log_files/' + f for f in listdir('../flocking_log_files')
-                        if isfile(join('../flocking_log_files', f))]
-            except FileNotFoundError:
-                return ['../flocking_log_files/' + f for f in listdir('../../flocking_log_files')
-                        if isfile(join('../../flocking_log_files', f))]
+            return ['../log_files/flocking_log_files/' + f for f in listdir('../log_files/flocking_log_files')
+                    if isfile(join('../log_files/flocking_log_files', f))]
         elif experiment_name == 'FORE':
-            try:
-                return ['../foraging_log_files/' + f for f in listdir('../foraging_log_files')
-                        if isfile(join('../foraging_log_files', f))]
-            except FileNotFoundError:
-                return ['../../foraging_log_files/' + f for f in listdir('../foraging_log_files')
-                        if isfile(join('../foraging_log_files', f))]
+            return ['../log_files/foraging_log_files/' + f for f in listdir('../log_files/foraging_log_files')
+                    if isfile(join('../log_files/foraging_log_files', f))]
         elif experiment_name == 'DIFF':
-            try:
-                return ['../diffusion_log_files/' + f for f in listdir('../diffusion_log_files')
-                        if isfile(join('../diffusion_log_files', f))]
-            except FileNotFoundError:
-                return ['../../diffusion_log_files/' + f for f in listdir('../diffusion_log_files')
-                        if isfile(join('../diffusion_log_files', f))]
+            return ['../log_files/diffusion_log_files/' + f for f in listdir('../log_files/diffusion_log_files')
+                    if isfile(join('../diffusion_log_files', f))]
         elif experiment_name == 'DISP':
-            try:
-                return ['../dispersion_log_files/' + f for f in listdir('../dispersion_log_files')
-                        if isfile(join('../dispersion_log_files', f))]
-            except FileNotFoundError:
-                return ['../../dispersion_log_files/' + f for f in listdir('../dispersion_log_files')
-                        if isfile(join('../dispersion_log_files', f))]
+            return ['../log_files/dispersion_log_files/' + f for f in listdir('../log_files/dispersion_log_files')
+                    if isfile(join('../log_files/dispersion_log_files', f))]
         elif experiment_name == 'HOME':
-            try:
-                return ['../homing_log_files/' + f for f in listdir('../homing_log_files')
-                        if isfile(join('../homing_log_files', f))]
-            except FileNotFoundError:
-                return ['../../homing_log_files/' + f for f in listdir('../homing_log_files')
-                        if isfile(join('../homing_log_files', f))]
+            return ['../log_files/homing_log_files/' + f for f in listdir('../log_files/homing_log_files')
+                    if isfile(join('../log_files/homing_log_files', f))]
 
     @staticmethod
     def sanitize_warehouse_csv_file(task_name: str,
@@ -378,7 +358,7 @@ class Parser:
 
 
 if __name__ == "__main__":
-    log_files_root = '../../flocking_log_files'
+    log_files_root = '../../log_files/flocking_log_files'
     files = listdir(log_files_root)
     for file in files:
         if 'DS' in file:
