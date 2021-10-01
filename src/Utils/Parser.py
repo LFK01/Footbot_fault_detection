@@ -310,6 +310,21 @@ class Parser:
         return json_data["Area_partitions"]
 
     @staticmethod
+    def read_features_set() -> list[str]:
+        """
+        Method to retrieve the LSTM length in the parameters file.
+
+        Returns
+        -------
+        seed : int
+            Value read in the file
+        """
+
+        json_data = Parser.open_parameters_json_file()
+
+        return json_data["Features"]
+
+    @staticmethod
     def write_json_file_names(file_names: list[str], task: str) -> None:
         json_data = Parser.open_parameters_json_file()
         for index in range(len(file_names)):

@@ -43,7 +43,7 @@ class DataWizard:
 
         for bot in range(len(experiments[0].list_of_footbots)):
             fault_experiments = [exp for exp in experiments if any(exp.list_of_footbots[bot].fault_time_series)]
-            nominal_experiments = [exp for exp in experiments if exp not in fault_experiments]
+            nominal_experiments = [exp for exp in experiments if not any(exp.list_of_footbots[bot].fault_time_series)]
 
             train_experiments = nominal_experiments[
                                 :int(len(nominal_experiments) * splitting[0])
@@ -115,26 +115,44 @@ class DataWizard:
         return bot_dataset
 
     @staticmethod
-    def retrieve_bot_features(bot: FootBot, down_sampling_steps: int) -> list[np.ndarray]:
-        vector = [
-            bot.single_robot_positions[::down_sampling_steps, 0],
-            bot.single_robot_positions[::down_sampling_steps, 1],
-            bot.speed_time_series[::down_sampling_steps],
-            bot.direction_time_series[::down_sampling_steps, 0],
-            bot.direction_time_series[::down_sampling_steps, 1],
-            bot.cumulative_speed[::down_sampling_steps],
-            bot.neighbors_time_series[::down_sampling_steps],
-            bot.swarm_cohesion_time_series[::down_sampling_steps],
-            bot.distance_from_centroid_time_series[::down_sampling_steps],
-            bot.cumulative_distance_from_centroid_time_series[::down_sampling_steps],
-            bot.positions_entropy[::down_sampling_steps]
-        ]
-        vector.extend(area_coverage_slice[::down_sampling_steps] for area_coverage_slice in bot.area_coverage)
-        vector.extend(coverage_speed_slice[::down_sampling_steps] for coverage_speed_slice in bot.coverage_speed)
+    def retrieve_bot_features(bot: FootBot,
+                              down_sampling_steps: int) -> list[np.ndarray]:
+
+        features_list = Parser.read_features_set()
+
+        vector = []
+        if 'single_robot_positions' in features_list:
+            vector.append(bot.single_robot_positions[::down_sampling_steps, 0])
+            vector.append(bot.single_robot_positions[::down_sampling_steps, 1])
+        if 'speed_time_series' in features_list:
+            vector.append(bot.speed_time_series[::down_sampling_steps])
+        if 'direction_time_series' in features_list:
+            vector.append(bot.direction_time_series[::down_sampling_steps, 0])
+            vector.append(bot.direction_time_series[::down_sampling_steps, 1])
+        if 'cumulative_speed' in features_list:
+            vector.append(bot.cumulative_speed[::down_sampling_steps])
+        if 'neighbors_time_series' in features_list:
+            vector.append(bot.neighbors_time_series[::down_sampling_steps])
+        if 'swarm_cohesion_time_series' in features_list:
+            vector.append(bot.swarm_cohesion_time_series[::down_sampling_steps])
+        if 'distance_from_centroid_time_series' in features_list:
+            vector.append(bot.distance_from_centroid_time_series[::down_sampling_steps])
+        if 'cumulative_distance_from_centroid_time_series' in features_list:
+            vector.append(bot.cumulative_distance_from_centroid_time_series[::down_sampling_steps])
+        if 'positions_entropy' in features_list:
+            vector.append(bot.positions_entropy[::down_sampling_steps])
+        if 'area_coverage' in features_list:
+            for area_coverage_slice in bot.area_coverage:
+                vector.append(area_coverage_slice[::down_sampling_steps])
+        if 'coverage_speed' in features_list:
+            for coverage_speed_slice in bot.coverage_speed:
+                vector.append(coverage_speed_slice[::down_sampling_steps])
+
         # since some arrays may end up having different lengths, we short them to the maximum common length
         # which is the minimum among the length of all the features
         cut_max_common_length = min(feature.shape[0] for feature in vector)
         vector = [feature[:cut_max_common_length] for feature in vector]
+
         return vector
 
     @staticmethod

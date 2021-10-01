@@ -27,10 +27,11 @@ def build_swarm():
               'wb') as output_file:
         pickle.dump(experiment_list, output_file)
 
+
 def build_dataset():
-    with open('../cached_files/cached_swarms/.pkl',
-              'wb') as output_file:
-        experiment_list = pickle.load(output_file)
+    with open('../cached_files/cached_swarms/52_experiment_swarm_list.pkl',
+              'rb') as input_file:
+        experiment_list = pickle.load(input_file)
 
     down_sampling = Parser.read_down_sampling_size()
     timesteps = SwarmDataWizard.shortest_experiment_timesteps(experiment_list=experiment_list)
@@ -44,7 +45,9 @@ def build_dataset():
         down_sampling_steps=down_sampling,
         preprocessing_type='norm').datasets
 
-    with open('../cached_files/cached_datasets/bot_datasets_down_sampled_' + str(down_sampling) + '_'
+    with open('../cached_files/cached_datasets/bot_datasets_down_sampled_'
+              + str(down_sampling)
+              + '_all_features_'
               + datetime.now().strftime('%d-%m-%Y_%H-%M') + '.pkl', 'wb') as output_file:
         pickle.dump(data_wizard_datasets, output_file)
 

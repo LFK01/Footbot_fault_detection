@@ -3,7 +3,26 @@
     "TIME_WINDOW": 10,
     "SEED": 123,
     "LSTM_length": 10,
-    "Down_sampling": 100,
+    "Down_sampling": 1,
+    "Features": [
+        "single_robot_positions",
+        "speed_time_series",
+        "direction_time_series",
+        "cumulative_speed",
+        "neighbors_time_series",
+        "swarm_cohesion_time_series",
+        "distance_from_centroid_time_series",
+        "cumulative_distance_from_centroid_time_series",
+        "positions_entropy",
+        "area_coverage",
+        "coverage_speed_slice"
+    ],
+    "Area_partitions": [
+        2,
+        4,
+        8,
+        16
+    ],
     "File Names": {
         "DISP": {
             "1": "../dispersion_log_files/dispersion_100_nominal.csv",
@@ -94,11 +113,5 @@
             "50": "../flocking_log_files/flocking_15_west_10_percent_rotating_fault_after_0_gain_1000Tue_Sep_28_09-05-23_2021.csv",
             "51": "../flocking_log_files/flocking_15_nord_33_percent_rotating_fault_after_100_gain_1000Thu_Sep_23_16-34-11_2021.csv"
         }
-    },
-    "Area_partitions": [
-        2,
-        4,
-        8,
-        16
-    ]
+    }
 }
