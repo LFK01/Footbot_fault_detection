@@ -1,4 +1,5 @@
 import os
+import random
 import subprocess
 import xml.etree.ElementTree
 import numpy as np
@@ -22,10 +23,7 @@ class BotDataset:
 
 
 if __name__ == "__main__":
-    # NORD min = "-1,12,0" max = "1,14,0"
-    # EST min = "12,-1,0" max = "14,1,0"
-    # SUD min = "-1,-14,0" max = "1,-12,0"
-    # WEST min = "-14,-1,0" max = "-12,1,0"
+
     positions = {'North': {'min': '-1,12,0',
                            'max': '1,14,0'},
                  'South': {'min': '-1,-14,0',
@@ -34,22 +32,33 @@ if __name__ == "__main__":
                           'max': '-12,1,0'},
                  'East': {'min': '12,-1,0',
                           'max': '14,1,0'}}
+
     fault_modules = [10, 5, 3, 2]
-    fault_timesteps = [0, 100, 500, 800]
-    # os.chdir('/Users/lucianofranchin/Documents/Github_repos/argos3-examples/')
-    # subprocess.run('ls')
-    # for position in positions.keys():
+    fault_timesteps = [0, 500, 1500, 4000]
+
     # open xml file
     xml_file = xml.etree.ElementTree.parse('/Users/lucianofranchin/Documents/Github_repos/'
                                            'argos3-examples/experiments/flocking.argos')
     root = xml_file.getroot()
 
-    for element in xml_file.iter():
-        if element.tag == 'position':
-            element.attrib['min'] = positions['North']['min']
-            element.attrib['max'] = positions['North']['max']
-        if element.tag == 'visualization':
-            root.remove(element)
+    for position in positions.keys():
+        for element in xml_file.iter():
+            if element.tag == 'position':
+                element.attrib['min'] = positions[position]['min']
+                element.attrib['max'] = positions[position]['max']
+            if element.tag == 'entity':
+                element.attrib['quantity'] = '15'
+            if element.tag == 'experiment':
+                element.attrib['length'] = '800'
+            if element.tag == 'visualization':
+                root.remove(element)
 
-    xml_file.write('/Users/lucianofranchin/Documents/Github_repos/'
-                   'argos3-examples/experiments/flocking_new.argos')
+        xml_file.write('/Users/lucianofranchin/Documents/Github_repos/'
+                       'argos3-examples/experiments/flocking_execution.argos')
+
+        for fault_module in fault_modules:
+            for fault_timestep in fault_timesteps:
+                module_offset = random.randint(0, 10)
+                os.chdir('/Users/lucianofranchin/Documents/Github_repos/argos3-examples/')
+                subprocess.run('argos3 -c experiments/flocking_execution.argos', shell=True)
+

@@ -32,33 +32,11 @@ class GbModel:
 
         self.model.fit(X=train_dataset, y=target_dataset)
 
-        with open('../cached_files/cached_trained_models/gb_model' + datetime.now().strftime('%d-%m-%Y_%H-%M') + '.pkl', 'wb') as f:
+        with open('../cached_files/cached_trained_models/gb_model'
+                  + datetime.now().strftime('%d-%m-%Y_%H-%M') + '.pkl', 'wb') as f:
             pickle.dump(self.model, f)
 
-        test_dataset, target_test_dataset = self.prepare_test_dataset()
-
-        test_prediciton = self.model.predict(X=test_dataset)
-
-        score = self.model.score(X=test_dataset, y=target_test_dataset)
-
-        conf_disp = ConfusionMatrixDisplay.from_predictions(y_true=target_test_dataset, y_pred=test_prediciton)
-        prec_rec_disp = PrecisionRecallDisplay.from_predictions(y_true=target_test_dataset, y_pred=test_prediciton)
-        prec_result = precision_score(y_true=target_test_dataset, y_pred=test_prediciton)
-        rec_result = recall_score(y_true=target_test_dataset, y_pred=test_prediciton)
-        f1_result = f1_score(y_true=target_test_dataset, y_pred=test_prediciton)
-
-        conf_disp.plot()
-        plt.title('Confusion Matrix Gradient Boosting Flocking Down Sampled x20')
-        plt.show()
-
-        prec_rec_disp.plot()
-        plt.title('Precision Recall Cruve Gradient Boosting Down Sampled x20')
-        plt.show()
-
-        print('Mean Accuracy score: ' + str(score))
-        print('Precision: ' + str(prec_result))
-        print('Recall: ' + str(rec_result))
-        print('F1 Score: ' + str(f1_result))
+        self.compute_test_performance()
 
     @staticmethod
     def flatten_dataset(array: np.ndarray):
@@ -104,6 +82,9 @@ class GbModel:
         with open('../cached_files/cached_trained_models/gb_model30-09-2021_15-39.pkl', 'rb') as f:
             self.model = pickle.load(f)
 
+        self.compute_test_performance()
+
+    def compute_test_performance(self):
         test_dataset, target_test_dataset = self.prepare_test_dataset()
 
         test_prediciton = self.model.predict(X=test_dataset)
@@ -118,7 +99,6 @@ class GbModel:
 
         conf_disp.plot()
         plt.title('Confusion Matrix Gradient Boosting Flocking Down Sampled x20')
-        plt.show()
 
         prec_rec_disp.plot()
         plt.title('Precision Recall Cruve Gradient Boosting Down Sampled x20')
