@@ -1,5 +1,4 @@
 import os
-import sys
 import datetime
 
 import matplotlib.pyplot as plt
@@ -41,6 +40,8 @@ class Plotter:
             Additional string to specify where to save the plot
         title: str
             Title that shows on the pyplot graph
+        show_plot: bool
+            Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
 
         plt.figure()
@@ -81,6 +82,8 @@ class Plotter:
             Additional string to specify where to save the plot
         title: str
             Title that shows on the pyplot graph
+        show_plot: bool
+            Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
         plt.figure()
         for bot in footbot_list:
@@ -110,6 +113,8 @@ class Plotter:
             Additional string to specify where to save the plot
         title: str
             Title of the graph
+        show_plot: bool
+            Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
         plt.figure()
         for bot in footbot_list:
@@ -142,6 +147,8 @@ class Plotter:
             Additional string to specify where to save the plot
         title: str
             Title of the graph
+        show_plot: bool
+            Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
         plt.figure()
         for bot in footbot_list:
@@ -171,6 +178,8 @@ class Plotter:
             Additional string to specify where to save the plot
         title: str
             Title of the graph
+        show_plot: bool
+            Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
         plt.figure()
         for bot in footbot_list:
@@ -200,6 +209,8 @@ class Plotter:
             Additional string to specify where to save the plot
         title: str
             Title of the graph
+        show_plot: bool
+            Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
         plt.figure()
         for bot in footbot_list:
@@ -229,6 +240,8 @@ class Plotter:
             Additional string to specify where to save the plot
         title: str
             Title of the graph
+        show_plot: bool
+            Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
         plt.figure()
         for bot in footbot_list:
@@ -258,6 +271,8 @@ class Plotter:
             Additional string to specify where to save the plot
         title: str
             Title of the graph
+        show_plot: bool
+            Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
         plt.figure()
         for bot in footbot_list:
@@ -287,6 +302,8 @@ class Plotter:
             Additional string to specify where to save the plot
         title: str
             Title that shows on the pyplot graph
+        show_plot: bool
+            Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
         plt.figure()
         for bot in footbot_list:
@@ -316,6 +333,8 @@ class Plotter:
             Additional string to specify where to save the plot
         title: str
             Title that shows on the pyplot graph
+        show_plot: bool
+            Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
         plt.figure()
         for bot in footbot_list:
@@ -345,6 +364,8 @@ class Plotter:
             Additional string to specify where to save the plot
         title: str
             Title that shows on the pyplot graph
+        show_plot: bool
+            Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
         plt.figure()
         for bot in footbot_list:
@@ -374,6 +395,8 @@ class Plotter:
             Additional string to specify where to save the plot
         title: str
             Title that shows on the pyplot graph
+        show_plot: bool
+            Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
         cumulative_faulty_bots = []
         plt.figure()
@@ -407,6 +430,8 @@ class Plotter:
             Additional string to specify where to save the plot
         title: str
             Title that shows on the pyplot graph
+        show_plot: bool
+            Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
         plt.figure()
         for bot in footbot_list:
@@ -436,9 +461,11 @@ class Plotter:
             Additional string to specify where to save the plot
         title: str
             Title that shows on the pyplot graph
+        show_plot: bool
+            Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
         plt.figure()
-        plt.plot(footbot_list.traversed_distance_time_series)
+        plt.plot(footbot_list.speed_time_series)
         plt.xlabel("timestep")
         plt.ylabel("Swarm speed")
         plt.title(title)
@@ -464,6 +491,8 @@ class Plotter:
             Additional string to specify where to save the plot
         title: str
             Title that shows on the pyplot graph
+        show_plot: bool
+            Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
         plt.figure()
         for bot in footbot_list:
@@ -501,6 +530,8 @@ class Plotter:
             Additional string to specify where to save the plot
         additional_title_string: str
             Additional string to specify whether the bot is nominal or not
+        show_plot: bool
+            Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
         area_splits = Parser.read_area_splits()
         for percentage_index in range(len(area_splits)):
@@ -552,6 +583,8 @@ class Plotter:
             Additional string to specify where to save the plot
         additional_title_string: str
             Additional string to specify whether the bot is nominal or not
+        show_plot: bool
+            Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
         for key_area_coverage in main_swarm.area_coverage.keys():
             plt.figure()
@@ -593,20 +626,30 @@ def build_flocking_swarm(task_name: str, file_number: int):
     neighborhood_radius = Parser.read_neighborhood_radius()
     time_window_size = Parser.read_time_window()
     file = Parser.read_filename(task_name=task_name, file_number=file_number)
+    timesteps = Parser.retrieve_timesteps_series_from_dataframe(
+        df_footbot_positions=Parser.open_pandas_dataframe(filename=file)
+    )
     footbots_list = Parser.create_flocking_swarm(filename=file,
                                                  neighborhood_radius=neighborhood_radius,
                                                  time_window_size=time_window_size)
-    return footbots_list, Swarm(footbots_list)
+    return footbots_list, Swarm(timesteps=timesteps,
+                                swarm=footbots_list)
 
 
 def build_foraging_swarm(task_name: str, file_number: int):
+
     neighborhood_radius = Parser.read_neighborhood_radius()
     time_window_size = Parser.read_time_window()
     file = Parser.read_filename(task_name=task_name, file_number=file_number)
+    timesteps = Parser.retrieve_timesteps_series_from_dataframe(
+        df_footbot_positions=Parser.open_pandas_dataframe(filename=file)
+    )
+
     footbots_list = Parser.create_foraging_swarm(filename=file,
                                                  neighborhood_radius=neighborhood_radius,
                                                  time_window_size=time_window_size)
-    return footbots_list, Swarm(footbots_list)
+    return footbots_list, Swarm(timesteps=timesteps,
+                                swarm=footbots_list)
 
 
 def plot_common_features(nominal_bots: list[FootBot],

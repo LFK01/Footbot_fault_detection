@@ -1,5 +1,3 @@
-import os
-
 import pandas as pd
 import numpy as np
 import json
@@ -81,6 +79,13 @@ class Parser:
             all_robots_positions[footbot_id] = positions
 
         return footbots_unique_ids, number_of_robots, number_of_timesteps, np.asarray(timesteps), all_robots_positions
+
+    @staticmethod
+    def retrieve_timesteps_series_from_dataframe(df_footbot_positions: pd.DataFrame) -> np.ndarray:
+        # retrieve number of timesteps
+        timesteps = df_footbot_positions['timestep'].unique()
+
+        return timesteps
 
     @staticmethod
     def create_flocking_swarm(filename: str, neighborhood_radius: float, time_window_size: int) -> list[FootBot]:
@@ -253,6 +258,7 @@ class Parser:
         Method to read the name of csv files
         Parameters
         ----------
+        task_name: name of the task to read filename from
         file_number: int
             Number of filename in parameters_and_settings.txt
         Returns
@@ -271,7 +277,7 @@ class Parser:
 
         Returns
         -------
-        seed : int
+        lstm_length : int
             Value read in the file
         """
 
@@ -297,12 +303,11 @@ class Parser:
     @staticmethod
     def read_area_splits() -> list[int]:
         """
-        Method to retrieve the LSTM length in the parameters file.
+        Method to retrieve the list of area splits in the parameters file.
 
         Returns
         -------
-        seed : int
-            Value read in the file
+        area_partitions : list[int]
         """
 
         json_data = Parser.open_parameters_json_file()
@@ -312,17 +317,58 @@ class Parser:
     @staticmethod
     def read_features_set() -> list[str]:
         """
-        Method to retrieve the LSTM length in the parameters file.
+        Method to retrieve the list of features to use in the dataset in the parameters file.
 
         Returns
         -------
-        seed : int
-            Value read in the file
+        feature_list: list[str]
         """
 
         json_data = Parser.open_parameters_json_file()
 
         return json_data["Features"]
+
+    @staticmethod
+    def read_dataset_splittings() -> dict[str, list[float]]:
+        """
+        Method to retrieve the list of splitting values to use in the building of dataset.
+
+        Returns
+        -------
+        splitting_dict: dict[str, list[float]]
+        """
+
+        json_data = Parser.open_parameters_json_file()
+
+        return json_data["Splitting"]
+
+    @staticmethod
+    def read_validation_choice() -> bool:
+        """
+        Method to check if the validation set has to be built or not.
+
+        Returns
+        -------
+        validation: bool
+        """
+
+        json_data = Parser.open_parameters_json_file()
+
+        return json_data["Validation"]
+
+    @staticmethod
+    def read_preprocessing_type() -> str:
+        """
+        Method to read the preprocessing type.
+
+        Returns
+        -------
+        preprocessing: str
+        """
+
+        json_data = Parser.open_parameters_json_file()
+
+        return json_data["Preprocessing"]
 
     @staticmethod
     def write_json_file_names(file_names: list[str], task: str) -> None:
@@ -373,8 +419,6 @@ class Parser:
 
 
 if __name__ == "__main__":
-    log_files_root = '../../log_files/flocking_log_files'
-    files = listdir(log_files_root)
-    for file in files:
-        if 'DS' in file:
-            os.remove(join(log_files_root, file))
+    score = 0.9644444444444444
+    bot_identifier = 2
+    print('{} & {:.4} & \\\\'.format(bot_identifier, score))

@@ -4,11 +4,11 @@ from tensorflow import keras
 from tensorflow.keras import layers
 from sklearn.utils import class_weight
 from src.Utils.Parser import Parser
-from src.Utils.data_utils.BotDataset import BotDataset
+from src.Utils.data_utils.datasets.TrValTeDataset import TrValTeDataset
 
 
 class ConvLstmModel:
-    def __init__(self, bot_datasets: list[BotDataset]):
+    def __init__(self, bot_datasets: list[TrValTeDataset]):
         self.LSTM_length = Parser.read_lstm_length()
         self.time_window = Parser.read_time_window()
         self.bot_datasets = bot_datasets

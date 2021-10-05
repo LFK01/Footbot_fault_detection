@@ -1,10 +1,9 @@
-from abc import abstractmethod
 import numpy as np
-import random
 from src.Utils.Parser import Parser
 from src.classes.Swarm import Swarm
 from src.classes.FootBot import FootBot
-from src.Utils.data_utils.BotDataset import BotDataset
+from src.Utils.data_utils.datasets.TrValTeDataset import TrValTeDataset
+from src.Utils.data_utils.datasets.GeneralDataset import GeneralDataset
 
 
 class DataWizard:
@@ -28,65 +27,69 @@ class DataWizard:
         )
 
     @staticmethod
-    def flatten_experiments(dataset: np.ndarray):
-        return np.concatenate([exp for exp in dataset])
+    def slice_train_test_experiments(bot: int,
+                                     train_experiments,
+                                     test_experiments,
+                                     down_sampling_steps: int = 1) -> GeneralDataset:
+
+        """
+        VALIDATION SET NOT COMPUTED
+        Method that retrieves the features of each bot and stacks them in order to be analyzed by the learning model.
+        Experiments are concatenated one after the other in order to create an unique time series.
+        Parameters
+        ----------
+        bot: int = the current bot to analyze
+        train_experiments
+        test_experiments
+        down_sampling_steps
+
+        Returns
+        -------
+
+        """
+
+        bot_train_dataset, bot_train_target_dataset = DataWizard.retrieve_features_and_target(
+            bot=bot,
+            experiments=train_experiments,
+            down_sampling_steps=down_sampling_steps
+        )
+        bot_test_dataset, bot_test_target_dataset = DataWizard.retrieve_features_and_target(
+            bot=bot,
+            experiments=test_experiments,
+            down_sampling_steps=down_sampling_steps
+        )
+        # numpy concatenate creates an unique time series of all the experiments
+        bot_dataset = GeneralDataset(
+            bot_identifier=bot,
+            train_dataset=np.concatenate(bot_train_dataset, axis=-1),
+            target_train_dataset=np.concatenate(bot_train_target_dataset, axis=-1),
+            test_dataset=np.concatenate(bot_test_dataset, axis=-1),
+            target_test_dataset=np.concatenate(bot_test_target_dataset, axis=-1)
+        )
+        return bot_dataset
 
     @staticmethod
-    def create_balanced_bot_train_val_test_set(experiments: list[Swarm],
-                                               splitting=None,
-                                               down_sampling_steps: int = 1) -> list[BotDataset]:
-        random.seed(Parser.read_seed())
-        if splitting is None:
-            splitting = [0.7, 0.2, 0.1]
+    def slice_train_val_test_experiments(bot: int,
+                                         train_experiments,
+                                         validation_experiments,
+                                         test_experiments,
+                                         down_sampling_steps: int = 1) -> TrValTeDataset:
 
-        dataset = []
+        """
+        VALIDATION SET COMPUTED
+        Method that retrieves the features of each bot and stacks them in order to be analyzed by the learning model.
+        Parameters
+        ----------
+        bot: int = the current bot to analyze
+        train_experiments
+        validation_experiments
+        test_experiments
+        down_sampling_steps
 
-        for bot in range(len(experiments[0].list_of_footbots)):
-            fault_experiments = [exp for exp in experiments if any(exp.list_of_footbots[bot].fault_time_series)]
-            nominal_experiments = [exp for exp in experiments if not any(exp.list_of_footbots[bot].fault_time_series)]
+        Returns
+        -------
 
-            train_experiments = nominal_experiments[
-                                :int(len(nominal_experiments) * splitting[0])
-                                ]
-            validation_experiments = nominal_experiments[
-                                     int(len(nominal_experiments) * splitting[0]):
-                                     int(len(nominal_experiments) * (splitting[0] + splitting[1]))
-                                     ]
-            test_experiments = nominal_experiments[
-                               int(len(nominal_experiments) * (splitting[0] + splitting[1])):
-                               ]
-
-            if len(fault_experiments) > 0:
-                train_experiments.extend(fault_experiments[
-                                         :int(len(fault_experiments) * splitting[0])
-                                         ])
-                validation_experiments.extend(fault_experiments[
-                                              int(len(fault_experiments) * splitting[0]):
-                                              int(len(fault_experiments) * (splitting[0] + splitting[1]))
-                                              ])
-                test_experiments.extend(fault_experiments[
-                                        int(len(fault_experiments) * (splitting[0] + splitting[1])):
-                                        ])
-
-            random.shuffle(train_experiments)
-            random.shuffle(validation_experiments)
-            random.shuffle(test_experiments)
-
-            bot_dataset = DataWizard.slice_experiments(bot=bot,
-                                                       train_experiments=train_experiments,
-                                                       validation_experiments=validation_experiments,
-                                                       test_experiments=test_experiments,
-                                                       down_sampling_steps=down_sampling_steps)
-            dataset.append(bot_dataset)
-
-        return dataset
-
-    @staticmethod
-    def slice_experiments(bot: int,
-                          train_experiments,
-                          validation_experiments,
-                          test_experiments,
-                          down_sampling_steps: int = 1) -> BotDataset:
+        """
 
         bot_train_dataset, bot_train_target_dataset = DataWizard.retrieve_features_and_target(
             bot=bot,
@@ -104,7 +107,7 @@ class DataWizard:
             down_sampling_steps=down_sampling_steps
         )
 
-        bot_dataset = BotDataset(
+        bot_dataset = TrValTeDataset(
             train_dataset=np.concatenate(bot_train_dataset, axis=-1),
             target_train_dataset=np.concatenate(bot_train_target_dataset, axis=-1),
             validation_dataset=np.concatenate(bot_val_dataset, axis=-1),
@@ -116,6 +119,7 @@ class DataWizard:
 
     @staticmethod
     def retrieve_bot_features(bot: FootBot,
+                              swarm: Swarm,
                               down_sampling_steps: int) -> list[np.ndarray]:
 
         features_list = Parser.read_features_set()
@@ -147,6 +151,12 @@ class DataWizard:
         if 'coverage_speed' in features_list:
             for coverage_speed_slice in bot.coverage_speed:
                 vector.append(coverage_speed_slice[::down_sampling_steps])
+        if 'global_features' in features_list:
+            vector.append(swarm.trajectory[::down_sampling_steps, 0])
+            vector.append(swarm.trajectory[::down_sampling_steps, 1])
+            vector.append(swarm.speed_time_series[::down_sampling_steps])
+            for area_coverage_slice in swarm.area_coverage.values():
+                vector.append(area_coverage_slice[::down_sampling_steps])
 
         # since some arrays may end up having different lengths, we short them to the maximum common length
         # which is the minimum among the length of all the features
@@ -162,61 +172,10 @@ class DataWizard:
 
         for exp in experiments:
             retrieved_features = np.asarray(DataWizard.retrieve_bot_features(bot=exp.list_of_footbots[bot],
+                                                                             swarm=exp,
                                                                              down_sampling_steps=down_sampling_steps))
 
             bot_dataset.append(retrieved_features)
             bot_target_dataset.append(exp.list_of_footbots[bot].fault_time_series[::down_sampling_steps])
 
         return bot_dataset, bot_target_dataset
-
-    @staticmethod
-    def standard_normalization(dataset: list[list[np.ndarray]]):
-        pass
-
-    @abstractmethod
-    def create_train_numpy_array(self, experiments: list[Swarm]) -> np.ndarray:
-        """abstract method"""
-
-    @abstractmethod
-    def create_target_train_numpy_array(self, experiments) -> np.ndarray:
-        """abstract method"""
-
-    @abstractmethod
-    def create_val_numpy_array(self, experiments) -> np.ndarray:
-        """abstract method"""
-
-    @abstractmethod
-    def create_target_val_numpy_array(self, experiments) -> np.ndarray:
-        """abstract method"""
-
-    @abstractmethod
-    def create_test_numpy_array(self, experiments) -> np.ndarray:
-        """abstract method"""
-
-    @abstractmethod
-    def create_test_target_numpy_array(self, experiments) -> np.ndarray:
-        """abstract method"""
-
-    @abstractmethod
-    def create_train_dataset(self, experiments):
-        """abstract method"""
-
-    @abstractmethod
-    def create_target_train_dataset(self, experiments):
-        """abstract method"""
-
-    @abstractmethod
-    def create_val_dataset(self, experiments):
-        """abstract method"""
-
-    @abstractmethod
-    def create_target_val_dataset(self, experiments):
-        """abstract method"""
-
-    @abstractmethod
-    def create_test_dataset(self, experiments):
-        """abstract method"""
-
-    @abstractmethod
-    def create_test_target_dataset(self, experiments):
-        """abstract method"""

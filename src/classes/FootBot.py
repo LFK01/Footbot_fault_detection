@@ -150,15 +150,22 @@ class FootBot:
         """
         Method which computes the distance traversed in each timestep.
         """
+        self.speed_time_series = FootBot.compute_entity_speed(self.timesteps, self.single_robot_positions)
+
+    @staticmethod
+    def compute_entity_speed(timesteps: np.ndarray,
+                             trajectory: np.ndarray) -> np.ndarray:
         tmp = []
-        for time_iterator in range(len(self.timesteps[:-1])):
-            time_delta = self.timesteps[time_iterator+1] - self.timesteps[time_iterator]
-            distance_x = self.single_robot_positions[time_iterator][0] - self.single_robot_positions[time_iterator+1][0]
-            distance_y = self.single_robot_positions[time_iterator][1] - self.single_robot_positions[time_iterator+1][1]
+        for time_iterator in range(len(timesteps[:-1])):
+            time_delta = timesteps[time_iterator + 1] - timesteps[time_iterator]
+            distance_x = trajectory[time_iterator][0] - trajectory[time_iterator + 1][
+                0]
+            distance_y = trajectory[time_iterator][1] - trajectory[time_iterator + 1][
+                1]
             traversed_distance = np.sqrt(distance_x ** 2 + distance_y ** 2) / time_delta
             tmp.append(traversed_distance)
 
-        self.speed_time_series = np.asarray(tmp)
+        return np.asarray(tmp)
 
     def compute_trajectory_entropy(self, base=None):
         tmp = []

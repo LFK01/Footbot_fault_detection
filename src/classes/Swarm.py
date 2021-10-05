@@ -10,10 +10,11 @@ class Swarm:
     Class that collects all the robots in the swarm and computes the features of the cluster
     """
 
-    def __init__(self, swarm: list[FootBot]):
+    def __init__(self, timesteps: np.ndarray, swarm: list[FootBot]):
+        self.timesteps = timesteps
         self.list_of_footbots = swarm
         self.trajectory = self.compute_cluster_trajectory()
-        self.traversed_distance_time_series = [0.0]
+        self.speed_time_series = [0.0]
         self.area_partitions = self.compute_area_partitions()
         self.area_coverage = self.compute_area_coverage()
 
@@ -27,14 +28,7 @@ class Swarm:
         return np.mean(all_bot_trajectory, axis=0)
 
     def compute_cluster_speed(self):
-        tmp = []
-        current_position = self.trajectory[0]
-        for next_position in self.trajectory[1:]:
-            distance_x = current_position[0] - next_position[0]
-            distance_y = current_position[1] - next_position[1]
-            traversed_distance = np.sqrt(distance_x**2 + distance_y**2)
-            tmp.append(traversed_distance)
-        self.traversed_distance_time_series = np.asarray(tmp)
+        self.speed_time_series = FootBot.compute_entity_speed(self.timesteps, self.trajectory)
 
     def compute_distances_from_centroid(self):
         for bot in self.list_of_footbots:
@@ -71,7 +65,7 @@ class Swarm:
             if positions_index < len(self.trajectory):
                 percentage_time_series.extend([percentage_time_series[-1]] * (len(self.trajectory) - positions_index))
 
-            area_coverage[str(len(area_subdivision))] = percentage_time_series
+            area_coverage[str(len(area_subdivision))] = np.asarray(percentage_time_series)
 
         return area_coverage
 
