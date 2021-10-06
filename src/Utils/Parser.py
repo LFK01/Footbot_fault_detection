@@ -1,3 +1,7 @@
+import os
+import random
+import subprocess
+
 import pandas as pd
 import numpy as np
 import json
@@ -26,16 +30,10 @@ class Parser:
     @staticmethod
     def open_parameters_json_file() -> dict:
         # open file
-        try:
-            json_file = open('../txt_files/parameters_and_settings.json')
-            data = json.load(json_file)
-        except FileNotFoundError:
-            try:
-                json_file = open('../../txt_files/parameters_and_settings.json')
-                data = json.load(json_file)
-            except FileNotFoundError:
-                json_file = open('txt_files/parameters_and_settings.json')
-                data = json.load(json_file)
+        root = Parser.get_project_root()
+        path = join(root, 'txt_files', 'parameters_and_settings.json')
+        json_file = open(path)
+        data = json.load(json_file)
 
         return data
 
@@ -380,21 +378,23 @@ class Parser:
 
     @staticmethod
     def read_files_in_directory(experiment_name: str) -> list:
+        root = Parser.get_project_root()
+        path = join(root, 'log_files')
         if experiment_name == 'FLOC':
-            return ['../log_files/flocking_log_files/' + f for f in listdir('../log_files/flocking_log_files')
-                    if isfile(join('../log_files/flocking_log_files', f))]
+            return [join(path, 'flocking_log_files', f) for f in listdir(join(path, 'flocking_log_files'))
+                    if isfile(join(path, 'flocking_log_files', f))]
         elif experiment_name == 'FORE':
-            return ['../log_files/foraging_log_files/' + f for f in listdir('../log_files/foraging_log_files')
-                    if isfile(join('../log_files/foraging_log_files', f))]
+            return [join(path, 'foraging_log_files', f) for f in listdir(join(path, 'foraging_log_files'))
+                    if isfile(join(path, 'foraging_log_files', f))]
         elif experiment_name == 'DIFF':
-            return ['../log_files/diffusion_log_files/' + f for f in listdir('../log_files/diffusion_log_files')
-                    if isfile(join('../diffusion_log_files', f))]
+            return [join(path, 'diffusion_log_files', f) for f in listdir(join(path, 'diffusion_log_files'))
+                    if isfile(join(path, 'diffusion_log_files', f))]
         elif experiment_name == 'DISP':
-            return ['../log_files/dispersion_log_files/' + f for f in listdir('../log_files/dispersion_log_files')
-                    if isfile(join('../log_files/dispersion_log_files', f))]
+            return [join(path, 'dispersion_log_files', f) for f in listdir(join(path, 'dispersion_log_files'))
+                    if isfile(join(path, 'dispersion_log_files', f))]
         elif experiment_name == 'HOME':
-            return ['../log_files/homing_log_files/' + f for f in listdir('../log_files/homing_log_files')
-                    if isfile(join('../log_files/homing_log_files', f))]
+            return [join(path, 'homing_log_files', f) for f in listdir(join(path, 'homing_log_files'))
+                    if isfile(join(path, 'homing_log_files', f))]
 
     @staticmethod
     def sanitize_warehouse_csv_file(task_name: str,
@@ -419,6 +419,4 @@ class Parser:
 
 
 if __name__ == "__main__":
-    score = 0.9644444444444444
-    bot_identifier = 2
-    print('{} & {:.4} & \\\\'.format(bot_identifier, score))
+    pass
