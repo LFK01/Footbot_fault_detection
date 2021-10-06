@@ -40,20 +40,15 @@ class Parser:
     @staticmethod
     def open_pandas_dataframe(filename: str) -> pd.DataFrame:
         # open file in a pandas dataframe
-        try:
-            df_footbot_positions = pd.read_csv(filename,
-                                               dtype={'timestep': float,
-                                                      'ID': int,
-                                                      'PosX': float,
-                                                      'PosY': float,
-                                                      'Fault': bool})
-        except FileNotFoundError:
-            df_footbot_positions = pd.read_csv('../' + filename,
-                                               dtype={'timestep': float,
-                                                      'ID': int,
-                                                      'PosX': float,
-                                                      'PosY': float,
-                                                      'Fault': bool})
+        root = Parser.get_project_root()
+        path = join(root, 'log_files', filename)
+
+        df_footbot_positions = pd.read_csv(path,
+                                           dtype={'timestep': float,
+                                                  'ID': int,
+                                                  'PosX': float,
+                                                  'PosY': float,
+                                                  'Fault': bool})
 
         return df_footbot_positions
 

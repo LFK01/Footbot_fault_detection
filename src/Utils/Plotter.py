@@ -44,7 +44,7 @@ class Plotter:
             Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
 
-        plt.figure()
+        fig = plt.figure()
         for bot in footbot_list:
             plt.scatter(
                 [pos[0] for pos in bot.single_robot_positions],
@@ -65,6 +65,7 @@ class Plotter:
         plt.savefig(path + title.replace(" ", "_"))
         if show_plot:
             plt.show()
+        plt.close(fig)
 
     @staticmethod
     def plot_trajectory_entropy(footbot_list: list[FootBot],
@@ -85,7 +86,7 @@ class Plotter:
         show_plot: bool
             Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
-        plt.figure()
+        fig = plt.figure()
         for bot in footbot_list:
             plt.plot(bot.positions_entropy, alpha=0.5)
         plt.xlabel("Timestep")
@@ -96,6 +97,7 @@ class Plotter:
         plt.savefig(path + title.replace(" ", "_"))
         if show_plot:
             plt.show()
+        plt.close(fig)
 
     @staticmethod
     def plot_state_time_series(footbot_list: list[FootBot],
@@ -116,7 +118,7 @@ class Plotter:
         show_plot: bool
             Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
-        plt.figure()
+        fig = plt.figure()
         for bot in footbot_list:
             plt.plot(bot.state_time_series)
         plt.xlabel("Timestep")
@@ -130,6 +132,7 @@ class Plotter:
         plt.savefig(path + title.replace(" ", "_"))
         if show_plot:
             plt.show()
+        plt.close(fig)
 
     @staticmethod
     def plot_time_rested_time_series(footbot_list: list[FootBot],
@@ -150,7 +153,7 @@ class Plotter:
         show_plot: bool
             Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
-        plt.figure()
+        fig = plt.figure()
         for bot in footbot_list:
             plt.plot(bot.TimeRested_time_series)
         plt.xlabel("Timestep")
@@ -161,6 +164,7 @@ class Plotter:
         plt.savefig(path + title.replace(" ", "_"))
         if show_plot:
             plt.show()
+        plt.close(fig)
 
     @staticmethod
     def plot_has_food_time_series(footbot_list: list[FootBot],
@@ -181,7 +185,7 @@ class Plotter:
         show_plot: bool
             Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
-        plt.figure()
+        fig = plt.figure()
         for bot in footbot_list:
             plt.plot(bot.HasFood_time_series)
         plt.xlabel("Timestep")
@@ -192,6 +196,7 @@ class Plotter:
         plt.savefig(path + title.replace(" ", "_"))
         if show_plot:
             plt.show()
+        plt.close(fig)
 
     @staticmethod
     def plot_total_food_time_series(footbot_list: list[FootBot],
@@ -212,7 +217,7 @@ class Plotter:
         show_plot: bool
             Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
-        plt.figure()
+        fig = plt.figure()
         for bot in footbot_list:
             plt.plot(bot.TotalFood_time_series)
         plt.xlabel("Timestep")
@@ -223,6 +228,7 @@ class Plotter:
         plt.savefig(path + title.replace(" ", "_"))
         if show_plot:
             plt.show()
+        plt.close(fig)
 
     @staticmethod
     def plot_time_searching_for_nest_time_series(footbot_list: list[FootBot],
@@ -243,7 +249,7 @@ class Plotter:
         show_plot: bool
             Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
-        plt.figure()
+        fig = plt.figure()
         for bot in footbot_list:
             plt.plot(bot.TimeSearchingForNest_time_series)
         plt.xlabel("Timestep")
@@ -254,6 +260,7 @@ class Plotter:
         plt.savefig(path + title.replace(" ", "_"))
         if show_plot:
             plt.show()
+        plt.close(fig)
 
     @staticmethod
     def plot_exploring_unsuccessfully_time_series(footbot_list: list[FootBot],
@@ -274,7 +281,7 @@ class Plotter:
         show_plot: bool
             Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
-        plt.figure()
+        fig = plt.figure()
         for bot in footbot_list:
             plt.plot(bot.TimeExploringUnsuccessfully_time_series)
         plt.xlabel("Timestep")
@@ -285,6 +292,7 @@ class Plotter:
         plt.savefig(path + title.replace(" ", "_"))
         if show_plot:
             plt.show()
+        plt.close(fig)
 
     @staticmethod
     def plot_speeds(footbot_list: list[FootBot],
@@ -305,7 +313,7 @@ class Plotter:
         show_plot: bool
             Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
-        plt.figure()
+        fig = plt.figure()
         for bot in footbot_list:
             plt.plot(bot.speed_time_series)
         plt.xlabel("Timestep")
@@ -316,6 +324,7 @@ class Plotter:
         plt.savefig(path + title.replace(" ", "_"))
         if show_plot:
             plt.show()
+        plt.close(fig)
 
     @staticmethod
     def plot_cumulative_traversed_distance(footbot_list: list[FootBot],
@@ -336,7 +345,7 @@ class Plotter:
         show_plot: bool
             Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
-        plt.figure()
+        fig = plt.figure()
         for bot in footbot_list:
             plt.plot(bot.cumulative_speed)
         plt.xlabel("Timestep")
@@ -347,6 +356,7 @@ class Plotter:
         plt.savefig(path + title.replace(" ", "_"))
         if show_plot:
             plt.show()
+        plt.close(fig)
 
     @staticmethod
     def plot_neighbors(footbot_list: list[FootBot],
@@ -367,7 +377,7 @@ class Plotter:
         show_plot: bool
             Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
-        plt.figure()
+        fig = plt.figure()
         for bot in footbot_list:
             plt.plot(bot.neighbors_time_series)
         plt.xlabel("Timestep")
@@ -378,6 +388,7 @@ class Plotter:
         plt.savefig(path + title.replace(" ", "_"))
         if show_plot:
             plt.show()
+        plt.close(fig)
 
     @staticmethod
     def plot_faulty_robots(footbot_list: list[FootBot],
@@ -399,7 +410,7 @@ class Plotter:
             Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
         cumulative_faulty_bots = []
-        plt.figure()
+        fig = plt.figure()
         for timestep in range(len(footbot_list[0].fault_time_series)):
             cumulative_faulty_bots.append(
                 sum(bot.fault_time_series[timestep] for bot in footbot_list)
@@ -413,6 +424,7 @@ class Plotter:
         plt.savefig(path + title.replace(" ", "_"))
         if show_plot:
             plt.show()
+        plt.close(fig)
 
     @staticmethod
     def plot_swarm_cohesion(footbot_list: list[FootBot],
@@ -433,7 +445,7 @@ class Plotter:
         show_plot: bool
             Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
-        plt.figure()
+        fig = plt.figure()
         for bot in footbot_list:
             plt.plot(bot.swarm_cohesion_time_series)
         plt.xlabel("Timestep")
@@ -444,6 +456,7 @@ class Plotter:
         plt.savefig(path + title.replace(" ", "_"))
         if show_plot:
             plt.show()
+        plt.close(fig)
 
     @staticmethod
     def plot_swarm_speed(footbot_list: Swarm,
@@ -464,7 +477,7 @@ class Plotter:
         show_plot: bool
             Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
-        plt.figure()
+        fig = plt.figure()
         plt.plot(footbot_list.speed_time_series)
         plt.xlabel("timestep")
         plt.ylabel("Swarm speed")
@@ -474,6 +487,7 @@ class Plotter:
         plt.savefig(path + title.replace(" ", "_"))
         if show_plot:
             plt.show()
+        plt.close(fig)
 
     @staticmethod
     def plot_distances_from_centroid(footbot_list: list[FootBot],
@@ -494,7 +508,7 @@ class Plotter:
         show_plot: bool
             Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
-        plt.figure()
+        fig = plt.figure()
         for bot in footbot_list:
             plt.plot(bot.distance_from_centroid_time_series)
         plt.xlabel("Timestep")
@@ -502,7 +516,7 @@ class Plotter:
         plt.title("Distance from centroid for each bot")
         plt.show()
 
-        plt.figure()
+        fig = plt.figure()
         for bot in footbot_list:
             plt.plot(bot.cumulative_distance_from_centroid_time_series)
         plt.xlabel("Timestep")
@@ -513,6 +527,7 @@ class Plotter:
         plt.savefig(path + title.replace(" ", "_"))
         if show_plot:
             plt.show()
+        plt.close(fig)
 
     @staticmethod
     def plot_footbot_area_coverage(footbot_list: list[FootBot],
@@ -535,7 +550,7 @@ class Plotter:
         """
         area_splits = Parser.read_area_splits()
         for percentage_index in range(len(area_splits)):
-            plt.figure()
+            fig = plt.figure()
             for bot in footbot_list:
                 plt.plot(bot.area_coverage[percentage_index])
             plt.xlabel("Timestep")
@@ -552,7 +567,7 @@ class Plotter:
                 plt.show()
 
         for percentage_index in range(len(area_splits)):
-            plt.figure()
+            fig = plt.figure()
             for bot in footbot_list:
                 plt.plot(bot.coverage_speed[percentage_index])
             plt.xlabel("Timestep")
@@ -566,6 +581,7 @@ class Plotter:
             plt.savefig(path + title.strip().replace(" ", "_"))
             if show_plot:
                 plt.show()
+            plt.close(fig)
 
     @staticmethod
     def plot_swarm_area_coverage(main_swarm: Swarm,
@@ -587,7 +603,7 @@ class Plotter:
             Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
         for key_area_coverage in main_swarm.area_coverage.keys():
-            plt.figure()
+            fig = plt.figure()
             plt.plot(main_swarm.area_coverage[key_area_coverage])
             plt.xlabel("Timestep")
             plt.ylabel("Coverage Percentage")
@@ -828,9 +844,6 @@ def plot_model_performances():
 
 if __name__ == "__main__":
     task_name = 'FLOC'
-    json_data = Parser.open_parameters_json_file()
-
-    for key in json_data['File Names'][task_name].keys():
-        main_dispersion(task_name=task_name,
-                        file_number=int(key),
-                        show_all_graphs=False)
+    main_dispersion(task_name=task_name,
+                    file_number=0,
+                    show_all_graphs=False)
