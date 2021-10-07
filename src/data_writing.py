@@ -13,8 +13,10 @@ def build_swarm():
     task_name = 'FLOC'
 
     experiment_list = []
-    for file in Parser.read_files_in_directory(experiment_name=task_name):
-        print(file.split('/')[-1])
+    done_files = 0
+    file_list = Parser.read_files_in_directory(experiment_name=task_name)
+    for file in file_list:
+        print('Doing file {} out of {}: {}'.format(done_files, len(file_list), file.split('/')[-1]))
         footbots_list = Parser.create_flocking_swarm(filename=file,
                                                      neighborhood_radius=neighborhood_radius,
                                                      time_window_size=time_window_size)
@@ -27,15 +29,17 @@ def build_swarm():
 
         experiment_list.append(swarm)
 
-    with open('../cached_files/cached_swarms/10_experiments'
+        done_files += 1
+
+    with open('../cached_files/cached_swarms/149_experiments'
               + datetime.now().strftime('%d-%m-%Y_%H-%M') +
-              '_10_bots.pkl',
+              '_15_bots.pkl',
               'wb') as output_file:
         pickle.dump(experiment_list, output_file)
 
 
 def build_dataset():
-    with open('../cached_files/cached_swarms/52_experiments_10_bots.pkl',
+    with open('../cached_files/cached_swarms/149_experiments_15_bots.pkl',
               'rb') as input_file:
         experiment_list = pickle.load(input_file)
 
@@ -54,7 +58,7 @@ def build_dataset():
 
     data_wizard_datasets = data_wizard.datasets
 
-    with open('../cached_files/cached_datasets/bot_datasets_down_sampled_'
+    with open('../cached_files/cached_datasets/149exp_15bot_datasets_down_sampled_'
               + str(down_sampling)
               + '_ALL_features_'
               + datetime.now().strftime('%d-%m-%Y_%H-%M') + '.pkl', 'wb') as output_file:

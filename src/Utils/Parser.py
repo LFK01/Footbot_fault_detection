@@ -1,12 +1,10 @@
 import os
-import random
-import subprocess
 
 import pandas as pd
 import numpy as np
-import json
+from json import load, dump
 from os import listdir
-from os.path import isfile, join
+from os.path import isfile, join, exists
 from pathlib import Path
 from src.classes.FootBot import FootBot
 
@@ -33,15 +31,27 @@ class Parser:
         root = Parser.get_project_root()
         path = join(root, 'txt_files', 'parameters_and_settings.json')
         json_file = open(path)
-        data = json.load(json_file)
+        data = load(json_file)
 
         return data
 
     @staticmethod
-    def open_pandas_dataframe(filename: str) -> pd.DataFrame:
+    def open_pandas_dataframe(filename: str,
+                              task_name: str) -> pd.DataFrame:
         # open file in a pandas dataframe
         root = Parser.get_project_root()
-        path = join(root, 'log_files', filename)
+        path = join(root, 'log_files')
+
+        if task_name == 'DISP':
+            path = join(path, 'dispersion_log_files', filename)
+        elif task_name == 'HOME':
+            path = join(path, 'homing_log_files', filename)
+        elif task_name == 'FORE':
+            path = join(path, 'foraging_log_files', filename)
+        elif task_name == 'WARE':
+            path = join(path, 'warehouse_log_files', filename)
+        elif task_name == 'FLOC':
+            path = join(path, 'flocking_log_files', filename)
 
         df_footbot_positions = pd.read_csv(path,
                                            dtype={'timestep': float,
@@ -138,11 +148,10 @@ class Parser:
         # list to store the robots of the swarm
         footbot_swarm = []
 
+        root = Parser.get_project_root()
+        path = join(root, 'log_files', 'foraging_log_files', filename)
         # open file in a pandas dataframe
-        try:
-            df_footbot_positions = pd.read_csv(filename)
-        except FileNotFoundError:
-            df_footbot_positions = pd.read_csv('../' + filename)
+        df_footbot_positions = pd.read_csv(path)
 
         # retrieve infos
         footbots_unique_ids, number_of_robots, number_of_timesteps, timesteps, all_robots_positions = Parser. \
@@ -369,7 +378,7 @@ class Parser:
         for index in range(len(file_names)):
             json_data['File Names'][task][str(index)] = file_names[index]
         with open('../../txt_files/parameters_and_settings.json', 'w', encoding='utf-8') as f:
-            json.dump(json_data, f, ensure_ascii=False, indent=4)
+            dump(json_data, f, ensure_ascii=False, indent=4)
 
     @staticmethod
     def read_files_in_directory(experiment_name: str) -> list:
@@ -392,15 +401,45 @@ class Parser:
                     if isfile(join(path, 'homing_log_files', f))]
 
     @staticmethod
+    def remove_ds_store_from_folder(task_name: str):
+        root = Parser.get_project_root()
+        path = join(root, 'log_files')
+        if task_name == 'FLOC':
+            path = join(path, 'flocking_log_files')
+            if exists(join(path, '.DS_store')):
+                os.remove(join(path, '.DS_store'))
+                print('REMOVED .DS_store')
+        elif task_name == 'FORE':
+            path = join(path, 'foraging_log_files')
+            if exists(join(path, '.DS_store')):
+                os.remove(join(path, '.DS_store'))
+                print('REMOVED .DS_store')
+        elif task_name == 'DIFF':
+            path = join(path, 'diffusion_log_files')
+            if exists(join(path, '.DS_store')):
+                os.remove(join(path, '.DS_store'))
+                print('REMOVED .DS_store')
+        elif task_name == 'DISP':
+            path = join(path, 'dispersion_log_files')
+            if exists(join(path, '.DS_store')):
+                os.remove(join(path, '.DS_store'))
+                print('REMOVED .DS_store')
+        elif task_name == 'HOME':
+            path = join(path, 'homing_log_files')
+            if exists(join(path, '.DS_store')):
+                os.remove(join(path, '.DS_store'))
+                print('REMOVED .DS_store')
+
+    @staticmethod
     def sanitize_warehouse_csv_file(task_name: str,
                                     file_number: int):
         filename = Parser.read_filename(task_name=task_name,
                                         file_number=file_number)
-        try:
-            f = open(filename, "r")
-        except FileNotFoundError:
-            filename = '../' + filename
-            f = open(filename, "r")
+
+        root = Parser.get_project_root()
+        path = join(root, filename)
+
+        f = open(path, 'r')
 
         print('sanitizing file...')
         lines = f.readlines()

@@ -11,8 +11,6 @@ class SwarmDataWizard(DataWizard):
                  timesteps: int,
                  time_window: int,
                  label_size: int,
-                 experiments: list[Swarm],
-                 splitting: list[float],
-                 preprocessing_type: str = ''):
+                 experiments: list[Swarm]):
 
         super().__init__(timesteps, time_window, label_size, experiments)

@@ -3,7 +3,7 @@
     "TIME_WINDOW": 10,
     "SEED": 123,
     "LSTM_length": 10,
-    "Down_sampling": 100,
+    "Down_sampling": 20,
     "Preprocessing": "STD",
     "Validation": 0,
     "Splitting": {
@@ -21,9 +21,10 @@
         "cumulative_distance_from_centroid_time_series",
         "positions_entropy",
         "area_coverage",
-        "coverage_speed_slice",
+        "coverage_speed",
         "global_features"
     ],
+    "Not Considered Features": [],
     "Area_partitions": [
         2,
         4,
@@ -55,19 +56,14 @@
             "8": "homing_log_files/homing_100_nominal.csv"
         },
         "FORE": {
-            "1": "foraging_log_files/positions_foraging_20_nominal.csv",
-            "2": "foraging_log_files/positions_foraging_20_fault.csv",
-            "3": "foraging_log_files/foraging_20_10_percent_rotating_fault_after_500_duration_7500.csv",
-            "4": "foraging_log_files/foraging_20_33_percent_rotating_fault_after_500_duration_7500.csv",
-            "5": "foraging_log_files/foraging_20_nominal_duration_7500.csv",
-            "6": "foraging_log_files/foraging_20_50_percent_rotating_fault_after_500_duration_7500.csv"
+            "1": "foraging_20_nominal_duration_8000.csv"
         },
         "WARE": {
             "1": "warehouse_log_files/warehouse_10_percent_slowed_fault.csv",
             "2": "warehouse_log_files/warehouse_10_percent_stop_fault.csv"
         },
         "FLOC": {
-            "0": "flocking_log_files/flocking_15_East_6_percent_rotating_fault_after_0_gain_1000Wed_Oct__6_10-28-50_2021.csv"
+            "0": "flocking_log_files/flocking_15_North_20_percent_rotating_fault_after_4000_gain_1000Wed_Oct__6_10-30-46_2021.csv"
         }
     }
 }

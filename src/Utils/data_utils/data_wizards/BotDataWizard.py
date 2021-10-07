@@ -29,10 +29,10 @@ class BotDataWizard(DataWizard):
             experiments=experiments
         )
         print('Created balanced datasets')
-        # feature are normalized in order to have zero mean and unit variance
-        self.normalize_dataset()
         # feature are transposed in order to have the timesteps in the first axis and the features in the second
         self.transpose_dataset()
+        # feature are normalized in order to have zero mean and unit variance
+        self.normalize_dataset()
 
     def create_balanced_bot_train_test_set(self,
                                            experiments: list[Swarm],

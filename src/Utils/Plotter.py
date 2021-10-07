@@ -515,6 +515,7 @@ class Plotter:
         plt.ylabel("Distance from Centroid")
         plt.title("Distance from centroid for each bot")
         plt.show()
+        plt.close(fig)
 
         fig = plt.figure()
         for bot in footbot_list:
@@ -557,14 +558,15 @@ class Plotter:
             plt.ylabel("Coverage Percentage")
             plt.ylim((-0.1, 1.1))
             title = additional_title_string + " Single Bot Area Coverage with " \
-                                            + str(area_splits[percentage_index] ** 2) \
-                                            + " subdivisions"
+                    + str(area_splits[percentage_index] ** 2) \
+                    + " subdivisions"
             plt.title(title)
             if path != "":
                 path += "/"
             plt.savefig(path + title.strip().replace(" ", "_"))
             if show_plot:
                 plt.show()
+            plt.close(fig)
 
         for percentage_index in range(len(area_splits)):
             fig = plt.figure()
@@ -573,8 +575,8 @@ class Plotter:
             plt.xlabel("Timestep")
             plt.ylabel("Coverage Speed")
             title = additional_title_string + " Single Bot Area Coverage Speed with " \
-                                            + str(area_splits[percentage_index] ** 2) \
-                                            + " subdivisions"
+                    + str(area_splits[percentage_index] ** 2) \
+                    + " subdivisions"
             plt.title(title)
             if path != "":
                 path += "/"
@@ -615,10 +617,11 @@ class Plotter:
             plt.savefig(path + title.strip().replace(" ", "_"))
             if show_plot:
                 plt.show()
+            plt.close(fig)
 
 
-def make_folder(task_name: str, file_number: int) -> str:
-    new_folder_name = Parser.read_filename(task_name=task_name,
+def make_folder(par_task_name: str, file_number: int) -> str:
+    new_folder_name = Parser.read_filename(task_name=par_task_name,
                                            file_number=file_number).split('/')[-1].split('.')[0]
     # find project root
     root = Parser.get_project_root()
@@ -638,10 +641,10 @@ def divide_flocks(footbots_list: list[FootBot]) -> tuple[list[FootBot], list[Foo
     return faulty_bots, nominal_bots
 
 
-def build_flocking_swarm(task_name: str, file_number: int):
+def build_flocking_swarm(par_task_name: str, file_number: int):
     neighborhood_radius = Parser.read_neighborhood_radius()
     time_window_size = Parser.read_time_window()
-    file = Parser.read_filename(task_name=task_name, file_number=file_number)
+    file = Parser.read_filename(task_name=par_task_name, file_number=file_number)
     timesteps = Parser.retrieve_timesteps_series_from_dataframe(
         df_footbot_positions=Parser.open_pandas_dataframe(filename=file)
     )
@@ -652,13 +655,13 @@ def build_flocking_swarm(task_name: str, file_number: int):
                                 swarm=footbots_list)
 
 
-def build_foraging_swarm(task_name: str, file_number: int):
-
+def build_foraging_swarm(par_task_name: str, file_number: int):
     neighborhood_radius = Parser.read_neighborhood_radius()
     time_window_size = Parser.read_time_window()
-    file = Parser.read_filename(task_name=task_name, file_number=file_number)
+    file = Parser.read_filename(task_name=par_task_name, file_number=file_number)
     timesteps = Parser.retrieve_timesteps_series_from_dataframe(
-        df_footbot_positions=Parser.open_pandas_dataframe(filename=file)
+        df_footbot_positions=Parser.open_pandas_dataframe(filename=file,
+                                                          task_name=par_task_name)
     )
 
     footbots_list = Parser.create_foraging_swarm(filename=file,
@@ -673,7 +676,6 @@ def plot_common_features(nominal_bots: list[FootBot],
                          main_swarm: Swarm,
                          saving_graphs_file_path,
                          show_all_graphs: bool = True):
-
     Plotter.plot_trajectories(footbot_list=nominal_bots,
                               swarm=main_swarm,
                               plot_swarm=False,
@@ -747,51 +749,64 @@ def plot_common_features(nominal_bots: list[FootBot],
 
 def plot_foraging_features(nominal_bots: list[FootBot],
                            faulty_bots: list[FootBot],
-                           saving_graphs_file_path):
-
+                           saving_graphs_file_path,
+                           show_all_graphs: bool = True):
     Plotter.plot_exploring_unsuccessfully_time_series(footbot_list=nominal_bots,
                                                       path=saving_graphs_file_path,
-                                                      title="Nominal Bot searching time")
+                                                      title="Nominal Bot searching time",
+                                                      show_plot=show_all_graphs)
     Plotter.plot_exploring_unsuccessfully_time_series(footbot_list=faulty_bots,
                                                       path=saving_graphs_file_path,
-                                                      title="Faulty Bot searching time")
+                                                      title="Faulty Bot searching time",
+                                                      show_plot=show_all_graphs)
     Plotter.plot_has_food_time_series(footbot_list=nominal_bots,
                                       path=saving_graphs_file_path,
-                                      title="Nominal Bot carrying food")
+                                      title="Nominal Bot carrying food",
+                                      show_plot=show_all_graphs)
     Plotter.plot_has_food_time_series(footbot_list=faulty_bots,
                                       path=saving_graphs_file_path,
-                                      title="Faulty Bot carrying food")
+                                      title="Faulty Bot carrying food",
+                                      show_plot=show_all_graphs)
     Plotter.plot_state_time_series(footbot_list=nominal_bots,
                                    path=saving_graphs_file_path,
-                                   title="Nominal Bot states")
+                                   title="Nominal Bot states",
+                                   show_plot=show_all_graphs)
     Plotter.plot_state_time_series(footbot_list=faulty_bots,
                                    path=saving_graphs_file_path,
-                                   title="Faulty Bot states")
+                                   title="Faulty Bot states",
+                                   show_plot=show_all_graphs)
     Plotter.plot_time_rested_time_series(footbot_list=nominal_bots,
                                          path=saving_graphs_file_path,
-                                         title="Nominal Bot rested time")
+                                         title="Nominal Bot rested time",
+                                         show_plot=show_all_graphs)
     Plotter.plot_time_rested_time_series(footbot_list=faulty_bots,
                                          path=saving_graphs_file_path,
-                                         title="Faulty Bot rested time")
+                                         title="Faulty Bot rested time",
+                                         show_plot=show_all_graphs)
     Plotter.plot_total_food_time_series(footbot_list=nominal_bots,
                                         path=saving_graphs_file_path,
-                                        title="Nominal Bot rested time")
+                                        title="Nominal Bot rested time",
+                                        show_plot=show_all_graphs)
     Plotter.plot_total_food_time_series(footbot_list=faulty_bots,
                                         path=saving_graphs_file_path,
-                                        title="Faulty Bot rested time")
+                                        title="Faulty Bot rested time",
+                                        show_plot=show_all_graphs)
     Plotter.plot_time_searching_for_nest_time_series(footbot_list=nominal_bots,
                                                      path=saving_graphs_file_path,
-                                                     title="Nominal Bot rested time")
+                                                     title="Nominal Bot rested time",
+                                                     show_plot=show_all_graphs)
     Plotter.plot_time_searching_for_nest_time_series(footbot_list=faulty_bots,
                                                      path=saving_graphs_file_path,
-                                                     title="Faulty Bot rested time")
+                                                     title="Faulty Bot rested time",
+                                                     show_plot=show_all_graphs)
 
 
-def main_foraging(task_name: str,
-                  file_number: int):
-    saving_graphs_file_path = make_folder(task_name=task_name, file_number=file_number)
+def main_foraging(par_task_name: str,
+                  file_number: int,
+                  show_all_graphs: bool = True):
+    saving_graphs_file_path = make_folder(par_task_name=par_task_name, file_number=file_number)
 
-    footbots_list, main_swarm = build_foraging_swarm(task_name=task_name,
+    footbots_list, main_swarm = build_foraging_swarm(par_task_name=par_task_name,
                                                      file_number=file_number)
 
     faulty_bots, nominal_bots = divide_flocks(footbots_list=footbots_list)
@@ -799,19 +814,20 @@ def main_foraging(task_name: str,
     plot_common_features(nominal_bots=nominal_bots,
                          faulty_bots=faulty_bots,
                          main_swarm=main_swarm,
-                         saving_graphs_file_path=saving_graphs_file_path)
+                         saving_graphs_file_path=saving_graphs_file_path,
+                         show_all_graphs=show_all_graphs)
 
     plot_foraging_features(nominal_bots=nominal_bots,
                            faulty_bots=faulty_bots,
                            saving_graphs_file_path=saving_graphs_file_path)
 
 
-def main_dispersion(task_name: str,
+def main_dispersion(par_task_name: str,
                     file_number: int,
                     show_all_graphs: bool = True):
-    saving_graphs_file_path = make_folder(task_name=task_name, file_number=file_number)
+    saving_graphs_file_path = make_folder(par_task_name=par_task_name, file_number=file_number)
 
-    footbots_list, main_swarm = build_flocking_swarm(task_name=task_name,
+    footbots_list, main_swarm = build_flocking_swarm(par_task_name=par_task_name,
                                                      file_number=file_number)
 
     faulty_bots, nominal_bots = divide_flocks(footbots_list=footbots_list)
@@ -843,7 +859,7 @@ def plot_model_performances():
 
 
 if __name__ == "__main__":
-    task_name = 'FLOC'
-    main_dispersion(task_name=task_name,
-                    file_number=0,
-                    show_all_graphs=False)
+    task_name = 'FORE'
+    main_foraging(par_task_name=task_name,
+                  file_number=1,
+                  show_all_graphs=False)

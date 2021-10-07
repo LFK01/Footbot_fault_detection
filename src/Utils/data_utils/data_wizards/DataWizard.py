@@ -108,6 +108,7 @@ class DataWizard:
         )
 
         bot_dataset = TrValTeDataset(
+            bot_identifier=bot,
             train_dataset=np.concatenate(bot_train_dataset, axis=-1),
             target_train_dataset=np.concatenate(bot_train_target_dataset, axis=-1),
             validation_dataset=np.concatenate(bot_val_dataset, axis=-1),
