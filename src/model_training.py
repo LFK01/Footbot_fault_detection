@@ -2,7 +2,7 @@ from os.path import join
 from pickle import load
 
 from src.Utils.Parser import Parser
-from src.Utils.data_utils.datasets.GeneralDataset import GeneralDataset
+from src.Utils.data_utils.datasets_classes.GeneralDataset import GeneralDataset
 from src.Utils.models.SingleBotGbModel import SingleBotGbModel
 from src.Utils.models.ShuffledBotsGbModel import ShuffledBotsGbModel
 

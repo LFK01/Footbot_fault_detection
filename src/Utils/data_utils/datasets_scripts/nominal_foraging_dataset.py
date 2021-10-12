@@ -5,6 +5,7 @@ from xml.etree import ElementTree
 from xml.etree.ElementTree import Element
 
 from src.Utils.Parser import Parser
+from src.Utils.data_utils.datasets_scripts.flocking_dataset import compile_repo
 
 
 def modify_foraging_cpp_file(par_x_length: int,
@@ -136,11 +137,6 @@ def modify_foraging_xml_file(par_element_tree: ElementTree.ElementTree,
                            'argos3-examples/experiments/foraging_execution.argos')
 
 
-def compile_repo():
-    os.chdir('/Users/lucianofranchin/Documents/Github_repos/argos3-examples/build/')
-    subprocess.call('make', shell=True)
-
-
 def compute_parameters_and_edit_files(par_x_length: int,
                                       par_y_length: int,
                                       par_initial_arena_size: int,
@@ -169,7 +165,7 @@ def compute_parameters_and_edit_files(par_x_length: int,
     compile_repo()
 
     return current_bot_number, current_minimum_resting_time, current_minimum_unsuccessful_explore_time, \
-           current_minimum_search_for_place_in_nest_time, current_items_number, current_light_intensity
+        current_minimum_search_for_place_in_nest_time, current_items_number, current_light_intensity
 
 
 def create_nominal_foraging_dataset():
@@ -182,12 +178,6 @@ def create_nominal_foraging_dataset():
 
     # variables to manage the simulation execution
     nominal_exp_repetitions = 4
-    single_bot_fault_repetitions = 2
-    # boolean list to cycle through nominal and non-nominal executions
-    nominal_experiments = [False, True]
-    # integer numbers to compute the percentage of robots that are non-nominal
-    fault_modules = [10, 5, 3]
-    fault_timesteps = [0, 1000, 4000]
 
     # variables to modify simulation parameters
     arena_dimensions = [5, 6, 7, 8]
@@ -205,19 +195,19 @@ def create_nominal_foraging_dataset():
             print('Doing Arena {}x{}'.format(x_length, y_length))
 
             current_bot_number, current_minimum_resting_time, current_minimum_unsuccessful_explore_time, \
-            current_minimum_search_for_place_in_nest_time, current_items_number, \
-            current_light_intensity = compute_parameters_and_edit_files(
-                par_x_length=x_length,
-                par_y_length=y_length,
-                par_initial_arena_size=initial_arena_size,
-                par_initial_bot_number=initial_bot_number,
-                par_initial_minimum_resting_time=initial_minimum_resting_time,
-                par_initial_minimum_unsuccessful_explore_time=initial_minimum_unsuccessful_explore_time,
-                par_initial_minimum_search_for_place_in_nest_time=
-                initial_minimum_search_for_place_in_nest_time,
-                par_initial_items_number=initial_items_number,
-                par_initial_light_intensity=initial_light_intensity
-            )
+                current_minimum_search_for_place_in_nest_time, current_items_number, \
+                current_light_intensity = compute_parameters_and_edit_files(
+                    par_x_length=x_length,
+                    par_y_length=y_length,
+                    par_initial_arena_size=initial_arena_size,
+                    par_initial_bot_number=initial_bot_number,
+                    par_initial_minimum_resting_time=initial_minimum_resting_time,
+                    par_initial_minimum_unsuccessful_explore_time=initial_minimum_unsuccessful_explore_time,
+                    par_initial_minimum_search_for_place_in_nest_time=
+                    initial_minimum_search_for_place_in_nest_time,
+                    par_initial_items_number=initial_items_number,
+                    par_initial_light_intensity=initial_light_intensity
+                )
 
             seeds = random.sample(range(0, 1000), nominal_exp_repetitions)
 

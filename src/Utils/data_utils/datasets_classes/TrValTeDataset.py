@@ -1,11 +1,11 @@
 import numpy as np
 
-from src.Utils.data_utils.datasets.GeneralDataset import GeneralDataset
+from src.Utils.data_utils.datasets_classes.GeneralDataset import GeneralDataset
 
 
 class TrValTeDataset(GeneralDataset):
     """
-    Class to store and organize datasets with test, validation and test splits
+    Class to store and organize datasets_classes with test, validation and test splits
     """
     def __init__(self,
                  bot_identifier: int,

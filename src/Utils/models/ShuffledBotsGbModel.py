@@ -1,7 +1,7 @@
 from sklearn.ensemble import GradientBoostingClassifier
 
 from src.Utils.Parser import Parser
-from src.Utils.data_utils.datasets.GeneralDataset import GeneralDataset
+from src.Utils.data_utils.datasets_classes.GeneralDataset import GeneralDataset
 from src.Utils.models.ShuffledBotsScikitModel import ShuffledBotsScikitModel
 
 

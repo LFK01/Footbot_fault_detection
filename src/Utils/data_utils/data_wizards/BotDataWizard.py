@@ -2,7 +2,7 @@ import random
 import numpy as np
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
-from src.Utils.data_utils.datasets.GeneralDataset import GeneralDataset
+from src.Utils.data_utils.datasets_classes.GeneralDataset import GeneralDataset
 from src.Utils.Parser import Parser
 from src.classes.Swarm import Swarm
 from src.Utils.data_utils.data_wizards.DataWizard import DataWizard
@@ -10,7 +10,7 @@ from src.Utils.data_utils.data_wizards.DataWizard import DataWizard
 
 class BotDataWizard(DataWizard):
     """
-    Class to build bots datasets
+    Class to build bots datasets_classes
     """
 
     def __init__(self,
@@ -28,7 +28,7 @@ class BotDataWizard(DataWizard):
         self.datasets: list[GeneralDataset] = self.create_balanced_bot_train_test_set(
             experiments=experiments
         )
-        print('Created balanced datasets')
+        print('Created balanced datasets_classes')
         # feature are transposed in order to have the timesteps in the first axis and the features in the second
         self.transpose_dataset()
         # feature are normalized in order to have zero mean and unit variance

@@ -6,7 +6,7 @@ from datetime import datetime
 
 from sklearn.metrics import PrecisionRecallDisplay, ConfusionMatrixDisplay, precision_score, recall_score, f1_score
 
-from src.Utils.data_utils.datasets.GeneralDataset import GeneralDataset
+from src.Utils.data_utils.datasets_classes.GeneralDataset import GeneralDataset
 from src.Utils.Parser import Parser
 
 
@@ -78,7 +78,7 @@ class SingleBotScikitModel:
                                                                prec_result,
                                                                rec_result,
                                                                f1_result))
-        # print('Bot' + str(self.datasets.bot_identifier) + ' Mean Accuracy score: ' + str(score))
-        # print('Bot' + str(self.datasets.bot_identifier) + ' Precision: ' + str(prec_result))
-        # print('Bot' + str(self.datasets.bot_identifier) + ' Recall: ' + str(rec_result))
-        # print('Bot' + str(self.datasets.bot_identifier) + ' F1 Score: ' + str(f1_result))
+        # print('Bot' + str(self.datasets_classes.bot_identifier) + ' Mean Accuracy score: ' + str(score))
+        # print('Bot' + str(self.datasets_classes.bot_identifier) + ' Precision: ' + str(prec_result))
+        # print('Bot' + str(self.datasets_classes.bot_identifier) + ' Recall: ' + str(rec_result))
+        # print('Bot' + str(self.datasets_classes.bot_identifier) + ' F1 Score: ' + str(f1_result))

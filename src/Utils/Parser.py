@@ -112,7 +112,8 @@ class Parser:
         # list to store the robots of the swarm
         footbot_swarm = []
 
-        df_footbot_positions = Parser.open_pandas_dataframe(filename=filename)
+        df_footbot_positions = Parser.open_pandas_dataframe(filename=filename,
+                                                            task_name='FLOC')
 
         # retrieve infos
         footbots_unique_ids, number_of_robots, number_of_timesteps, timesteps, all_robots_positions = Parser. \

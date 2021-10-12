@@ -9,7 +9,7 @@ import numpy as np
 from sklearn.metrics import PrecisionRecallDisplay, ConfusionMatrixDisplay, precision_score, recall_score, f1_score
 
 from src.Utils.Parser import Parser
-from src.Utils.data_utils.datasets.GeneralDataset import GeneralDataset
+from src.Utils.data_utils.datasets_classes.GeneralDataset import GeneralDataset
 
 
 class ShuffledBotsScikitModel:

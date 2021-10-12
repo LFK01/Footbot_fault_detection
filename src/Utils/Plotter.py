@@ -646,7 +646,8 @@ def build_flocking_swarm(par_task_name: str, file_number: int):
     time_window_size = Parser.read_time_window()
     file = Parser.read_filename(task_name=par_task_name, file_number=file_number)
     timesteps = Parser.retrieve_timesteps_series_from_dataframe(
-        df_footbot_positions=Parser.open_pandas_dataframe(filename=file)
+        df_footbot_positions=Parser.open_pandas_dataframe(filename=file,
+                                                          task_name='FLOC')
     )
     footbots_list = Parser.create_flocking_swarm(filename=file,
                                                  neighborhood_radius=neighborhood_radius,

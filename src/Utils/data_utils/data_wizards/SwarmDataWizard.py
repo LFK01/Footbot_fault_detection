@@ -4,7 +4,7 @@ from src.Utils.data_utils.data_wizards.DataWizard import DataWizard
 
 class SwarmDataWizard(DataWizard):
     """
-    Class to create datasets of features including global swarm features
+    Class to create datasets_classes of features including global swarm features
     """
 
     def __init__(self,

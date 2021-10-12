@@ -2,8 +2,8 @@ import numpy as np
 from src.Utils.Parser import Parser
 from src.classes.Swarm import Swarm
 from src.classes.FootBot import FootBot
-from src.Utils.data_utils.datasets.TrValTeDataset import TrValTeDataset
-from src.Utils.data_utils.datasets.GeneralDataset import GeneralDataset
+from src.Utils.data_utils.datasets_classes.TrValTeDataset import TrValTeDataset
+from src.Utils.data_utils.datasets_classes.GeneralDataset import GeneralDataset
 
 
 class DataWizard:
