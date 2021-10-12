@@ -22,7 +22,8 @@ def build_swarm():
                                                      time_window_size=time_window_size)
 
         timesteps = Parser.retrieve_timesteps_series_from_dataframe(
-            df_footbot_positions=Parser.open_pandas_dataframe(filename=file))
+            df_footbot_positions=Parser.open_pandas_dataframe(filename=file,
+                                                              task_name=task_name))
 
         swarm = Swarm(timesteps=timesteps,
                       swarm=footbots_list)

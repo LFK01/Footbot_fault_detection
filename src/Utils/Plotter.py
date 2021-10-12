@@ -1,5 +1,6 @@
 import os
-import datetime
+from datetime import datetime
+import pickle
 
 import matplotlib.pyplot as plt
 from src.classes.FootBot import FootBot
@@ -60,9 +61,8 @@ class Plotter:
         plt.ylabel("Y")
         plt.title(title)
         plt.legend(loc="upper right", markerscale=18)
-        if path != "":
-            path += "/"
-        plt.savefig(path + title.replace(" ", "_"))
+        path = os.path.join(path, title.replace(" ", "_"))
+        plt.savefig(path)
         if show_plot:
             plt.show()
         plt.close(fig)
@@ -628,7 +628,7 @@ def make_folder(par_task_name: str, file_number: int) -> str:
     saving_graphs_file_path = os.path.join(root, 'images', new_folder_name)
 
     if os.path.exists(saving_graphs_file_path):
-        saving_graphs_file_path = saving_graphs_file_path + '_' + datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+        saving_graphs_file_path = saving_graphs_file_path + '_' + datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
     os.makedirs(saving_graphs_file_path)
 
     return saving_graphs_file_path
@@ -667,6 +667,14 @@ def build_foraging_swarm(par_task_name: str, file_number: int):
     footbots_list = Parser.create_foraging_swarm(filename=file,
                                                  neighborhood_radius=neighborhood_radius,
                                                  time_window_size=time_window_size)
+    root = Parser.get_project_root()
+    path = os.path.join(root, 'cached_files')
+    with open(os.path.join(path, 'foraging_footbot_list' +
+                                 datetime.now().strftime('%d-%m-%Y_%H-%M') +
+                                 '70_bots_800sec.pkl'),
+              'wb') as output_file:
+        pickle.dump(footbots_list, output_file)
+
     return footbots_list, Swarm(timesteps=timesteps,
                                 swarm=footbots_list)
 
@@ -785,11 +793,11 @@ def plot_foraging_features(nominal_bots: list[FootBot],
                                          show_plot=show_all_graphs)
     Plotter.plot_total_food_time_series(footbot_list=nominal_bots,
                                         path=saving_graphs_file_path,
-                                        title="Nominal Bot rested time",
+                                        title="Nominal Bot total food",
                                         show_plot=show_all_graphs)
     Plotter.plot_total_food_time_series(footbot_list=faulty_bots,
                                         path=saving_graphs_file_path,
-                                        title="Faulty Bot rested time",
+                                        title="Faulty Bot total food",
                                         show_plot=show_all_graphs)
     Plotter.plot_time_searching_for_nest_time_series(footbot_list=nominal_bots,
                                                      path=saving_graphs_file_path,

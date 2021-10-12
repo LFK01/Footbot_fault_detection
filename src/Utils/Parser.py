@@ -374,10 +374,12 @@ class Parser:
 
     @staticmethod
     def write_json_file_names(file_names: list[str], task: str) -> None:
+        root = Parser.get_project_root()
+        path = join(root, 'txt_files')
         json_data = Parser.open_parameters_json_file()
         for index in range(len(file_names)):
             json_data['File Names'][task][str(index)] = file_names[index]
-        with open('../../txt_files/parameters_and_settings.json', 'w', encoding='utf-8') as f:
+        with open(join(path, 'parameters_and_settings.json'), 'w', encoding='utf-8') as f:
             dump(json_data, f, ensure_ascii=False, indent=4)
 
     @staticmethod
@@ -453,4 +455,6 @@ class Parser:
 
 
 if __name__ == "__main__":
-    pass
+    x_length = 7
+    left_border = -(x_length / 2) + 0.3
+    print('{:2}'.format(left_border))

@@ -1,12 +1,16 @@
+from os.path import join
 from pickle import load
 
+from src.Utils.Parser import Parser
 from src.Utils.data_utils.datasets.GeneralDataset import GeneralDataset
 from src.Utils.models.SingleBotGbModel import SingleBotGbModel
 from src.Utils.models.ShuffledBotsGbModel import ShuffledBotsGbModel
 
 
 def execute_single_bot_ordered_training():
-    with open('../cached_files/cached_datasets/' + file_name, 'rb') as input_file:
+    root = Parser.get_project_root()
+    path = join(root, 'cached_files', 'cached_datasets', file_name)
+    with open(path, 'rb') as input_file:
         data_wizard_datasets: list[GeneralDataset] = load(input_file)
 
     for bot_dataset in data_wizard_datasets:
@@ -21,7 +25,9 @@ def execute_single_bot_ordered_training():
 
 
 def execute_single_bot_shuffled_training():
-    with open('../cached_files/cached_datasets/' + file_name, 'rb') as input_file:
+    root = Parser.get_project_root()
+    path = join(root, 'cached_files', 'cached_datasets', file_name)
+    with open(path, 'rb') as input_file:
         data_wizard_datasets: list[GeneralDataset] = load(input_file)
 
     model = ShuffledBotsGbModel(datasets=data_wizard_datasets,
