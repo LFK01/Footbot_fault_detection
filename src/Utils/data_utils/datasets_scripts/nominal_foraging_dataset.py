@@ -8,31 +8,6 @@ from src.Utils.Parser import Parser
 from src.Utils.data_utils.datasets_scripts.flocking_dataset import compile_repo
 
 
-def modify_foraging_cpp_file(par_x_length: int,
-                             par_y_length: int,
-                             bot_number: int):
-    filename = '/Users/lucianofranchin/Documents/Github_repos/argos3-examples' \
-               '/controllers/footbot_foraging/footbot_foraging.cpp'
-    file = open(filename, 'r')
-    new_file_text = ''
-    for file_line in file.readlines():
-        if 'myfile.open("log_files_directory/' in file_line:
-            if 'nominal' not in file_line:
-                file_line = '        myfile.open("log_files_directory/foraging_size{}x{}_bot_number{}_fault_" +\n' \
-                    .format(par_x_length, par_y_length, bot_number)
-            elif 'nominal' in file_line:
-                file_line = '        myfile.open("log_files_directory/foraging_size{}x{}_bot_number{}_nominal_" +\n' \
-                    .format(par_x_length, par_y_length, bot_number)
-        new_file_text = new_file_text + file_line
-
-    file.close()
-
-    output_file = open('/Users/lucianofranchin/Documents/Github_repos/argos3-examples'
-                       '/controllers/footbot_foraging/footbot_foraging.cpp', 'w')
-    output_file.write(new_file_text)
-    output_file.close()
-
-
 def modify_foraging_loop_func_cpp_file(par_x_length: int,
                                        par_y_length: int):
     filename = '/Users/lucianofranchin/Documents/Github_repos/argos3-examples' \
@@ -157,9 +132,6 @@ def compute_parameters_and_edit_files(par_x_length: int,
     current_items_number = int(size_increase * par_initial_items_number)
     current_light_intensity = size_increase * par_initial_light_intensity
 
-    modify_foraging_cpp_file(par_x_length=par_x_length,
-                             par_y_length=par_y_length,
-                             bot_number=current_bot_number)
     modify_foraging_loop_func_cpp_file(par_x_length=par_x_length,
                                        par_y_length=par_y_length)
     compile_repo()
