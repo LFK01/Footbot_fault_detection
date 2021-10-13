@@ -6,6 +6,7 @@ from xml.etree.ElementTree import Element
 
 from src.Utils.Parser import Parser
 from src.Utils.data_utils.datasets_scripts.flocking_dataset import compile_repo
+from src.data_writing import build_foraging_swarm
 
 
 def modify_foraging_loop_func_cpp_file(par_x_length: int,
@@ -208,4 +209,4 @@ def create_nominal_foraging_dataset():
 
 
 if __name__ == '__main__':
-    pass
+    build_foraging_swarm()

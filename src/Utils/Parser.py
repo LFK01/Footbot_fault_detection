@@ -456,6 +456,4 @@ class Parser:
 
 
 if __name__ == "__main__":
-    x_length = 7
-    left_border = -(x_length / 2) + 0.3
-    print('{:2}'.format(left_border))
+    Parser.remove_ds_store_from_folder(task_name='HOME')

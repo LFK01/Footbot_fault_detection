@@ -5,6 +5,7 @@ from xml.etree import ElementTree
 from xml.etree.ElementTree import Element
 
 from src.Utils.Parser import Parser
+from src.data_writing import build_swarm_no_foraging_stats
 
 
 def modify_homing_xml_file(par_element_tree: ElementTree.ElementTree,
@@ -123,4 +124,4 @@ def create_nominal_homing_dataset():
 
 
 if __name__ == '__main__':
-    create_nominal_homing_dataset()
+    build_swarm_no_foraging_stats(task_name='HOME')
