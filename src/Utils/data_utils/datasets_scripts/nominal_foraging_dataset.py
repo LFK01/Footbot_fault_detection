@@ -5,38 +5,7 @@ from xml.etree import ElementTree
 from xml.etree.ElementTree import Element
 
 from src.Utils.Parser import Parser
-from src.Utils.data_utils.datasets_scripts.flocking_dataset import compile_repo
 from src.data_writing import build_foraging_swarm
-
-
-def modify_foraging_loop_func_cpp_file(par_x_length: int,
-                                       par_y_length: int):
-    filename = '/Users/lucianofranchin/Documents/Github_repos/argos3-examples' \
-               '/loop_functions/foraging_loop_functions/foraging_loop_functions.cpp'
-    file = open(filename, 'r')
-    # nest limits definition and items placement area
-    new_file_text = ''
-    for file_line in file.readlines():
-        if 'Real left_border = ' in file_line:
-            left_border = -(par_x_length / 2)
-            file_line = 'Real left_border = {:5.1f}f;\n'.format(left_border)
-        if 'Real right_border = ' in file_line:
-            right_border = (par_x_length / 2)
-            file_line = 'Real right_border = {:5.1f}f;\n'.format(right_border)
-        if 'Real top_border = ' in file_line:
-            top_border = -(par_y_length * 0.20)
-            file_line = 'Real top_border = {:5.1f}f;\n'.format(top_border)
-        if 'Real bottom_border = ' in file_line:
-            bottom_border = -(par_y_length / 2)
-            file_line = 'Real bottom_border = {:5.1f}f;\n'.format(bottom_border)
-        new_file_text = new_file_text + file_line
-
-    file.close()
-
-    output_file = open('/Users/lucianofranchin/Documents/Github_repos/argos3-examples'
-                       '/loop_functions/foraging_loop_functions/foraging_loop_functions.cpp', 'w')
-    output_file.write(new_file_text)
-    output_file.close()
 
 
 def modify_foraging_xml_file(par_element_tree: ElementTree.ElementTree,
@@ -133,10 +102,6 @@ def compute_parameters_and_edit_files(par_x_length: int,
     current_items_number = int(size_increase * par_initial_items_number)
     current_light_intensity = size_increase * par_initial_light_intensity
 
-    modify_foraging_loop_func_cpp_file(par_x_length=par_x_length,
-                                       par_y_length=par_y_length)
-    compile_repo()
-
     return current_bot_number, current_minimum_resting_time, current_minimum_unsuccessful_explore_time, \
         current_minimum_search_for_place_in_nest_time, current_items_number, current_light_intensity
 
@@ -209,4 +174,4 @@ def create_nominal_foraging_dataset():
 
 
 if __name__ == '__main__':
-    build_foraging_swarm()
+    build_foraging_swarm(down_sampling=3)

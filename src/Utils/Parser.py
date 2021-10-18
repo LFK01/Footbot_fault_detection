@@ -406,6 +406,26 @@ class Parser:
                     if isfile(join(path, 'homing_log_files', f))]
 
     @staticmethod
+    def read_cached_swarms_in_directory(experiment_name: str) -> list:
+        root = Parser.get_project_root()
+        path = join(root, 'cached_files', 'cached_swarms')
+        if experiment_name == 'FLOC':
+            return [join(path, 'flocking_log_files', f) for f in listdir(join(path, 'flocking_log_files'))
+                    if isfile(join(path, 'flocking_log_files', f))]
+        elif experiment_name == 'FORE':
+            return [join(path, 'foraging_log_files', f) for f in listdir(join(path, 'foraging_log_files'))
+                    if isfile(join(path, 'foraging_log_files', f))]
+        elif experiment_name == 'DIFF':
+            return [join(path, 'diffusion_log_files', f) for f in listdir(join(path, 'diffusion_log_files'))
+                    if isfile(join(path, 'diffusion_log_files', f))]
+        elif experiment_name == 'DISP':
+            return [join(path, 'dispersion_log_files', f) for f in listdir(join(path, 'dispersion_log_files'))
+                    if isfile(join(path, 'dispersion_log_files', f))]
+        elif experiment_name == 'HOME':
+            return [join(path, 'homing_log_files', f) for f in listdir(join(path, 'homing_log_files'))
+                    if isfile(join(path, 'homing_log_files', f))]
+
+    @staticmethod
     def remove_ds_store_from_folder(task_name: str):
         root = Parser.get_project_root()
         path = join(root, 'log_files')

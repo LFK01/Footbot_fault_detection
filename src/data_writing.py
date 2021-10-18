@@ -1,18 +1,23 @@
 import pickle
+import random
 from datetime import datetime
+from os.path import join
 from src.Utils.Parser import Parser
 from src.classes.Swarm import Swarm
 from src.Utils.data_utils.data_wizards.BotDataWizard import BotDataWizard
 from src.Utils.data_utils.data_wizards.SwarmDataWizard import SwarmDataWizard
 
 
-def build_swarm_no_foraging_stats(task_name: str):
+def build_swarm_no_foraging_stats(task_name: str,
+                                  experiments_number_down_sampling: int = 1):
     neighborhood_radius = Parser.read_neighborhood_radius()
     time_window_size = Parser.read_time_window()
 
-    experiment_list = []
+    random.seed(Parser.read_seed())
     done_files = 0
     file_list = Parser.read_files_in_directory(experiment_name=task_name)
+    random.shuffle(file_list)
+    file_list = file_list[::experiments_number_down_sampling]
     for file in file_list:
         print('Doing file {} out of {}: {}'.format(done_files, len(file_list), file.split('/')[-1]))
         footbots_list = Parser.create_generic_swarm(task_name=task_name,
@@ -27,25 +32,48 @@ def build_swarm_no_foraging_stats(task_name: str):
         swarm = Swarm(timesteps=timesteps,
                       swarm=footbots_list)
 
-        experiment_list.append(swarm)
+        save_swarm(swarm=swarm,
+                   task_name=task_name)
 
         done_files += 1
 
-    with open('../cached_files/cached_swarms/{}_{}_experiments_{}.pkl'
-              .format(task_name,
-                      len(file_list),
-                      datetime.now().strftime('%d-%m-%Y_%H-%M')), 'wb') as output_file:
-        pickle.dump(experiment_list, output_file)
+
+def save_swarm(swarm: Swarm,
+               task_name: str):
+    root = Parser.get_project_root()
+    path = join(root, 'cached_files', 'cached_swarms')
+    if task_name == 'FLOC':
+        path = join(path, 'flocking_swarms', '{}_swarm_{}bots_{}.pkl'.format(task_name, len(swarm.list_of_footbots),
+                                                                             datetime.now().strftime('%d-%m-%Y_%H-%M')))
+        with open(path, 'wb') as output_file:
+            pickle.dump(swarm, output_file)
+    if task_name == 'HOME':
+        path = join(path, 'homing_swarms', '{}_swarm_{}bots_{}.pkl'.format(task_name, len(swarm.list_of_footbots),
+                                                                           datetime.now().strftime('%d-%m-%Y_%H-%M')))
+        with open(path, 'wb') as output_file:
+            pickle.dump(swarm, output_file)
+    if task_name == 'DISP':
+        path = join(path, 'dispersion_swarms',
+                    '{}_swarm_{}bots_{}.pkl'.format(task_name, len(swarm.list_of_footbots),
+                                                    datetime.now().strftime('%d-%m-%Y_%H-%M')))
+        with open(path, 'wb') as output_file:
+            pickle.dump(swarm, output_file)
+    if task_name == 'FORE':
+        path = join(path, 'foraging_swarms', '{}_swarm_{}bots_{}.pkl'.format(task_name, len(swarm.list_of_footbots),
+                                                                             datetime.now().strftime('%d-%m-%Y_%H-%M')))
+        with open(path, 'wb') as output_file:
+            pickle.dump(swarm, output_file)
 
 
-def build_foraging_swarm():
+def build_foraging_swarm(down_sampling: int):
     neighborhood_radius = Parser.read_neighborhood_radius()
     time_window_size = Parser.read_time_window()
 
     task_name = 'FORE'
-    experiment_list = []
     done_files = 0
     file_list = Parser.read_files_in_directory(experiment_name=task_name)
+    random.shuffle(file_list)
+    file_list = file_list[::down_sampling]
     for file in file_list:
         print('Doing file {} out of {}: {}'.format(done_files, len(file_list), file.split('/')[-1]))
         footbots_list = Parser.create_foraging_swarm(filename=file,
@@ -59,15 +87,10 @@ def build_foraging_swarm():
         swarm = Swarm(timesteps=timesteps,
                       swarm=footbots_list)
 
-        experiment_list.append(swarm)
+        save_swarm(swarm=swarm,
+                   task_name='FORE')
 
         done_files += 1
-
-    with open('../cached_files/cached_swarms/{}_{}_experiments_{}.pkl'
-              .format(task_name,
-                      len(file_list),
-                      datetime.now().strftime('%d-%m-%Y_%H-%M')), 'wb') as output_file:
-        pickle.dump(experiment_list, output_file)
 
 
 def build_dataset():

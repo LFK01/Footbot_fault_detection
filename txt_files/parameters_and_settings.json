@@ -33,27 +33,10 @@
     ],
     "File Names": {
         "DISP": {
-            "1": "dispersion_log_files/dispersion_100_nominal.csv",
-            "2": "dispersion_log_files/dispersion_100_fault.csv",
-            "3": "dispersion_log_files/dispersion_16_nominal.csv",
-            "4": "dispersion_log_files/dispersion_16_fault.csv",
-            "5": "dispersion_log_files/dispersion_16_rotating_at_100.csv",
-            "6": "dispersion_log_files/dispersion_100_50_percent_rotating_fault_after_100_gain_400.csv",
-            "7": "dispersion_log_files/dispersion_100_10percent_rotating_fault_after_500.csv",
-            "8": "dispersion_log_files/dispersion_100_33_percent_rotating_fault_after_500_gain_1000.csv",
-            "9": "dispersion_log_files/dispersion_100_10_percent_rotating_fault_after_500_gain_1000.csv",
-            "10": "dispersion_log_files/dispersion_100_50_percent_rotating_fault_after_500_gain_1000.csv",
-            "11": "dispersion_log_files/dispersion_100_33_percent_rotating_fault_after_500_gain_1000Tue_Sep_14_09-31-42_2021.csv"
+            "1": "dispersion_size10x18_bot_number63_rotating_fault_2500_gain_1000Tue_Oct_12_19-23-22_2021.csv"
         },
         "HOME": {
-            "1": "homing_log_files/homing_100_nominal.csv",
-            "2": "homing_log_files/homing_100_fault_one_third_rotating_after_500.csv",
-            "3": "homing_log_files/homing_100_10_percent_rotating_fault_after_500.csv",
-            "4": "homing_log_files/Log_positions_homing_Thu_Sep__2_08-08-27_2021.csv",
-            "5": "homing_log_files/homing_100_10_percent_rotating_fault_after_500_gain_400.csv",
-            "6": "homing_log_files/homing_100_50_percent_rotating_fault_after_500_gain_400.csv",
-            "7": "homing_log_files/homing_100_33_percent_rotating_fault_after_500_gain_400.csv",
-            "8": "homing_log_files/homing_100_nominal.csv"
+            "1": ""
         },
         "FORE": {
             "1": "foraging_20_nominal_duration_8000.csv"
@@ -62,7 +45,7 @@
             "1": "warehouse_0_percent_stop_fault20211017_15_21.csv"
         },
         "FLOC": {
-            "0": "flocking_log_files/flocking_15_North_20_percent_rotating_fault_after_4000_gain_1000Wed_Oct__6_10-30-46_2021.csv"
+            "0": "flocking_15_East_6_percent_rotating_fault_after_1500_gain_1000Mon_Oct_18_15-29-57_2021.csv"
         }
     }
 }

@@ -126,4 +126,5 @@ def create_nominal_dispersion_dataset():
 
 
 if __name__ == '__main__':
-    build_swarm_no_foraging_stats(task_name='DISP')
+    build_swarm_no_foraging_stats(task_name='DISP',
+                                  experiments_number_down_sampling=8)

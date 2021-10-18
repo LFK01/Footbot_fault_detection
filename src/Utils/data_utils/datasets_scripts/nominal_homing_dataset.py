@@ -124,4 +124,5 @@ def create_nominal_homing_dataset():
 
 
 if __name__ == '__main__':
-    build_swarm_no_foraging_stats(task_name='HOME')
+    build_swarm_no_foraging_stats(task_name='HOME',
+                                  experiments_number_down_sampling=8)
