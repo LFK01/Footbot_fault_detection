@@ -429,7 +429,7 @@ class Parser:
                     if isfile(join(path, 'homing_log_files', f))]
 
     @staticmethod
-    def remove_ds_store_from_folder(task_name: str):
+    def remove_ds_store_from_task_folder(task_name: str):
         root = Parser.get_project_root()
         path = join(root, 'log_files')
         if task_name == 'FLOC':
@@ -481,7 +481,18 @@ class Parser:
 
         print('finished sanitizing!')
 
+    @staticmethod
+    def remove_DS_store_from_generic_folder(folder_path):
+        for subdir, dirs, files in os.walk(folder_path):
+            for file_name in files:
+                if '.DS_Store' in file_name:
+                    os.remove(join(subdir, file_name))
+                    print('Removed' + file_name)
+
 
 if __name__ == "__main__":
-    Parser.sanitize_warehouse_csv_file(task_name='WARE',
-                                       file_number=1)
+    print(str(len([0, 1, 2])))
+    for i in range(len([0, 1, 2])):
+        print(str(i))
+    for i in range(3):
+        print(str(i))

@@ -7,15 +7,14 @@ from src.Utils.data_utils.datasets_classes.GeneralDataset import GeneralDataset
 
 
 class DataWizard:
-    def __init__(self, timesteps: int,
+    def __init__(self,
+                 timesteps: int,
                  time_window: int,
-                 label_size: int,
                  experiments: list[Swarm],
                  down_sampling_steps: int = 1,
                  preprocessing_type: str = 'raw'):
         self.timesteps: int = timesteps - 1
         self.time_window: int = time_window
-        self.label_size: int = label_size
         self.experiments: list[Swarm] = experiments
         self.down_sampling_steps = down_sampling_steps
         self.preprocessing_type = preprocessing_type
@@ -25,6 +24,10 @@ class DataWizard:
         return min(
             experiment.list_of_footbots[0].number_of_timesteps for experiment in experiment_list
         )
+
+    @staticmethod
+    def maximum_bot_number_in_experiment(experiment_list: list[Swarm]) -> int:
+        return max([len(exp.list_of_footbots) for exp in experiment_list])
 
     @staticmethod
     def slice_train_test_experiments(bot: int,

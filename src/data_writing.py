@@ -6,6 +6,7 @@ from src.Utils.Parser import Parser
 from src.classes.Swarm import Swarm
 from src.Utils.data_utils.data_wizards.BotDataWizard import BotDataWizard
 from src.Utils.data_utils.data_wizards.SwarmDataWizard import SwarmDataWizard
+from src.Utils.data_utils.data_wizards.PickleDataWizard import PickleDataWizard
 
 
 def build_swarm_no_foraging_stats(task_name: str,
@@ -121,4 +122,9 @@ def build_dataset():
 
 
 if __name__ == "__main__":
-    build_dataset()
+
+    down_sampling = Parser.read_down_sampling_size()
+    time_window_size = Parser.read_time_window()
+
+    pickle_wizard = PickleDataWizard(time_window=time_window_size,
+                                     down_sampling_steps=down_sampling)
