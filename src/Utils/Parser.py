@@ -91,12 +91,14 @@ class Parser:
         return timesteps
 
     @staticmethod
-    def create_flocking_swarm(filename: str, neighborhood_radius: float, time_window_size: int) -> list[FootBot]:
+    def create_generic_swarm(task_name: str, filename: str, neighborhood_radius: float, time_window_size: int) -> list[FootBot]:
         """
         Method to parse the positions file and return the list of footbots.
 
         Parameters
         ----------
+        task_name: str
+            String which specifies where to look into the json file
         filename : str
             String which specifies the name of the file to read
         neighborhood_radius : float
@@ -113,7 +115,7 @@ class Parser:
         footbot_swarm = []
 
         df_footbot_positions = Parser.open_pandas_dataframe(filename=filename,
-                                                            task_name='FLOC')
+                                                            task_name=task_name)
 
         # retrieve infos
         footbots_unique_ids, number_of_robots, number_of_timesteps, timesteps, all_robots_positions = Parser. \
@@ -440,7 +442,7 @@ class Parser:
                                         file_number=file_number)
 
         root = Parser.get_project_root()
-        path = join(root, filename)
+        path = join(root, 'log_files', 'warehouse_log_files', filename)
 
         f = open(path, 'r')
 
@@ -451,9 +453,12 @@ class Parser:
             for line in lines:
                 if "|" not in line.strip("\n"):
                     f.write(line)
+                else:
+                    print("FOUND CORRUPTED LINE")
 
         print('finished sanitizing!')
 
 
 if __name__ == "__main__":
-    Parser.remove_ds_store_from_folder(task_name='HOME')
+    Parser.sanitize_warehouse_csv_file(task_name='WARE',
+                                       file_number=1)

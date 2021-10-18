@@ -641,17 +641,18 @@ def divide_flocks(footbots_list: list[FootBot]) -> tuple[list[FootBot], list[Foo
     return faulty_bots, nominal_bots
 
 
-def build_flocking_swarm(par_task_name: str, file_number: int):
+def build_generic_swarm(par_task_name: str, file_number: int):
     neighborhood_radius = Parser.read_neighborhood_radius()
     time_window_size = Parser.read_time_window()
     file = Parser.read_filename(task_name=par_task_name, file_number=file_number)
     timesteps = Parser.retrieve_timesteps_series_from_dataframe(
         df_footbot_positions=Parser.open_pandas_dataframe(filename=file,
-                                                          task_name='FLOC')
+                                                          task_name=task_name)
     )
-    footbots_list = Parser.create_flocking_swarm(filename=file,
-                                                 neighborhood_radius=neighborhood_radius,
-                                                 time_window_size=time_window_size)
+    footbots_list = Parser.create_generic_swarm(task_name=task_name,
+                                                filename=file,
+                                                neighborhood_radius=neighborhood_radius,
+                                                time_window_size=time_window_size)
     return footbots_list, Swarm(timesteps=timesteps,
                                 swarm=footbots_list)
 
@@ -836,8 +837,8 @@ def main_dispersion(par_task_name: str,
                     show_all_graphs: bool = True):
     saving_graphs_file_path = make_folder(par_task_name=par_task_name, file_number=file_number)
 
-    footbots_list, main_swarm = build_flocking_swarm(par_task_name=par_task_name,
-                                                     file_number=file_number)
+    footbots_list, main_swarm = build_generic_swarm(par_task_name=par_task_name,
+                                                    file_number=file_number)
 
     faulty_bots, nominal_bots = divide_flocks(footbots_list=footbots_list)
 
@@ -868,7 +869,7 @@ def plot_model_performances():
 
 
 if __name__ == "__main__":
-    task_name = 'FORE'
-    main_foraging(par_task_name=task_name,
-                  file_number=1,
-                  show_all_graphs=False)
+    task_name = 'WARE'
+    main_dispersion(par_task_name=task_name,
+                    file_number=1,
+                    show_all_graphs=False)

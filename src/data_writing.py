@@ -15,9 +15,10 @@ def build_swarm_no_foraging_stats(task_name: str):
     file_list = Parser.read_files_in_directory(experiment_name=task_name)
     for file in file_list:
         print('Doing file {} out of {}: {}'.format(done_files, len(file_list), file.split('/')[-1]))
-        footbots_list = Parser.create_flocking_swarm(filename=file,
-                                                     neighborhood_radius=neighborhood_radius,
-                                                     time_window_size=time_window_size)
+        footbots_list = Parser.create_generic_swarm(task_name=task_name,
+                                                    filename=file,
+                                                    neighborhood_radius=neighborhood_radius,
+                                                    time_window_size=time_window_size)
 
         timesteps = Parser.retrieve_timesteps_series_from_dataframe(
             df_footbot_positions=Parser.open_pandas_dataframe(filename=file,

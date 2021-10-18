@@ -59,8 +59,7 @@
             "1": "foraging_20_nominal_duration_8000.csv"
         },
         "WARE": {
-            "1": "warehouse_log_files/warehouse_10_percent_slowed_fault.csv",
-            "2": "warehouse_log_files/warehouse_10_percent_stop_fault.csv"
+            "1": "warehouse_0_percent_stop_fault20211017_15_21.csv"
         },
         "FLOC": {
             "0": "flocking_log_files/flocking_15_North_20_percent_rotating_fault_after_4000_gain_1000Wed_Oct__6_10-30-46_2021.csv"
