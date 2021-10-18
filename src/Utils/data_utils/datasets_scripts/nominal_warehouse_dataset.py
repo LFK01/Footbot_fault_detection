@@ -94,8 +94,8 @@ def create_nominal_warehouse_dataset():
     aisles_number = [5, 6, 7]
     initial_aisles_number = aisles_number[0] ** 2
     initial_bot_number = 32
-    initial_pick_number = 4
-    initial_replenishment_number = 4
+    initial_pick_number = 2
+    initial_replenishment_number = 2
 
     print('Doing Nominal')
     for horizontal_aisles_number in aisles_number:
@@ -132,8 +132,8 @@ def create_nominal_warehouse_dataset():
                                 'Debug', 'RAWSimO.CLI.exe')
                 command_line = exe_path + ' ' \
                                         + xlayo_filename + ' ' \
-                                        + xconf_filename + ' ' \
                                         + xsett_filename + ' ' \
+                                        + xconf_filename + ' ' \
                                         + 'StatsDir1 1'
                 subproc = subprocess.Popen(command_line,
                                            stdin=subprocess.PIPE,

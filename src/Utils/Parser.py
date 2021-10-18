@@ -91,7 +91,10 @@ class Parser:
         return timesteps
 
     @staticmethod
-    def create_generic_swarm(task_name: str, filename: str, neighborhood_radius: float, time_window_size: int) -> list[FootBot]:
+    def create_generic_swarm(task_name: str,
+                             filename: str,
+                             neighborhood_radius: float,
+                             time_window_size: int) -> list[FootBot]:
         """
         Method to parse the positions file and return the list of footbots.
 
