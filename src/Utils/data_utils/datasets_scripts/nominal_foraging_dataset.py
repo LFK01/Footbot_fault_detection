@@ -106,7 +106,7 @@ def compute_parameters_and_edit_files(par_x_length: int,
         current_minimum_search_for_place_in_nest_time, current_items_number, current_light_intensity
 
 
-def create_nominal_foraging_dataset():
+def create_nominal_foraging_csv_logs():
     # open xml file
     xml_file = ElementTree.parse('/Users/lucianofranchin/Documents/Github_repos/'
                                  'argos3-examples/experiments/foraging.argos')

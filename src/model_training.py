@@ -39,9 +39,8 @@ def execute_single_bot_shuffled_training():
                                    features=feature_names)
 
 
-file_name = '149exp_15bot_datasets_down_sampled_20_ALL_features.pkl'
-downsampling = 20
-feature_names = 'ALL + Global'
-
 if __name__ == "__main__":
+    file_name = 'DISP_56exp_ALL_features_50downsampled.pkl'
+    feature_names = 'ALL + Global'
+    downsampling = Parser.read_down_sampling_size()
     execute_single_bot_shuffled_training()

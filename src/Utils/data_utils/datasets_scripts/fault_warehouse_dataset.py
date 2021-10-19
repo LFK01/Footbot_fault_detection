@@ -52,7 +52,7 @@ def modify_fault_warehouse_xconf_xml_file(par_element_tree: ElementTree.ElementT
     par_element_tree.write(path)
 
 
-def create_fault_warehouse_dataset():
+def create_fault_warehouse_csv_logs():
     # open xml file
     path = join('C:', os.sep, 'Users', 'Luciano', 'source', 'RawSim-O_conf_files', 'SimpleItem-Fill-200-200-4000.xsett')
     xsett_xml_file = ElementTree.parse(path)
@@ -179,4 +179,4 @@ def create_fault_warehouse_dataset():
 
 
 if __name__ == '__main__':
-    create_fault_warehouse_dataset()
+    create_fault_warehouse_csv_logs()

@@ -8,7 +8,7 @@ from src.Utils.Parser import Parser
 from nominal_foraging_dataset import modify_foraging_xml_file, compute_parameters_and_edit_files
 
 
-def create_fault_foraging_dataset():
+def create_fault_foraging_csv_logs():
     # open xml file
     xml_file = ElementTree.parse('/Users/lucianofranchin/Documents/Github_repos/'
                                  'argos3-examples/experiments/foraging.argos')
@@ -135,4 +135,4 @@ def create_fault_foraging_dataset():
 
 
 if __name__ == '__main__':
-    create_fault_foraging_dataset()
+    create_fault_foraging_csv_logs()

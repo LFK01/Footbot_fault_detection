@@ -7,7 +7,7 @@ from xml.etree.ElementTree import Element
 from src.Utils.Parser import Parser
 
 
-def create_fault_flocking_dataset():
+def create_fault_flocking_csv_logs():
     random.seed(Parser.read_seed())
     positions_dict = {'North': {'min': '-1,12,0',
                                 'max': '1,14,0'},
@@ -109,4 +109,4 @@ def execute_fault_flocking_simulation_command(par_xml_file: ElementTree,
 
 
 if __name__ == "__main__":
-    create_fault_flocking_dataset()
+    create_fault_flocking_csv_logs()

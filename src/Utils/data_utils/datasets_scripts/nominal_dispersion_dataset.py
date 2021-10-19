@@ -72,7 +72,7 @@ def compute_parameters(par_x_length: int,
     return current_bot_number, current_light_intensity
 
 
-def create_nominal_dispersion_dataset():
+def create_nominal_dispersion_csv_logs():
     # open xml file
     xml_file = ElementTree.parse('/Users/lucianofranchin/Documents/Github_repos/'
                                  'argos3-examples/experiments/footbot_dispersion.argos')

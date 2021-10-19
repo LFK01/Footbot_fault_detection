@@ -3,7 +3,7 @@
     "TIME_WINDOW": 10,
     "SEED": 123,
     "LSTM_length": 10,
-    "Down_sampling": 20,
+    "Down_sampling": 50,
     "Preprocessing": "STD",
     "Validation": 0,
     "Splitting": {
@@ -33,10 +33,10 @@
     ],
     "File Names": {
         "DISP": {
-            "1": "dispersion_size10x18_bot_number63_rotating_fault_2500_gain_1000Tue_Oct_12_19-23-22_2021.csv"
+            "1": "dispersion_size18x14_bot_number88_rotating_fault_500_gain_1000Tue_Oct_12_20-00-12_2021.csv"
         },
         "HOME": {
-            "1": ""
+            "1": "homing_size14x10_bot_number49_rotating_fault_33_percent_rotating_fault_after_0_gain_400Tue_Oct_12_20-35-19_2021.csv"
         },
         "FORE": {
             "1": "foraging_20_nominal_duration_8000.csv"

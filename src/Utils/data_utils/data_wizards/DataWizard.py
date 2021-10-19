@@ -182,4 +182,11 @@ class DataWizard:
             bot_dataset.append(retrieved_features)
             bot_target_dataset.append(exp.list_of_footbots[bot].fault_time_series[::down_sampling_steps])
 
+        # maybe due to downsampling or to speed like feature computation, bot features happen to have one less timestep
+        # than its test timeseries, to deal with this we cut target timeseries to comply with train timeseries
+        assert len(bot_dataset) == len(bot_target_dataset)
+        for i in range(len(bot_dataset)):
+            min_length = min(bot_dataset[i].shape[1], bot_target_dataset[i].shape[0])
+            bot_dataset[i] = bot_dataset[i][..., :min_length]
+            bot_target_dataset[i] = bot_target_dataset[i][..., :min_length]
         return bot_dataset, bot_target_dataset

@@ -392,6 +392,9 @@ class Parser:
     def read_files_in_directory(experiment_name: str) -> list:
         root = Parser.get_project_root()
         path = join(root, 'log_files')
+        if experiment_name == 'WARE':
+            return [join(path, 'warehouse_log_files', f) for f in listdir(join(path, 'warehouse_log_files'))
+                    if isfile(join(path, 'warehouse_log_files', f))]
         if experiment_name == 'FLOC':
             return [join(path, 'flocking_log_files', f) for f in listdir(join(path, 'flocking_log_files'))
                     if isfile(join(path, 'flocking_log_files', f))]
@@ -412,21 +415,41 @@ class Parser:
     def read_cached_swarms_in_directory(experiment_name: str) -> list:
         root = Parser.get_project_root()
         path = join(root, 'cached_files', 'cached_swarms')
+        if experiment_name == 'WARE':
+            return [join(path, 'warehouse_swarms', f) for f in listdir(join(path, 'warehouse_swarms'))
+                    if isfile(join(path, 'warehouse_swarms', f))]
         if experiment_name == 'FLOC':
-            return [join(path, 'flocking_log_files', f) for f in listdir(join(path, 'flocking_log_files'))
-                    if isfile(join(path, 'flocking_log_files', f))]
+            return [join(path, 'flocking_swarms', f) for f in listdir(join(path, 'flocking_swarms'))
+                    if isfile(join(path, 'flocking_swarms', f))]
         elif experiment_name == 'FORE':
-            return [join(path, 'foraging_log_files', f) for f in listdir(join(path, 'foraging_log_files'))
-                    if isfile(join(path, 'foraging_log_files', f))]
+            return [join(path, 'foraging_swarms', f) for f in listdir(join(path, 'foraging_swarms'))
+                    if isfile(join(path, 'foraging_swarms', f))]
         elif experiment_name == 'DIFF':
-            return [join(path, 'diffusion_log_files', f) for f in listdir(join(path, 'diffusion_log_files'))
-                    if isfile(join(path, 'diffusion_log_files', f))]
+            return [join(path, 'diffusion_swarms', f) for f in listdir(join(path, 'diffusion_swarms'))
+                    if isfile(join(path, 'diffusion_swarms', f))]
         elif experiment_name == 'DISP':
-            return [join(path, 'dispersion_log_files', f) for f in listdir(join(path, 'dispersion_log_files'))
-                    if isfile(join(path, 'dispersion_log_files', f))]
+            return [join(path, 'dispersion_swarms', f) for f in listdir(join(path, 'dispersion_swarms'))
+                    if isfile(join(path, 'dispersion_swarms', f))]
         elif experiment_name == 'HOME':
-            return [join(path, 'homing_log_files', f) for f in listdir(join(path, 'homing_log_files'))
-                    if isfile(join(path, 'homing_log_files', f))]
+            return [join(path, 'homing_swarms', f) for f in listdir(join(path, 'homing_swarms'))
+                    if isfile(join(path, 'homing_swarms', f))]
+
+    @staticmethod
+    def return_cached_swarm_directory_path(experiment_name: str) -> str:
+        root = Parser.get_project_root()
+        path = join(root, 'cached_files', 'cached_swarms')
+        if experiment_name == 'WARE':
+            return join(path, 'warehouse_swarms')
+        if experiment_name == 'FLOC':
+            return join(path, 'flocking_swarms')
+        elif experiment_name == 'FORE':
+            return join(path, 'foraging_swarms')
+        elif experiment_name == 'DIFF':
+            return join(path, 'diffusion_swarms')
+        elif experiment_name == 'DISP':
+            return join(path, 'dispersion_swarms')
+        elif experiment_name == 'HOME':
+            return join(path, 'homing_swarms')
 
     @staticmethod
     def remove_ds_store_from_task_folder(task_name: str):
@@ -459,10 +482,7 @@ class Parser:
                 print('REMOVED .DS_store')
 
     @staticmethod
-    def sanitize_warehouse_csv_file(task_name: str,
-                                    file_number: int):
-        filename = Parser.read_filename(task_name=task_name,
-                                        file_number=file_number)
+    def sanitize_warehouse_csv_file(filename: str):
 
         root = Parser.get_project_root()
         path = join(root, 'log_files', 'warehouse_log_files', filename)
@@ -472,7 +492,7 @@ class Parser:
         print('sanitizing file...')
         lines = f.readlines()
         f.close()
-        with open(filename, "w") as f:
+        with open(path, "w") as f:
             for line in lines:
                 if "|" not in line.strip("\n"):
                     f.write(line)
@@ -491,8 +511,13 @@ class Parser:
 
 
 if __name__ == "__main__":
-    print(str(len([0, 1, 2])))
-    for i in range(len([0, 1, 2])):
-        print(str(i))
-    for i in range(3):
-        print(str(i))
+    main_root = Parser.get_project_root()
+    main_path = join(main_root, 'log_files', 'warehouse_log_files')
+
+    target_list = [0, 1, 2, 3]
+    train_list = [0, 1, 2]
+
+    max_length = max(len(target_list), len(train_list))
+
+    print(target_list[:max_length])
+    print(train_list[:max_length])

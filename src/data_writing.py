@@ -6,7 +6,6 @@ from src.Utils.Parser import Parser
 from src.classes.Swarm import Swarm
 from src.Utils.data_utils.data_wizards.BotDataWizard import BotDataWizard
 from src.Utils.data_utils.data_wizards.SwarmDataWizard import SwarmDataWizard
-from src.Utils.data_utils.data_wizards.PickleDataWizard import PickleDataWizard
 
 
 def build_swarm_no_foraging_stats(task_name: str,
@@ -64,6 +63,12 @@ def save_swarm(swarm: Swarm,
                                                                              datetime.now().strftime('%d-%m-%Y_%H-%M')))
         with open(path, 'wb') as output_file:
             pickle.dump(swarm, output_file)
+    if task_name == 'WARE':
+        path = join(path, 'warehouse_swarms',
+                    '{}_swarm_{}bots_{}.pkl'.format(task_name, len(swarm.list_of_footbots),
+                                                    datetime.now().strftime('%d-%m-%Y_%H-%M')))
+        with open(path, 'wb') as output_file:
+            pickle.dump(swarm, output_file)
 
 
 def build_foraging_swarm(down_sampling: int):
@@ -108,7 +113,6 @@ def build_dataset():
     data_wizard = BotDataWizard(
         timesteps=timesteps,
         time_window=time_window_size,
-        label_size=1,
         experiments=experiment_list,
         down_sampling_steps=down_sampling)
 
@@ -122,9 +126,5 @@ def build_dataset():
 
 
 if __name__ == "__main__":
-
-    down_sampling = Parser.read_down_sampling_size()
-    time_window_size = Parser.read_time_window()
-
-    pickle_wizard = PickleDataWizard(time_window=time_window_size,
-                                     down_sampling_steps=down_sampling)
+    build_swarm_no_foraging_stats(task_name='WARE',
+                                  experiments_number_down_sampling=10)

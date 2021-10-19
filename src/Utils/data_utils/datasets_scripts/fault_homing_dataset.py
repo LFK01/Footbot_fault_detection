@@ -8,7 +8,7 @@ from src.Utils.Parser import Parser
 from nominal_homing_dataset import modify_homing_xml_file, compute_parameters
 
 
-def create_fault_homing_dataset():
+def create_fault_homing_csv_logs():
     # open xml file
     xml_file = ElementTree.parse('/Users/lucianofranchin/Documents/Github_repos/'
                                  'argos3-examples/experiments/footbot_homing.argos')
@@ -111,4 +111,4 @@ def create_fault_homing_dataset():
 
 
 if __name__ == '__main__':
-    create_fault_homing_dataset()
+    create_fault_homing_csv_logs()

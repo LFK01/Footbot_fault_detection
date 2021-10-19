@@ -4,11 +4,8 @@ from os import chdir
 from os.path import join
 import subprocess
 from xml.etree import ElementTree
-from xml.etree.ElementTree import Element
-from lxml import etree
 
 from src.Utils.Parser import Parser
-from src.data_writing import build_swarm_no_foraging_stats
 
 
 def modify_warehouse_xsett_xml_file(par_element_tree: ElementTree.ElementTree,
@@ -68,7 +65,7 @@ def compute_parameters(par_vertical_aisles: int,
     return current_bot_number, current_pick_number, current_replenishment_number
 
 
-def create_nominal_warehouse_dataset():
+def create_nominal_warehouse_csv_logs():
     # open xml file
     path = join('C:', os.sep, 'Users', 'Luciano', 'source', 'RawSim-O_conf_files', 'SimpleItem-Fill-200-200-4000.xsett')
     xsett_xml_file = ElementTree.parse(path)
@@ -76,9 +73,8 @@ def create_nominal_warehouse_dataset():
     path = join('C:', os.sep, 'Users', 'Luciano', 'source', 'RawSim-O_conf_files', '1-4-4-32-0.85.xlayo')
     xlayo_xml_file = ElementTree.parse(path)
 
-    path = join('C:', os.sep, 'Users', 'Luciano', 'source', 'RawSim-O_conf_files', 'PPFAR-TABalanced-SAActivateAll-ISEmptiest-'
-                                                                           'PSNearest-RPDummy-OBPodMatching-RBSamePod-'
-                                                                           'MMNoChange.xconf')
+    path = join('C:', os.sep, 'Users', 'Luciano', 'source', 'RawSim-O_conf_files',
+                'PPFAR-TABalanced-SAActivateAll-ISEmptiest-PSNearest-RPDummy-OBPodMatching-RBSamePod-MMNoChange.xconf')
     xconf_xml_file = ElementTree.parse(path)
 
     xsett_filename = 'Execution_settings.xsett'
@@ -146,4 +142,4 @@ def create_nominal_warehouse_dataset():
 
 
 if __name__ == '__main__':
-    create_nominal_warehouse_dataset()
+    create_nominal_warehouse_csv_logs()

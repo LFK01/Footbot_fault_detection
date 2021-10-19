@@ -8,7 +8,7 @@ from src.Utils.Parser import Parser
 from src.data_writing import build_swarm_no_foraging_stats
 
 
-def create_nominal_flocking_dataset():
+def create_nominal_flocking_csv_logs():
     random.seed(Parser.read_seed())
     positions_dict = {'North': {'min': '-1,12,0',
                                 'max': '1,14,0'},
