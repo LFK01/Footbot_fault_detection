@@ -323,7 +323,7 @@ class Parser:
         return json_data["Area_partitions"]
 
     @staticmethod
-    def read_features_set() -> list[str]:
+    def read_features_set(feature_set_number: int) -> list[str]:
         """
         Method to retrieve the list of features to use in the dataset in the parameters file.
 
@@ -331,10 +331,14 @@ class Parser:
         -------
         feature_list: list[str]
         """
-
         json_data = Parser.open_parameters_json_file()
 
-        return json_data["Features"]
+        if feature_set_number == 1:
+            return json_data['Features']['Set1']
+        elif feature_set_number == 2:
+            return json_data['Features']['Set2']
+        elif feature_set_number == 3:
+            return json_data['Features']['Set3']
 
     @staticmethod
     def read_dataset_splittings() -> dict[str, list[float]]:
@@ -452,6 +456,40 @@ class Parser:
             return join(path, 'homing_swarms')
 
     @staticmethod
+    def return_cached_dataset_directory_path(experiment_name: str) -> str:
+        root = Parser.get_project_root()
+        path = join(root, 'cached_files', 'cached_datasets')
+        if experiment_name == 'WARE':
+            return join(path, 'warehouse_datasets')
+        if experiment_name == 'FLOC':
+            return join(path, 'flocking_datasets')
+        elif experiment_name == 'FORE':
+            return join(path, 'foraging_datasets')
+        elif experiment_name == 'DIFF':
+            return join(path, 'diffusion_datasets')
+        elif experiment_name == 'DISP':
+            return join(path, 'dispersion_datasets')
+        elif experiment_name == 'HOME':
+            return join(path, 'homing_datasets')
+
+    @staticmethod
+    def return_performance_image_directory_path(experiment_name: str) -> str:
+        root = Parser.get_project_root()
+        path = join(root, 'images')
+        if experiment_name == 'WARE':
+            return join(path, 'warehouse_images')
+        if experiment_name == 'FLOC':
+            return join(path, 'flocking_images')
+        elif experiment_name == 'FORE':
+            return join(path, 'foraging_images')
+        elif experiment_name == 'DIFF':
+            return join(path, 'diffusion_images')
+        elif experiment_name == 'DISP':
+            return join(path, 'dispersion_images')
+        elif experiment_name == 'HOME':
+            return join(path, 'homing_images')
+
+    @staticmethod
     def remove_ds_store_from_task_folder(task_name: str):
         root = Parser.get_project_root()
         path = join(root, 'log_files')
@@ -502,7 +540,7 @@ class Parser:
         print('finished sanitizing!')
 
     @staticmethod
-    def remove_DS_store_from_generic_folder(folder_path):
+    def remove_ds_store_from_generic_folder(folder_path):
         for subdir, dirs, files in os.walk(folder_path):
             for file_name in files:
                 if '.DS_Store' in file_name:
@@ -511,13 +549,4 @@ class Parser:
 
 
 if __name__ == "__main__":
-    main_root = Parser.get_project_root()
-    main_path = join(main_root, 'log_files', 'warehouse_log_files')
-
-    target_list = [0, 1, 2, 3]
-    train_list = [0, 1, 2]
-
-    max_length = max(len(target_list), len(train_list))
-
-    print(target_list[:max_length])
-    print(train_list[:max_length])
+    pass

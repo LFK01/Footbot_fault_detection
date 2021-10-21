@@ -17,14 +17,17 @@ class BotDataWizard(DataWizard):
                  timesteps: int,
                  time_window: int,
                  experiments: list[Swarm],
+                 feature_set_number: int,
                  down_sampling_steps: int = 1):
         super().__init__(timesteps=timesteps,
                          time_window=time_window,
                          experiments=experiments,
+                         feature_set_number=feature_set_number,
                          down_sampling_steps=down_sampling_steps)
 
         self.datasets: list[GeneralDataset] = self.create_balanced_bot_train_test_set(
-            experiments=experiments
+            experiments=experiments,
+            feature_set_number=self.feature_set_number
         )
         print('BotDataWizard finished creating balanced datasets_classes')
         # feature are transposed in order to have the timesteps in the first axis and the features in the second
@@ -35,6 +38,7 @@ class BotDataWizard(DataWizard):
 
     def create_balanced_bot_train_test_set(self,
                                            experiments: list[Swarm],
+                                           feature_set_number: int,
                                            randomization: bool = False) -> list[GeneralDataset]:
 
         random.seed(Parser.read_seed())
@@ -76,6 +80,7 @@ class BotDataWizard(DataWizard):
                 bot_dataset = BotDataWizard.slice_train_test_experiments(bot=bot_index,
                                                                          train_experiments=train_experiments,
                                                                          test_experiments=test_experiments,
+                                                                         feature_set_number=feature_set_number,
                                                                          down_sampling_steps=self.down_sampling_steps)
                 dataset.append(bot_dataset)
 

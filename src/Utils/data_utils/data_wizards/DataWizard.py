@@ -11,11 +11,13 @@ class DataWizard:
                  timesteps: int,
                  time_window: int,
                  experiments: list[Swarm],
+                 feature_set_number: int,
                  down_sampling_steps: int = 1,
                  preprocessing_type: str = 'raw'):
         self.timesteps: int = timesteps - 1
         self.time_window: int = time_window
         self.experiments: list[Swarm] = experiments
+        self.feature_set_number = feature_set_number
         self.down_sampling_steps = down_sampling_steps
         self.preprocessing_type = preprocessing_type
 
@@ -31,8 +33,9 @@ class DataWizard:
 
     @staticmethod
     def slice_train_test_experiments(bot: int,
-                                     train_experiments,
-                                     test_experiments,
+                                     train_experiments: list[Swarm],
+                                     test_experiments: list[Swarm],
+                                     feature_set_number: int,
                                      down_sampling_steps: int = 1) -> GeneralDataset:
 
         """
@@ -41,6 +44,7 @@ class DataWizard:
         Experiments are concatenated one after the other in order to create an unique time series.
         Parameters
         ----------
+        feature_set_number
         bot: int = the current bot to analyze
         train_experiments
         test_experiments
@@ -54,11 +58,13 @@ class DataWizard:
         bot_train_dataset, bot_train_target_dataset = DataWizard.retrieve_features_and_target(
             bot=bot,
             experiments=train_experiments,
+            feature_set_number=feature_set_number,
             down_sampling_steps=down_sampling_steps
         )
         bot_test_dataset, bot_test_target_dataset = DataWizard.retrieve_features_and_target(
             bot=bot,
             experiments=test_experiments,
+            feature_set_number=feature_set_number,
             down_sampling_steps=down_sampling_steps
         )
         # numpy concatenate creates an unique time series of all the experiments
@@ -73,9 +79,10 @@ class DataWizard:
 
     @staticmethod
     def slice_train_val_test_experiments(bot: int,
-                                         train_experiments,
-                                         validation_experiments,
-                                         test_experiments,
+                                         train_experiments: list[Swarm],
+                                         validation_experiments: list[Swarm],
+                                         test_experiments: list[Swarm],
+                                         feature_set_number: int,
                                          down_sampling_steps: int = 1) -> TrValTeDataset:
 
         """
@@ -83,6 +90,7 @@ class DataWizard:
         Method that retrieves the features of each bot and stacks them in order to be analyzed by the learning model.
         Parameters
         ----------
+        feature_set_number
         bot: int = the current bot to analyze
         train_experiments
         validation_experiments
@@ -97,16 +105,19 @@ class DataWizard:
         bot_train_dataset, bot_train_target_dataset = DataWizard.retrieve_features_and_target(
             bot=bot,
             experiments=train_experiments,
+            feature_set_number=feature_set_number,
             down_sampling_steps=down_sampling_steps
         )
         bot_val_dataset, bot_val_target_dataset = DataWizard.retrieve_features_and_target(
             bot=bot,
             experiments=validation_experiments,
+            feature_set_number=feature_set_number,
             down_sampling_steps=down_sampling_steps
         )
         bot_test_dataset, bot_test_target_dataset = DataWizard.retrieve_features_and_target(
             bot=bot,
             experiments=test_experiments,
+            feature_set_number=feature_set_number,
             down_sampling_steps=down_sampling_steps
         )
 
@@ -124,9 +135,10 @@ class DataWizard:
     @staticmethod
     def retrieve_bot_features(bot: FootBot,
                               swarm: Swarm,
+                              feature_set_number: int,
                               down_sampling_steps: int) -> list[np.ndarray]:
 
-        features_list = Parser.read_features_set()
+        features_list = Parser.read_features_set(feature_set_number=feature_set_number)
 
         vector = []
         if 'single_robot_positions' in features_list:
@@ -170,13 +182,17 @@ class DataWizard:
         return vector
 
     @staticmethod
-    def retrieve_features_and_target(bot: int, experiments: list[Swarm], down_sampling_steps: int = 1):
+    def retrieve_features_and_target(bot: int,
+                                     experiments: list[Swarm],
+                                     feature_set_number: int,
+                                     down_sampling_steps: int = 1):
         bot_dataset = []
         bot_target_dataset = []
 
         for exp in experiments:
             retrieved_features = np.asarray(DataWizard.retrieve_bot_features(bot=exp.list_of_footbots[bot],
                                                                              swarm=exp,
+                                                                             feature_set_number=feature_set_number,
                                                                              down_sampling_steps=down_sampling_steps))
 
             bot_dataset.append(retrieved_features)

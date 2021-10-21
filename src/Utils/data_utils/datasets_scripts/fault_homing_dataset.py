@@ -23,10 +23,11 @@ def create_fault_homing_csv_logs():
     fault_timesteps = [0, 500, 1000, 2500]
 
     # variables to modify simulation parameters
-    arena_dimensions = [10, 14, 18, 20]
+    arena_dimensions = [5, 7, 9, 11]
     initial_arena_size = arena_dimensions[0] ** 2
-    initial_bot_number = 35
-    initial_light_intensity = 5.0
+    initial_bot_number = 9
+    initial_light_intensity = 4.0
+    initial_exp_length = 200
 
     print('Doing Fault')
     seeds = random.sample(range(1000000), (len(arena_dimensions) ** 2)
@@ -37,22 +38,24 @@ def create_fault_homing_csv_logs():
     for x_length in arena_dimensions:
         for y_length in arena_dimensions:
             print('Doing arena {}x{}'.format(x_length, y_length))
-            current_bot_number, current_light_intensity = compute_parameters(
+            current_bot_number, current_exp_length, current_light_intensity = compute_parameters(
                 par_x_length=x_length,
                 par_y_length=y_length,
                 par_initial_arena_size=initial_arena_size,
                 par_initial_bot_number=initial_bot_number,
+                par_initial_exp_length=initial_exp_length,
                 par_initial_light_intensity=initial_light_intensity)
 
             for fault_timestep in fault_timesteps:
                 print('Doing fault timestep: ' + str(fault_timestep))
                 for i in range(single_bot_fault_repetitions):
-                    print('Doing rep: {} out of {}'.format(i, single_bot_fault_repetitions))
+                    print('Doing rep: {} out of {}'.format(i+1, single_bot_fault_repetitions))
                     modify_homing_xml_file(par_element_tree=xml_file,
                                            par_root=root,
                                            par_x_length=x_length,
                                            par_y_length=y_length,
                                            par_current_bot_number=current_bot_number,
+                                           par_exp_length=current_exp_length,
                                            par_light_intensity=current_light_intensity,
                                            par_random_seed=seeds[i])
 
@@ -76,11 +79,12 @@ def create_fault_homing_csv_logs():
     counter = 0
     for x_length in arena_dimensions:
         for y_length in arena_dimensions:
-            current_bot_number, current_light_intensity = compute_parameters(
+            current_bot_number, current_exp_length, current_light_intensity = compute_parameters(
                 par_x_length=x_length,
                 par_y_length=y_length,
                 par_initial_arena_size=initial_arena_size,
                 par_initial_bot_number=initial_bot_number,
+                par_initial_exp_length=initial_exp_length,
                 par_initial_light_intensity=initial_light_intensity
             )
             for fault_module in fault_modules:
@@ -90,6 +94,7 @@ def create_fault_homing_csv_logs():
                                            par_x_length=x_length,
                                            par_y_length=y_length,
                                            par_current_bot_number=current_bot_number,
+                                           par_exp_length=current_exp_length,
                                            par_light_intensity=current_light_intensity,
                                            par_random_seed=seeds[counter])
 

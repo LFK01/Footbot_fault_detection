@@ -1,6 +1,8 @@
-import os
-from datetime import datetime
 import pickle
+from os.path import join, exists
+from os import makedirs, listdir
+from datetime import datetime
+from PIL import Image
 
 import matplotlib.pyplot as plt
 from src.classes.FootBot import FootBot
@@ -61,7 +63,7 @@ class Plotter:
         plt.ylabel("Y")
         plt.title(title)
         plt.legend(loc="upper right", markerscale=18)
-        path = os.path.join(path, title.replace(" ", "_"))
+        path = join(path, title.replace(" ", "_"))
         plt.savefig(path)
         if show_plot:
             plt.show()
@@ -619,257 +621,353 @@ class Plotter:
                 plt.show()
             plt.close(fig)
 
+    @staticmethod
+    def make_folder_from_json(par_task_name: str, file_number: int) -> str:
+        new_folder_name = Parser.read_filename(task_name=par_task_name,
+                                               file_number=file_number).split('/')[-1].split('.')[0]
+        # find project root
+        root = Parser.get_project_root()
+        saving_graphs_file_path = join(root, 'images', new_folder_name)
 
-def make_folder(par_task_name: str, file_number: int) -> str:
-    new_folder_name = Parser.read_filename(task_name=par_task_name,
-                                           file_number=file_number).split('/')[-1].split('.')[0]
-    # find project root
-    root = Parser.get_project_root()
-    saving_graphs_file_path = os.path.join(root, 'images', new_folder_name)
+        if exists(saving_graphs_file_path):
+            saving_graphs_file_path = saving_graphs_file_path + '_' + datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+        makedirs(saving_graphs_file_path)
 
-    if os.path.exists(saving_graphs_file_path):
-        saving_graphs_file_path = saving_graphs_file_path + '_' + datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-    os.makedirs(saving_graphs_file_path)
+        return saving_graphs_file_path
 
-    return saving_graphs_file_path
+    @staticmethod
+    def make_folder_from_complete_file_path(saving_graphs_file_path: str) -> str:
+        if exists(saving_graphs_file_path):
+            saving_graphs_file_path = saving_graphs_file_path + '_' + datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+        makedirs(saving_graphs_file_path)
 
+        return saving_graphs_file_path
 
-def divide_flocks(footbots_list: list[FootBot]) -> tuple[list[FootBot], list[FootBot]]:
-    faulty_bots = [bot for bot in footbots_list if any(bot.fault_time_series)]
-    nominal_bots = [bot for bot in footbots_list if not any(bot.fault_time_series)]
+    @staticmethod
+    def divide_flocks(footbots_list: list[FootBot]) -> tuple[list[FootBot], list[FootBot]]:
+        faulty_bots = [bot for bot in footbots_list if any(bot.fault_time_series)]
+        nominal_bots = [bot for bot in footbots_list if not any(bot.fault_time_series)]
 
-    return faulty_bots, nominal_bots
+        return faulty_bots, nominal_bots
 
+    @staticmethod
+    def build_generic_swarm(par_task_name: str, file_number: int):
+        neighborhood_radius = Parser.read_neighborhood_radius()
+        time_window_size = Parser.read_time_window()
+        file = Parser.read_filename(task_name=par_task_name, file_number=file_number)
+        timesteps = Parser.retrieve_timesteps_series_from_dataframe(
+            df_footbot_positions=Parser.open_pandas_dataframe(filename=file,
+                                                              task_name=par_task_name)
+        )
+        footbots_list = Parser.create_generic_swarm(task_name=par_task_name,
+                                                    filename=file,
+                                                    neighborhood_radius=neighborhood_radius,
+                                                    time_window_size=time_window_size)
+        return footbots_list, Swarm(timesteps=timesteps,
+                                    swarm=footbots_list)
 
-def build_generic_swarm(par_task_name: str, file_number: int):
-    neighborhood_radius = Parser.read_neighborhood_radius()
-    time_window_size = Parser.read_time_window()
-    file = Parser.read_filename(task_name=par_task_name, file_number=file_number)
-    timesteps = Parser.retrieve_timesteps_series_from_dataframe(
-        df_footbot_positions=Parser.open_pandas_dataframe(filename=file,
-                                                          task_name=task_name)
-    )
-    footbots_list = Parser.create_generic_swarm(task_name=task_name,
-                                                filename=file,
-                                                neighborhood_radius=neighborhood_radius,
-                                                time_window_size=time_window_size)
-    return footbots_list, Swarm(timesteps=timesteps,
-                                swarm=footbots_list)
+    @staticmethod
+    def build_foraging_swarm(par_task_name: str, file_number: int):
+        neighborhood_radius = Parser.read_neighborhood_radius()
+        time_window_size = Parser.read_time_window()
+        file = Parser.read_filename(task_name=par_task_name, file_number=file_number)
+        timesteps = Parser.retrieve_timesteps_series_from_dataframe(
+            df_footbot_positions=Parser.open_pandas_dataframe(filename=file,
+                                                              task_name=par_task_name)
+        )
 
+        footbots_list = Parser.create_foraging_swarm(filename=file,
+                                                     neighborhood_radius=neighborhood_radius,
+                                                     time_window_size=time_window_size)
+        root = Parser.get_project_root()
+        path = join(root, 'cached_files')
+        with open(join(path, 'foraging_footbot_list' +
+                             datetime.now().strftime('%d-%m-%Y_%H-%M') +
+                             '70_bots_800sec.pkl'),
+                  'wb') as output_file:
+            pickle.dump(footbots_list, output_file)
 
-def build_foraging_swarm(par_task_name: str, file_number: int):
-    neighborhood_radius = Parser.read_neighborhood_radius()
-    time_window_size = Parser.read_time_window()
-    file = Parser.read_filename(task_name=par_task_name, file_number=file_number)
-    timesteps = Parser.retrieve_timesteps_series_from_dataframe(
-        df_footbot_positions=Parser.open_pandas_dataframe(filename=file,
-                                                          task_name=par_task_name)
-    )
+        return footbots_list, Swarm(timesteps=timesteps,
+                                    swarm=footbots_list)
 
-    footbots_list = Parser.create_foraging_swarm(filename=file,
-                                                 neighborhood_radius=neighborhood_radius,
-                                                 time_window_size=time_window_size)
-    root = Parser.get_project_root()
-    path = os.path.join(root, 'cached_files')
-    with open(os.path.join(path, 'foraging_footbot_list' +
-                                 datetime.now().strftime('%d-%m-%Y_%H-%M') +
-                                 '70_bots_800sec.pkl'),
-              'wb') as output_file:
-        pickle.dump(footbots_list, output_file)
+    @staticmethod
+    def plot_traj_and_fault_in_separate_window(nominal_bots: list[FootBot],
+                                               faulty_bots: list[FootBot],
+                                               saving_path: str,
+                                               main_swarm: Swarm,
+                                               title: str = None):
+        print('Plotting trajectories')
+        if title is not None:
+            Plotter.plot_trajectories(footbot_list=nominal_bots,
+                                      swarm=main_swarm,
+                                      plot_swarm=True,
+                                      path=saving_path,
+                                      show_plot=False,
+                                      title='nom' + title)
+            Plotter.plot_trajectories(footbot_list=faulty_bots,
+                                      swarm=main_swarm,
+                                      plot_swarm=False,
+                                      path=saving_path,
+                                      show_plot=False,
+                                      title='fault' + title)
+            Plotter.plot_faulty_robots(footbot_list=main_swarm.list_of_footbots,
+                                       path=saving_path,
+                                       show_plot=False,
+                                       title='num' + title)
+        else:
+            Plotter.plot_trajectories(footbot_list=nominal_bots,
+                                      swarm=main_swarm,
+                                      plot_swarm=True,
+                                      path=saving_path,
+                                      show_plot=False)
+            Plotter.plot_trajectories(footbot_list=faulty_bots,
+                                      swarm=main_swarm,
+                                      plot_swarm=False,
+                                      path=saving_path,
+                                      show_plot=False)
+            Plotter.plot_faulty_robots(footbot_list=main_swarm.list_of_footbots,
+                                       path=saving_path,
+                                       show_plot=False)
 
-    return footbots_list, Swarm(timesteps=timesteps,
-                                swarm=footbots_list)
+    @staticmethod
+    def plot_common_features(nominal_bots: list[FootBot],
+                             faulty_bots: list[FootBot],
+                             main_swarm: Swarm,
+                             saving_graphs_file_path,
+                             show_all_graphs: bool = True):
+        Plotter.plot_trajectories(footbot_list=nominal_bots,
+                                  swarm=main_swarm,
+                                  plot_swarm=False,
+                                  path=saving_graphs_file_path,
+                                  title="Nominal Bots Trajectories",
+                                  show_plot=show_all_graphs)
+        Plotter.plot_trajectories(footbot_list=faulty_bots,
+                                  swarm=main_swarm,
+                                  plot_swarm=False,
+                                  path=saving_graphs_file_path,
+                                  title="Fault Bots Trajectories",
+                                  show_plot=show_all_graphs)
+        Plotter.plot_speeds(footbot_list=nominal_bots,
+                            path=saving_graphs_file_path,
+                            title="Nominal Bots Speeds",
+                            show_plot=show_all_graphs)
+        Plotter.plot_speeds(footbot_list=faulty_bots,
+                            path=saving_graphs_file_path,
+                            title="Fault Bots Speeds",
+                            show_plot=show_all_graphs)
+        Plotter.plot_cumulative_traversed_distance(footbot_list=nominal_bots,
+                                                   path=saving_graphs_file_path,
+                                                   title="Nominal Bots Cumulative Speeds",
+                                                   show_plot=show_all_graphs)
+        Plotter.plot_cumulative_traversed_distance(footbot_list=faulty_bots,
+                                                   path=saving_graphs_file_path,
+                                                   title="Fault Bots Cumulative Speeds",
+                                                   show_plot=show_all_graphs)
+        Plotter.plot_trajectory_entropy(footbot_list=nominal_bots,
+                                        path=saving_graphs_file_path,
+                                        title="Nominal Bots Trajectory Entropy",
+                                        show_plot=show_all_graphs)
+        Plotter.plot_trajectory_entropy(footbot_list=faulty_bots,
+                                        path=saving_graphs_file_path,
+                                        title="Fault Bots Trajectory Entropy",
+                                        show_plot=show_all_graphs)
+        Plotter.plot_footbot_area_coverage(footbot_list=nominal_bots,
+                                           path=saving_graphs_file_path,
+                                           additional_title_string="Nominal",
+                                           show_plot=show_all_graphs)
+        Plotter.plot_footbot_area_coverage(footbot_list=faulty_bots,
+                                           path=saving_graphs_file_path,
+                                           additional_title_string="Fault",
+                                           show_plot=show_all_graphs)
+        Plotter.plot_swarm_area_coverage(main_swarm=main_swarm,
+                                         path=saving_graphs_file_path,
+                                         show_plot=show_all_graphs)
 
-
-def plot_common_features(nominal_bots: list[FootBot],
-                         faulty_bots: list[FootBot],
-                         main_swarm: Swarm,
-                         saving_graphs_file_path,
-                         show_all_graphs: bool = True):
-    Plotter.plot_trajectories(footbot_list=nominal_bots,
-                              swarm=main_swarm,
-                              plot_swarm=False,
-                              path=saving_graphs_file_path,
-                              title="Nominal Bots Trajectories",
-                              show_plot=show_all_graphs)
-    Plotter.plot_trajectories(footbot_list=faulty_bots,
-                              swarm=main_swarm,
-                              plot_swarm=False,
-                              path=saving_graphs_file_path,
-                              title="Fault Bots Trajectories",
-                              show_plot=show_all_graphs)
-    Plotter.plot_speeds(footbot_list=nominal_bots,
-                        path=saving_graphs_file_path,
-                        title="Nominal Bots Speeds",
-                        show_plot=show_all_graphs)
-    Plotter.plot_speeds(footbot_list=faulty_bots,
-                        path=saving_graphs_file_path,
-                        title="Fault Bots Speeds",
-                        show_plot=show_all_graphs)
-    Plotter.plot_cumulative_traversed_distance(footbot_list=nominal_bots,
-                                               path=saving_graphs_file_path,
-                                               title="Nominal Bots Cumulative Speeds",
-                                               show_plot=show_all_graphs)
-    Plotter.plot_cumulative_traversed_distance(footbot_list=faulty_bots,
-                                               path=saving_graphs_file_path,
-                                               title="Fault Bots Cumulative Speeds",
-                                               show_plot=show_all_graphs)
-    Plotter.plot_trajectory_entropy(footbot_list=nominal_bots,
+        Plotter.plot_swarm_cohesion(footbot_list=nominal_bots,
                                     path=saving_graphs_file_path,
-                                    title="Nominal Bots Trajectory Entropy",
+                                    title="Nominal Average Distance from all Bots for each bot",
                                     show_plot=show_all_graphs)
-    Plotter.plot_trajectory_entropy(footbot_list=faulty_bots,
+        Plotter.plot_swarm_cohesion(footbot_list=faulty_bots,
                                     path=saving_graphs_file_path,
-                                    title="Fault Bots Trajectory Entropy",
+                                    title="Fault Average Distance from all Bots for each bot",
                                     show_plot=show_all_graphs)
-    Plotter.plot_footbot_area_coverage(footbot_list=nominal_bots,
-                                       path=saving_graphs_file_path,
-                                       additional_title_string="Nominal",
-                                       show_plot=show_all_graphs)
-    Plotter.plot_footbot_area_coverage(footbot_list=faulty_bots,
-                                       path=saving_graphs_file_path,
-                                       additional_title_string="Fault",
-                                       show_plot=show_all_graphs)
-    Plotter.plot_swarm_area_coverage(main_swarm=main_swarm,
-                                     path=saving_graphs_file_path,
-                                     show_plot=show_all_graphs)
-
-    Plotter.plot_swarm_cohesion(footbot_list=nominal_bots,
-                                path=saving_graphs_file_path,
-                                title="Nominal Average Distance from all Bots for each bot",
-                                show_plot=show_all_graphs)
-    Plotter.plot_swarm_cohesion(footbot_list=faulty_bots,
-                                path=saving_graphs_file_path,
-                                title="Fault Average Distance from all Bots for each bot",
-                                show_plot=show_all_graphs)
-    Plotter.plot_neighbors(footbot_list=nominal_bots,
-                           path=saving_graphs_file_path,
-                           title="Nominal Bots Neighbors",
-                           show_plot=show_all_graphs)
-    Plotter.plot_neighbors(footbot_list=faulty_bots,
-                           path=saving_graphs_file_path,
-                           title="Fault Bots Neighbors",
-                           show_plot=show_all_graphs)
-
-    Plotter.plot_faulty_robots(footbot_list=main_swarm.list_of_footbots,
+        Plotter.plot_neighbors(footbot_list=nominal_bots,
                                path=saving_graphs_file_path,
-                               title="Number of Faulty Bots",
+                               title="Nominal Bots Neighbors",
+                               show_plot=show_all_graphs)
+        Plotter.plot_neighbors(footbot_list=faulty_bots,
+                               path=saving_graphs_file_path,
+                               title="Fault Bots Neighbors",
                                show_plot=show_all_graphs)
 
-
-def plot_foraging_features(nominal_bots: list[FootBot],
-                           faulty_bots: list[FootBot],
-                           saving_graphs_file_path,
-                           show_all_graphs: bool = True):
-    Plotter.plot_exploring_unsuccessfully_time_series(footbot_list=nominal_bots,
-                                                      path=saving_graphs_file_path,
-                                                      title="Nominal Bot searching time",
-                                                      show_plot=show_all_graphs)
-    Plotter.plot_exploring_unsuccessfully_time_series(footbot_list=faulty_bots,
-                                                      path=saving_graphs_file_path,
-                                                      title="Faulty Bot searching time",
-                                                      show_plot=show_all_graphs)
-    Plotter.plot_has_food_time_series(footbot_list=nominal_bots,
-                                      path=saving_graphs_file_path,
-                                      title="Nominal Bot carrying food",
-                                      show_plot=show_all_graphs)
-    Plotter.plot_has_food_time_series(footbot_list=faulty_bots,
-                                      path=saving_graphs_file_path,
-                                      title="Faulty Bot carrying food",
-                                      show_plot=show_all_graphs)
-    Plotter.plot_state_time_series(footbot_list=nominal_bots,
+        Plotter.plot_faulty_robots(footbot_list=main_swarm.list_of_footbots,
                                    path=saving_graphs_file_path,
-                                   title="Nominal Bot states",
+                                   title="Number of Faulty Bots",
                                    show_plot=show_all_graphs)
-    Plotter.plot_state_time_series(footbot_list=faulty_bots,
-                                   path=saving_graphs_file_path,
-                                   title="Faulty Bot states",
-                                   show_plot=show_all_graphs)
-    Plotter.plot_time_rested_time_series(footbot_list=nominal_bots,
-                                         path=saving_graphs_file_path,
-                                         title="Nominal Bot rested time",
-                                         show_plot=show_all_graphs)
-    Plotter.plot_time_rested_time_series(footbot_list=faulty_bots,
-                                         path=saving_graphs_file_path,
-                                         title="Faulty Bot rested time",
-                                         show_plot=show_all_graphs)
-    Plotter.plot_total_food_time_series(footbot_list=nominal_bots,
-                                        path=saving_graphs_file_path,
-                                        title="Nominal Bot total food",
-                                        show_plot=show_all_graphs)
-    Plotter.plot_total_food_time_series(footbot_list=faulty_bots,
-                                        path=saving_graphs_file_path,
-                                        title="Faulty Bot total food",
-                                        show_plot=show_all_graphs)
-    Plotter.plot_time_searching_for_nest_time_series(footbot_list=nominal_bots,
-                                                     path=saving_graphs_file_path,
-                                                     title="Nominal Bot rested time",
-                                                     show_plot=show_all_graphs)
-    Plotter.plot_time_searching_for_nest_time_series(footbot_list=faulty_bots,
-                                                     path=saving_graphs_file_path,
-                                                     title="Faulty Bot rested time",
-                                                     show_plot=show_all_graphs)
 
+    @staticmethod
+    def plot_foraging_features(nominal_bots: list[FootBot],
+                               faulty_bots: list[FootBot],
+                               saving_graphs_file_path,
+                               show_all_graphs: bool = True):
+        Plotter.plot_exploring_unsuccessfully_time_series(footbot_list=nominal_bots,
+                                                          path=saving_graphs_file_path,
+                                                          title="Nominal Bot searching time",
+                                                          show_plot=show_all_graphs)
+        Plotter.plot_exploring_unsuccessfully_time_series(footbot_list=faulty_bots,
+                                                          path=saving_graphs_file_path,
+                                                          title="Faulty Bot searching time",
+                                                          show_plot=show_all_graphs)
+        Plotter.plot_has_food_time_series(footbot_list=nominal_bots,
+                                          path=saving_graphs_file_path,
+                                          title="Nominal Bot carrying food",
+                                          show_plot=show_all_graphs)
+        Plotter.plot_has_food_time_series(footbot_list=faulty_bots,
+                                          path=saving_graphs_file_path,
+                                          title="Faulty Bot carrying food",
+                                          show_plot=show_all_graphs)
+        Plotter.plot_state_time_series(footbot_list=nominal_bots,
+                                       path=saving_graphs_file_path,
+                                       title="Nominal Bot states",
+                                       show_plot=show_all_graphs)
+        Plotter.plot_state_time_series(footbot_list=faulty_bots,
+                                       path=saving_graphs_file_path,
+                                       title="Faulty Bot states",
+                                       show_plot=show_all_graphs)
+        Plotter.plot_time_rested_time_series(footbot_list=nominal_bots,
+                                             path=saving_graphs_file_path,
+                                             title="Nominal Bot rested time",
+                                             show_plot=show_all_graphs)
+        Plotter.plot_time_rested_time_series(footbot_list=faulty_bots,
+                                             path=saving_graphs_file_path,
+                                             title="Faulty Bot rested time",
+                                             show_plot=show_all_graphs)
+        Plotter.plot_total_food_time_series(footbot_list=nominal_bots,
+                                            path=saving_graphs_file_path,
+                                            title="Nominal Bot total food",
+                                            show_plot=show_all_graphs)
+        Plotter.plot_total_food_time_series(footbot_list=faulty_bots,
+                                            path=saving_graphs_file_path,
+                                            title="Faulty Bot total food",
+                                            show_plot=show_all_graphs)
+        Plotter.plot_time_searching_for_nest_time_series(footbot_list=nominal_bots,
+                                                         path=saving_graphs_file_path,
+                                                         title="Nominal Bot rested time",
+                                                         show_plot=show_all_graphs)
+        Plotter.plot_time_searching_for_nest_time_series(footbot_list=faulty_bots,
+                                                         path=saving_graphs_file_path,
+                                                         title="Faulty Bot rested time",
+                                                         show_plot=show_all_graphs)
 
-def main_foraging(par_task_name: str,
-                  file_number: int,
-                  show_all_graphs: bool = True):
-    saving_graphs_file_path = make_folder(par_task_name=par_task_name, file_number=file_number)
+    @staticmethod
+    def main_foraging(par_task_name: str,
+                      file_number: int,
+                      show_all_graphs: bool = True):
+        saving_graphs_file_path = Plotter.make_folder_from_json(par_task_name=par_task_name, file_number=file_number)
 
-    footbots_list, main_swarm = build_foraging_swarm(par_task_name=par_task_name,
-                                                     file_number=file_number)
+        footbots_list, main_swarm = Plotter.build_foraging_swarm(par_task_name=par_task_name,
+                                                                 file_number=file_number)
 
-    faulty_bots, nominal_bots = divide_flocks(footbots_list=footbots_list)
+        faulty_bots, nominal_bots = Plotter.divide_flocks(footbots_list=footbots_list)
 
-    plot_common_features(nominal_bots=nominal_bots,
-                         faulty_bots=faulty_bots,
-                         main_swarm=main_swarm,
-                         saving_graphs_file_path=saving_graphs_file_path,
-                         show_all_graphs=show_all_graphs)
+        Plotter.plot_common_features(nominal_bots=nominal_bots,
+                                     faulty_bots=faulty_bots,
+                                     main_swarm=main_swarm,
+                                     saving_graphs_file_path=saving_graphs_file_path,
+                                     show_all_graphs=show_all_graphs)
 
-    plot_foraging_features(nominal_bots=nominal_bots,
-                           faulty_bots=faulty_bots,
-                           saving_graphs_file_path=saving_graphs_file_path)
+        Plotter.plot_foraging_features(nominal_bots=nominal_bots,
+                                       faulty_bots=faulty_bots,
+                                       saving_graphs_file_path=saving_graphs_file_path)
 
+    @staticmethod
+    def plot_all_cached_swarm_in_directory(task_name: str):
+        folder = Parser.return_cached_swarm_directory_path(experiment_name=task_name)
+        root = Parser.get_project_root()
+        images_path = join(root, 'images')
+        for file in listdir(folder):
+            file_path = join(folder, file)
+            with open(file_path, 'rb') as f:
+                swarm = pickle.load(f)
+            print('loaded {}'.format(file))
+            folder_path = Plotter.make_folder_from_complete_file_path(join(images_path, file))
+            faulty_bots, nominal_bots = Plotter.divide_flocks(swarm.list_of_footbots)
+            Plotter.plot_traj_and_fault_in_separate_window(nominal_bots=nominal_bots,
+                                                           faulty_bots=faulty_bots,
+                                                           saving_path=folder_path,
+                                                           main_swarm=swarm,
+                                                           title=file.replace('.pkl', ''))
+            for image_file in listdir(folder_path):
+                image_path = join(folder_path, image_file)
+                img = Image.open(image_path)
+                img.show()
 
-def main_dispersion(par_task_name: str,
-                    file_number: int,
-                    show_all_graphs: bool = True):
-    saving_graphs_file_path = make_folder(par_task_name=par_task_name, file_number=file_number)
+    @staticmethod
+    def plot_from_json_cached_swarm(par_task_name: str,
+                                    file_number: int,
+                                    show_all_graphs: bool = True):
+        saving_graphs_file_path = Plotter.make_folder_from_json(par_task_name=par_task_name, file_number=file_number)
 
-    footbots_list, main_swarm = build_generic_swarm(par_task_name=par_task_name,
-                                                    file_number=file_number)
+        footbots_list, main_swarm = Plotter.load_generic_swarm_from_json(par_task_name=par_task_name,
+                                                                         file_number=file_number)
 
-    faulty_bots, nominal_bots = divide_flocks(footbots_list=footbots_list)
+        faulty_bots, nominal_bots = Plotter.divide_flocks(footbots_list=footbots_list)
 
-    plot_common_features(nominal_bots=nominal_bots,
-                         faulty_bots=faulty_bots,
-                         main_swarm=main_swarm,
-                         saving_graphs_file_path=saving_graphs_file_path,
-                         show_all_graphs=show_all_graphs)
+        Plotter.plot_common_features(nominal_bots=nominal_bots,
+                                     faulty_bots=faulty_bots,
+                                     main_swarm=main_swarm,
+                                     saving_graphs_file_path=saving_graphs_file_path,
+                                     show_all_graphs=show_all_graphs)
 
+    @staticmethod
+    def load_generic_swarm_from_json(par_task_name: str,
+                                     file_number: int) -> tuple[list[FootBot], Swarm]:
+        filename = Parser.read_filename(task_name=par_task_name,
+                                        file_number=file_number)
+        path = Parser.return_cached_swarm_directory_path(experiment_name=par_task_name)
+        path = join(path, filename)
+        with open(path, 'rb') as f:
+            swarm = pickle.load(f)
+        print('loaded {}'.format(filename))
+        return swarm.list_of_footbots, swarm
 
-def plot_model_performances():
-    x_values = [0, 1, 2, 3, 4, 5]
-    y_values = [0.8700, 0.9840, 0.7904, 0.9994, 0.9920, 0.8335]
-    bot_labels = ['Bot 0', 'Bot 1', 'Bot 3', 'Bot 4', 'Bot 7', 'Bot 8']
+    @staticmethod
+    def main_dispersion(par_task_name: str,
+                        file_number: int,
+                        show_all_graphs: bool = True):
+        saving_graphs_file_path = Plotter.make_folder_from_json(par_task_name=par_task_name, file_number=file_number)
 
-    plt.figure()
-    plt.scatter(x=x_values, y=y_values, label='single bot', alpha=0.7)
-    for x_val, y_val in zip(x_values, y_values):
-        plt.text(x_val + 0.03, y_val + 0.03, str(y_val)[:4])
-    plt.xticks(ticks=x_values, labels=bot_labels)
-    plt.axis([-0.5, 5.5, -0.1, 1.1])
-    plt.ylabel("Performance")
-    plt.title("Gradient Boosting Performance")
-    plt.hlines(0.9427457141610229, xmin=0, xmax=5, color='r', linestyles='dashed', label='merged bots')
-    plt.text(5, 0.97, str(0.94))
-    plt.legend()
-    plt.show()
+        footbots_list, main_swarm = Plotter.build_generic_swarm(par_task_name=par_task_name,
+                                                                file_number=file_number)
+
+        faulty_bots, nominal_bots = Plotter.divide_flocks(footbots_list=footbots_list)
+
+        Plotter.plot_common_features(nominal_bots=nominal_bots,
+                                     faulty_bots=faulty_bots,
+                                     main_swarm=main_swarm,
+                                     saving_graphs_file_path=saving_graphs_file_path,
+                                     show_all_graphs=show_all_graphs)
+
+    @staticmethod
+    def plot_model_performances():
+        x_values = [0, 1, 2, 3, 4, 5]
+        y_values = [0.8700, 0.9840, 0.7904, 0.9994, 0.9920, 0.8335]
+        bot_labels = ['Bot 0', 'Bot 1', 'Bot 3', 'Bot 4', 'Bot 7', 'Bot 8']
+
+        plt.figure()
+        plt.scatter(x=x_values, y=y_values, label='single bot', alpha=0.7)
+        for x_val, y_val in zip(x_values, y_values):
+            plt.text(x_val + 0.03, y_val + 0.03, str(y_val)[:4])
+        plt.xticks(ticks=x_values, labels=bot_labels)
+        plt.axis([-0.5, 5.5, -0.1, 1.1])
+        plt.ylabel("Performance")
+        plt.title("Gradient Boosting Performance")
+        plt.hlines(0.9427457141610229, xmin=0, xmax=5, color='r', linestyles='dashed', label='merged bots')
+        plt.text(5, 0.97, str(0.94))
+        plt.legend()
+        plt.show()
 
 
 if __name__ == "__main__":
-    task_name = 'DISP'
-    main_dispersion(par_task_name=task_name,
-                    file_number=1,
-                    show_all_graphs=False)
+    main_task_name = 'HOME'
+    Plotter.plot_all_cached_swarm_in_directory(task_name=main_task_name)

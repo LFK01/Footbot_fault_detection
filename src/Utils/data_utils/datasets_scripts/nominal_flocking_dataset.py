@@ -5,7 +5,7 @@ from xml.etree import ElementTree
 from xml.etree.ElementTree import Element
 
 from src.Utils.Parser import Parser
-from src.data_writing import build_swarm_no_foraging_stats
+from src.model_training import execute_training_feature_set_datasets
 
 
 def create_nominal_flocking_csv_logs():
@@ -74,5 +74,4 @@ def modify_nominal_flocking_xml_file(par_element_tree: ElementTree.ElementTree,
 
 
 if __name__ == "__main__":
-    task_name = 'FLOC'
-    build_swarm_no_foraging_stats(task_name=task_name)
+    create_nominal_flocking_csv_logs()

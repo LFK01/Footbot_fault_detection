@@ -6,6 +6,7 @@ import subprocess
 from xml.etree import ElementTree
 
 from src.Utils.Parser import Parser
+from src.model_training import execute_training_feature_set_datasets
 
 
 def modify_warehouse_xsett_xml_file(par_element_tree: ElementTree.ElementTree,
@@ -142,4 +143,4 @@ def create_nominal_warehouse_csv_logs():
 
 
 if __name__ == '__main__':
-    create_nominal_warehouse_csv_logs()
+    execute_training_feature_set_datasets(task_name='WARE')

@@ -10,6 +10,10 @@ class SwarmDataWizard(DataWizard):
     def __init__(self,
                  timesteps: int,
                  time_window: int,
+                 feature_set_number: int,
                  experiments: list[Swarm]):
 
-        super().__init__(timesteps, time_window, experiments)
+        super().__init__(timesteps=timesteps,
+                         time_window=time_window,
+                         feature_set_number=feature_set_number,
+                         experiments=experiments)

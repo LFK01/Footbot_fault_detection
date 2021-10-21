@@ -6,6 +6,7 @@ from xml.etree.ElementTree import Element
 
 from src.Utils.Parser import Parser
 from src.data_writing import build_swarm_no_foraging_stats
+from src.model_training import execute_training_feature_set_datasets
 
 
 def modify_homing_xml_file(par_element_tree: ElementTree.ElementTree,
@@ -13,11 +14,12 @@ def modify_homing_xml_file(par_element_tree: ElementTree.ElementTree,
                            par_x_length: int,
                            par_y_length: int,
                            par_current_bot_number: int,
+                           par_exp_length: int,
                            par_light_intensity: float,
                            par_random_seed: int):
     for element_iterator in par_element_tree.iter():
         if element_iterator.tag == 'experiment':
-            element_iterator.attrib['length'] = '500'
+            element_iterator.attrib['length'] = str(par_exp_length)
         if element_iterator.tag == 'experiment':
             element_iterator.attrib['random_seed'] = str(par_random_seed)
         if element_iterator.tag == 'arena':
@@ -61,13 +63,15 @@ def compute_parameters(par_x_length: int,
                        par_y_length: int,
                        par_initial_arena_size: int,
                        par_initial_bot_number: int,
+                       par_initial_exp_length : int,
                        par_initial_light_intensity: float):
     current_arena_size = par_x_length * par_y_length
     size_increase = current_arena_size / par_initial_arena_size
     current_bot_number = int(size_increase * par_initial_bot_number)
+    current_exp_length = int(size_increase * par_initial_exp_length)
     current_light_intensity = size_increase * par_initial_light_intensity
 
-    return current_bot_number, current_light_intensity
+    return current_bot_number, current_exp_length, current_light_intensity
 
 
 def create_nominal_homing_csv_logs():
@@ -82,9 +86,10 @@ def create_nominal_homing_csv_logs():
     nominal_exp_repetitions = 4
 
     # variables to modify simulation parameters
-    arena_dimensions = [10, 14, 18, 20]
+    arena_dimensions = [5, 7, 9, 10]
     initial_arena_size = arena_dimensions[0] ** 2
-    initial_bot_number = 35
+    initial_bot_number = 9
+    initial_exp_length = 200
     initial_light_intensity = 5.0
 
     print('Doing Nominal')
@@ -92,11 +97,12 @@ def create_nominal_homing_csv_logs():
         for y_length in arena_dimensions:
             print('Doing Arena {}x{}'.format(x_length, y_length))
 
-            current_bot_number, current_light_intensity = compute_parameters(
+            current_bot_number, current_exp_length, current_light_intensity = compute_parameters(
                 par_x_length=x_length,
                 par_y_length=y_length,
                 par_initial_arena_size=initial_arena_size,
                 par_initial_bot_number=initial_bot_number,
+                par_initial_exp_length=initial_exp_length,
                 par_initial_light_intensity=initial_light_intensity)
 
             seeds = random.sample(range(0, 1000), nominal_exp_repetitions)
@@ -108,6 +114,7 @@ def create_nominal_homing_csv_logs():
                                        par_x_length=x_length,
                                        par_y_length=y_length,
                                        par_current_bot_number=current_bot_number,
+                                       par_exp_length=current_exp_length,
                                        par_light_intensity=current_light_intensity,
                                        par_random_seed=seeds[i])
 
@@ -125,4 +132,4 @@ def create_nominal_homing_csv_logs():
 
 if __name__ == '__main__':
     build_swarm_no_foraging_stats(task_name='HOME',
-                                  experiments_number_down_sampling=8)
+                                  experiments_number_down_sampling=2)

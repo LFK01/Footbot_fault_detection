@@ -4,8 +4,9 @@ from datetime import datetime
 from os.path import join
 from src.Utils.Parser import Parser
 from src.classes.Swarm import Swarm
+from src.Utils.data_utils.data_wizards.DataWizard import DataWizard
 from src.Utils.data_utils.data_wizards.BotDataWizard import BotDataWizard
-from src.Utils.data_utils.data_wizards.SwarmDataWizard import SwarmDataWizard
+from src.Utils.data_utils.data_wizards.PickleDataWizard import PickleDataWizard
 
 
 def build_swarm_no_foraging_stats(task_name: str,
@@ -99,7 +100,7 @@ def build_foraging_swarm(down_sampling: int):
         done_files += 1
 
 
-def build_dataset():
+def build_dataset(feature_set_number: int):
     with open('../cached_files/cached_swarms/149_experiments_15_bots.pkl',
               'rb') as input_file:
         experiment_list = pickle.load(input_file)
@@ -107,14 +108,15 @@ def build_dataset():
     print('loaded file')
 
     down_sampling = Parser.read_down_sampling_size()
-    timesteps = SwarmDataWizard.shortest_experiment_timesteps(experiment_list=experiment_list)
+    timesteps = DataWizard.shortest_experiment_timesteps(experiment_list=experiment_list)
     time_window_size = Parser.read_time_window()
 
     data_wizard = BotDataWizard(
         timesteps=timesteps,
         time_window=time_window_size,
         experiments=experiment_list,
-        down_sampling_steps=down_sampling)
+        down_sampling_steps=down_sampling,
+        feature_set_number=feature_set_number)
 
     data_wizard_datasets = data_wizard.datasets
 
@@ -125,6 +127,19 @@ def build_dataset():
         pickle.dump(data_wizard_datasets, output_file)
 
 
+def build_feature_set_datasets(main_task_name: str):
+    f_numbers = [1, 2, 3]
+    down_sampling = Parser.read_down_sampling_size()
+    time_window_size = Parser.read_time_window()
+
+    pickle_wizard = PickleDataWizard(time_window=time_window_size,
+                                     down_sampling_steps=down_sampling)
+
+    for main_feature_set_number in f_numbers:
+        print('Building feature set {} of task {}'.format(main_feature_set_number, main_task_name))
+        pickle_wizard.save_bot_train_test_dataset_specific_swarm(task_name=main_task_name,
+                                                                 feature_set_number=main_feature_set_number)
+
+
 if __name__ == "__main__":
-    build_swarm_no_foraging_stats(task_name='WARE',
-                                  experiments_number_down_sampling=10)
+    pass

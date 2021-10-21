@@ -41,11 +41,15 @@ class ShuffledBotsScikitModel:
     def train(self):
         self.model.fit(X=self.concatenated_train_datasets, y=self.concatenated_target_train_datasets)
 
-        with open('../cached_files/cached_trained_models/' + self.model_name + '_model'
-                  + datetime.now().strftime('%d-%m-%Y_%H-%M') + '.pkl', 'wb') as f:
+        root = Parser.get_project_root()
+        model_string = self.model_name + '_model' + datetime.now().strftime('%d-%m-%Y_%H-%M') + '.pkl'
+        path = join(root, 'cached_files', 'cached_trained_models', model_string)
+
+        with open(path, 'wb') as f:
             pickle.dump(self.model, f)
 
     def compute_test_performance(self,
+                                 task_name: str,
                                  downsampling: int,
                                  features: str):
         test_prediction = self.model.predict(X=self.concatenated_test_datasets)
@@ -61,7 +65,7 @@ class ShuffledBotsScikitModel:
         plt.title(title)
         title = title.replace(" + ", "")
         title = title.replace(" ", "_")
-        path = join(Parser.get_project_root(), 'images', title)
+        path = join(Parser.return_performance_image_directory_path(task_name), title)
         plt.savefig(path)
 
         PrecisionRecallDisplay.from_estimator(estimator=self.model,
@@ -75,7 +79,7 @@ class ShuffledBotsScikitModel:
         plt.title(title)
         title = title.replace(" + ", "")
         title = title.replace(" ", "_")
-        path = join(Parser.get_project_root(), 'images', title)
+        path = join(Parser.return_performance_image_directory_path(task_name), title)
         plt.savefig(path)
 
         prec_result = precision_score(y_true=self.concatenated_target_test_datasets, y_pred=test_prediction)
