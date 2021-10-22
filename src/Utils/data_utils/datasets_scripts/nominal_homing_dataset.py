@@ -5,7 +5,7 @@ from xml.etree import ElementTree
 from xml.etree.ElementTree import Element
 
 from src.Utils.Parser import Parser
-from src.data_writing import build_swarm_no_foraging_stats
+from src.data_writing import build_swarm_no_foraging_stats, build_feature_set_datasets
 from src.model_training import execute_training_feature_set_datasets
 
 
@@ -131,5 +131,4 @@ def create_nominal_homing_csv_logs():
 
 
 if __name__ == '__main__':
-    build_swarm_no_foraging_stats(task_name='HOME',
-                                  experiments_number_down_sampling=2)
+    execute_training_feature_set_datasets(task_name='HOME')

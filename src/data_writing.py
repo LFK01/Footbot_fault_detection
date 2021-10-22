@@ -15,7 +15,7 @@ def build_swarm_no_foraging_stats(task_name: str,
     time_window_size = Parser.read_time_window()
 
     random.seed(Parser.read_seed())
-    done_files = 0
+    done_files = 1
     file_list = Parser.read_files_in_directory(experiment_name=task_name)
     random.shuffle(file_list)
     file_list = file_list[::experiments_number_down_sampling]
@@ -34,12 +34,14 @@ def build_swarm_no_foraging_stats(task_name: str,
                       swarm=footbots_list)
 
         save_swarm(swarm=swarm,
+                   file_name=file.split('/')[-1],
                    task_name=task_name)
 
         done_files += 1
 
 
 def save_swarm(swarm: Swarm,
+               file_name: str,
                task_name: str):
     root = Parser.get_project_root()
     path = join(root, 'cached_files', 'cached_swarms')
@@ -49,8 +51,7 @@ def save_swarm(swarm: Swarm,
         with open(path, 'wb') as output_file:
             pickle.dump(swarm, output_file)
     if task_name == 'HOME':
-        path = join(path, 'homing_swarms', '{}_swarm_{}bots_{}.pkl'.format(task_name, len(swarm.list_of_footbots),
-                                                                           datetime.now().strftime('%d-%m-%Y_%H-%M')))
+        path = join(path, 'homing_swarms', '{}_{}.pkl'.format(task_name, file_name[7:-37]))
         with open(path, 'wb') as output_file:
             pickle.dump(swarm, output_file)
     if task_name == 'DISP':
