@@ -549,4 +549,5 @@ class Parser:
 
 
 if __name__ == "__main__":
-    pass
+    filename = 'homing_size11x11_bot_number43_rotating_fault_5_percent_rotating_fault_after_1000_gain_400Thu_Oct_21_16-22-53_2021.csv'
+    print(filename[7:-37])
