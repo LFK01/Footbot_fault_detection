@@ -6,6 +6,7 @@ from numpy import floor
 from xml.etree import ElementTree
 
 from src.Utils.Parser import Parser
+from src.data_writing import build_swarm_no_foraging_stats
 from src.model_training import execute_training_feature_set_datasets
 
 
@@ -141,4 +142,6 @@ def create_nominal_warehouse_csv_logs():
 
 
 if __name__ == '__main__':
-    create_nominal_warehouse_csv_logs()
+    task_name = 'WARE'
+    build_swarm_no_foraging_stats(task_name=task_name,
+                                  experiments_number_down_sampling=1)

@@ -369,6 +369,20 @@ class Parser:
         return json_data["Validation"]
 
     @staticmethod
+    def read_not_done_files() -> list[str]:
+        """
+        Method to check if the validation set has to be built or not.
+
+        Returns
+        -------
+        validation: bool
+        """
+
+        json_data = Parser.open_parameters_json_file()
+
+        return json_data["NotDoneFiles"]
+
+    @staticmethod
     def read_preprocessing_type() -> str:
         """
         Method to read the preprocessing type.
@@ -518,6 +532,11 @@ class Parser:
             if exists(join(path, '.DS_store')):
                 os.remove(join(path, '.DS_store'))
                 print('REMOVED .DS_store')
+        elif task_name == 'WARE':
+            path = join(path, 'warehouse_log_files')
+            if exists(join(path, '.DS_Store')):
+                os.remove(join(path, '.DS_store'))
+                print('REMOVED .DS_store')
 
     @staticmethod
     def sanitize_warehouse_csv_file(filename: str):
@@ -549,5 +568,7 @@ class Parser:
 
 
 if __name__ == "__main__":
-    filename = 'homing_size11x11_bot_number43_rotating_fault_5_percent_rotating_fault_after_1000_gain_400Thu_Oct_21_16-22-53_2021.csv'
-    print(filename[7:-37])
+    not_done_files = Parser.read_not_done_files()
+    print(not [_ for _ in not_done_files[::2] if _ in not_done_files[1::2]])
+    print(not_done_files[::2], not_done_files[1::2])
+
