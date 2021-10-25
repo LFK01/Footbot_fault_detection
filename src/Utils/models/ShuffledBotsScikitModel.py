@@ -14,7 +14,7 @@ from src.Utils.data_utils.datasets_classes.GeneralDataset import GeneralDataset
 
 class ShuffledBotsScikitModel:
     def __init__(self,
-                 datasets: list[GeneralDataset],
+                 datasets: GeneralDataset,
                  model,
                  model_name: str = 'Generic'):
         random.seed()
@@ -22,24 +22,11 @@ class ShuffledBotsScikitModel:
         self.model_name = model_name
         self.model = model
 
-        self.concatenated_train_datasets = np.concatenate(
-            [dataset.train_dataset for dataset in self.datasets]
-        )
-        self.concatenated_target_train_datasets = np.concatenate(
-            [dataset.target_train_dataset for dataset in self.datasets]
-        )
-        self.concatenated_test_datasets = np.concatenate(
-            [dataset.test_dataset for dataset in self.datasets]
-        )
-        self.concatenated_target_test_datasets = np.concatenate(
-            [dataset.target_test_dataset for dataset in self.datasets]
-        )
-
         np.random.seed(Parser.read_seed())
         self.shuffle_datasets()
 
     def train(self):
-        self.model.fit(X=self.concatenated_train_datasets, y=self.concatenated_target_train_datasets)
+        self.model.fit(X=self.datasets.train_dataset, y=self.datasets.target_train_dataset)
 
         root = Parser.get_project_root()
         model_string = self.model_name + '_model' + datetime.now().strftime('%d-%m-%Y_%H-%M') + '.pkl'
@@ -52,13 +39,14 @@ class ShuffledBotsScikitModel:
                                  task_name: str,
                                  downsampling: int,
                                  features: str):
-        test_prediction = self.model.predict(X=self.concatenated_test_datasets)
+        test_prediction = self.model.predict(X=self.datasets.test_dataset)
 
-        score = self.model.score(X=self.concatenated_test_datasets, y=self.concatenated_target_test_datasets)
+        score = self.model.score(X=self.datasets.test_dataset,
+                                 y=self.datasets.target_test_dataset)
 
         ConfusionMatrixDisplay.from_estimator(estimator=self.model,
-                                              X=self.concatenated_test_datasets,
-                                              y=self.concatenated_target_test_datasets)
+                                              X=self.datasets.test_dataset,
+                                              y=self.datasets.target_test_dataset)
         title = 'All bots Shuffled Conf Matrix ' + self.model_name + ' Downsampl x' \
                 + str(downsampling) + ' ' \
                 + features
@@ -69,8 +57,8 @@ class ShuffledBotsScikitModel:
         plt.savefig(path)
 
         PrecisionRecallDisplay.from_estimator(estimator=self.model,
-                                              X=self.concatenated_test_datasets,
-                                              y=self.concatenated_target_test_datasets,
+                                              X=self.datasets.test_dataset,
+                                              y=self.datasets.target_test_dataset,
                                               name=self.model_name)
 
         title = 'All bots shuffled Prec Rec Curve ' + self.model_name + ' Downsampl' \
@@ -82,9 +70,9 @@ class ShuffledBotsScikitModel:
         path = join(Parser.return_performance_image_directory_path(task_name), title)
         plt.savefig(path)
 
-        prec_result = precision_score(y_true=self.concatenated_target_test_datasets, y_pred=test_prediction)
-        rec_result = recall_score(y_true=self.concatenated_target_test_datasets, y_pred=test_prediction)
-        f1_result = f1_score(y_true=self.concatenated_target_test_datasets, y_pred=test_prediction)
+        prec_result = precision_score(y_true=self.datasets.target_test_dataset, y_pred=test_prediction)
+        rec_result = recall_score(y_true=self.datasets.target_test_dataset, y_pred=test_prediction)
+        f1_result = f1_score(y_true=self.datasets.target_test_dataset, y_pred=test_prediction)
 
         print('& {:.4} & {:.4} & {:.4} & {:.4} \\\\'.format(score,
                                                             prec_result,
@@ -96,12 +84,12 @@ class ShuffledBotsScikitModel:
         print('All bots shuffled F1 Score: ' + str(f1_result))
 
     def shuffle_datasets(self):
-        assert len(self.concatenated_train_datasets) == len(self.concatenated_target_train_datasets)
-        permutation = np.random.permutation(len(self.concatenated_train_datasets))
-        self.concatenated_train_datasets = self.concatenated_train_datasets[permutation]
-        self.concatenated_target_train_datasets = self.concatenated_target_train_datasets[permutation]
+        assert len(self.datasets.train_dataset) == len(self.datasets.target_train_dataset)
+        permutation = np.random.permutation(len(self.datasets.train_dataset))
+        self.datasets.train_dataset = self.datasets.train_dataset[permutation]
+        self.datasets.target_train_dataset = self.datasets.target_train_dataset[permutation]
 
-        assert len(self.concatenated_test_datasets) == len(self.concatenated_test_datasets)
-        permutation = np.random.permutation(len(self.concatenated_test_datasets))
-        self.concatenated_test_datasets = self.concatenated_test_datasets[permutation]
-        self.concatenated_target_test_datasets = self.concatenated_target_test_datasets[permutation]
+        assert len(self.datasets.test_dataset) == len(self.datasets.target_test_dataset)
+        permutation = np.random.permutation(len(self.datasets.test_dataset))
+        self.datasets.test_dataset = self.datasets.test_dataset[permutation]
+        self.datasets.target_test_dataset = self.datasets.target_test_dataset[permutation]

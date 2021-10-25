@@ -23,7 +23,7 @@ def build_swarm_no_foraging_stats(task_name: str,
     file_list = file_list[::experiments_number_down_sampling]
     not_done_files = Parser.read_not_done_files()
     for file in file_list:
-        if file[10:-19] in not_done_files:
+        if file.split('/')[-1] in not_done_files:
             print('Doing file {} out of {}: {}'.format(done_files, len(file_list), file.split('/')[-1]))
             footbots_list = Parser.create_generic_swarm(task_name=task_name,
                                                         filename=file,
@@ -51,27 +51,25 @@ def save_swarm(swarm: Swarm,
     root = Parser.get_project_root()
     path = join(root, 'cached_files', 'cached_swarms')
     if task_name == 'FLOC':
-        path = join(path, 'flocking_swarms', '{}_swarm_{}bots_{}.pkl'.format(task_name, len(swarm.list_of_footbots),
-                                                                             datetime.now().strftime('%d-%m-%Y_%H-%M')))
+        path = join(path, 'flocking_swarms', '{}_{}.pkl'.format(task_name, file_name[9:-4]))
         with open(path, 'wb') as output_file:
             pickle.dump(swarm, output_file)
     if task_name == 'HOME':
-        path = join(path, 'homing_swarms', '{}_{}.pkl'.format(task_name, file_name[7:-37]))
+        path = join(path, 'homing_swarms', '{}_{}.pkl'.format(task_name, file_name[7:-4]))
         with open(path, 'wb') as output_file:
             pickle.dump(swarm, output_file)
     if task_name == 'DISP':
         path = join(path, 'dispersion_swarms',
-                    '{}_{}.pkl'.format(task_name, file_name[7:-37]))
+                    '{}_{}.pkl'.format(task_name, file_name[11:-4]))
         with open(path, 'wb') as output_file:
             pickle.dump(swarm, output_file)
     if task_name == 'FORE':
-        path = join(path, 'foraging_swarms', '{}_swarm_{}bots_{}.pkl'.format(task_name, len(swarm.list_of_footbots),
-                                                                             datetime.now().strftime('%d-%m-%Y_%H-%M')))
+        path = join(path, 'foraging_swarms', '{}_{}.pkl'.format(task_name, file_name[9:-4]))
         with open(path, 'wb') as output_file:
             pickle.dump(swarm, output_file)
     if task_name == 'WARE':
         path = join(path, 'warehouse_swarms',
-                    '{}_{}.pkl'.format(task_name, file_name[10:-19]))
+                    '{}_{}.pkl'.format(task_name, file_name[10:-4]))
         with open(path, 'wb') as output_file:
             pickle.dump(swarm, output_file)
 
@@ -99,19 +97,21 @@ def build_foraging_swarm(down_sampling: int):
                       swarm=footbots_list)
 
         save_swarm(swarm=swarm,
-                   task_name='FORE')
+                   task_name='FORE',
+                   file_name=file.split('/')[-1])
 
         done_files += 1
 
 
-def build_dataset(feature_set_number: int):
+def build_dataset(feature_set_number: int,
+                  perform_data_balancing: bool):
     with open('../cached_files/cached_swarms/149_experiments_15_bots.pkl',
               'rb') as input_file:
         experiment_list = pickle.load(input_file)
 
     print('loaded file')
 
-    down_sampling = Parser.read_down_sampling_size()
+    down_sampling = Parser.read_timeseries_down_sampling()
     timesteps = DataWizard.shortest_experiment_timesteps(experiment_list=experiment_list)
     time_window_size = Parser.read_time_window()
 
@@ -120,9 +120,10 @@ def build_dataset(feature_set_number: int):
         time_window=time_window_size,
         experiments=experiment_list,
         down_sampling_steps=down_sampling,
-        feature_set_number=feature_set_number)
+        feature_set_number=feature_set_number,
+        perform_data_balancing=perform_data_balancing)
 
-    data_wizard_datasets = data_wizard.datasets
+    data_wizard_datasets = data_wizard.dataset
 
     with open('../cached_files/cached_datasets/149exp_15bot_datasets_down_sampled_'
               + str(down_sampling)
@@ -131,19 +132,25 @@ def build_dataset(feature_set_number: int):
         pickle.dump(data_wizard_datasets, output_file)
 
 
-def build_feature_set_datasets(main_task_name: str):
+def build_feature_set_datasets(main_task_name: str,
+                               experiments_downsampling,
+                               perform_data_balancing: bool):
     f_numbers = [1, 2, 3]
-    down_sampling = Parser.read_down_sampling_size()
+    timeseries_down_sampling = Parser.read_timeseries_down_sampling()
     time_window_size = Parser.read_time_window()
 
     pickle_wizard = PickleDataWizard(time_window=time_window_size,
-                                     down_sampling_steps=down_sampling)
+                                     down_sampling_steps=timeseries_down_sampling)
 
     for main_feature_set_number in f_numbers:
         print('Building feature set {} of task {}'.format(main_feature_set_number, main_task_name))
         pickle_wizard.save_bot_train_test_dataset_specific_swarm(task_name=main_task_name,
-                                                                 feature_set_number=main_feature_set_number)
+                                                                 feature_set_number=main_feature_set_number,
+                                                                 experiments_downsampling=experiments_downsampling,
+                                                                 perform_data_balancing=perform_data_balancing)
 
 
 if __name__ == "__main__":
-    pass
+    build_feature_set_datasets(main_task_name='WARE',
+                               experiments_downsampling=2,
+                               perform_data_balancing=True)

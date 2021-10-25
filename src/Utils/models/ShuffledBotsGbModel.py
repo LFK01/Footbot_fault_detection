@@ -7,11 +7,12 @@ from src.Utils.models.ShuffledBotsScikitModel import ShuffledBotsScikitModel
 
 class ShuffledBotsGbModel(ShuffledBotsScikitModel):
     def __init__(self,
-                 datasets: list[GeneralDataset],
+                 datasets: GeneralDataset,
                  model_name: str = 'ShuffledGBoost'):
         seed = Parser.read_seed()
         model = GradientBoostingClassifier(loss='exponential',
-                                           n_estimators=100,
+                                           n_estimators=200,
+                                           n_iter_no_change=5,
                                            learning_rate=0.1,
                                            max_depth=5,
                                            random_state=seed,

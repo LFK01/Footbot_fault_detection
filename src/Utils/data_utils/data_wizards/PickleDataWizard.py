@@ -1,4 +1,5 @@
 import pickle
+import random
 from os.path import join
 from os import listdir
 from src.Utils.Parser import Parser
@@ -18,7 +19,8 @@ class PickleDataWizard:
         self.down_sampling_steps = down_sampling_steps
 
     def save_bot_train_test_dataset_all_swarms(self,
-                                               feature_set_number: int):
+                                               feature_set_number: int,
+                                               perform_data_balancing: bool):
         experiment_list = []
         root = Parser.get_project_root()
         cached_swarms_path = join(root, 'cached_files', 'cached_swarms')
@@ -35,9 +37,10 @@ class PickleDataWizard:
                                    time_window=self.time_window,
                                    experiments=experiment_list,
                                    down_sampling_steps=self.down_sampling_steps,
-                                   feature_set_number=feature_set_number)
+                                   feature_set_number=feature_set_number,
+                                   perform_data_balancing=perform_data_balancing)
 
-            datasets = wizard.datasets
+            datasets = wizard.dataset
             print('Computed Dataset')
 
             filename = join(root, 'cached_files', 'cached_datasets',
@@ -48,10 +51,18 @@ class PickleDataWizard:
 
     def save_bot_train_test_dataset_specific_swarm(self,
                                                    task_name: str,
-                                                   feature_set_number: int):
+                                                   feature_set_number: int,
+                                                   experiments_downsampling: int,
+                                                   perform_data_balancing: bool):
         experiment_list = []
+        random.seed(Parser.read_seed())
+
         swarm_path = Parser.return_cached_swarm_directory_path(experiment_name=task_name)
-        for cached_swarm_file in Parser.read_cached_swarms_in_directory(experiment_name=task_name):
+        cached_swarm_list = Parser.read_cached_swarms_in_directory(experiment_name=task_name)
+
+        random.shuffle(cached_swarm_list)
+        cached_swarm_list = cached_swarm_list[::experiments_downsampling]
+        for cached_swarm_file in cached_swarm_list:
             with open(join(swarm_path, cached_swarm_file), 'rb') as f:
                 cached_swarm = pickle.load(file=f)
             print('Loaded swarm: {}'.format(cached_swarm_file))
@@ -61,15 +72,16 @@ class PickleDataWizard:
                                time_window=self.time_window,
                                experiments=experiment_list,
                                down_sampling_steps=self.down_sampling_steps,
-                               feature_set_number=feature_set_number)
+                               feature_set_number=feature_set_number,
+                               perform_data_balancing=perform_data_balancing)
 
-        datasets = wizard.datasets
+        datasets = wizard.dataset
         print('Computed Dataset')
 
         dataset_path = Parser.return_cached_dataset_directory_path(experiment_name=task_name)
         filename = join(dataset_path,
                         '{}_{}exp_features_set{}_{}downsampled.pkl'.format(task_name,
-                                                                           len(listdir(swarm_path)),
+                                                                           len(cached_swarm_list),
                                                                            feature_set_number,
                                                                            self.down_sampling_steps))
         with open(filename, 'wb') as output_file:

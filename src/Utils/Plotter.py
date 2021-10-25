@@ -695,6 +695,7 @@ class Plotter:
                                                faulty_bots: list[FootBot],
                                                saving_path: str,
                                                main_swarm: Swarm,
+                                               show_graphs: bool,
                                                title: str = None):
         print('Plotting trajectories')
         if title is not None:
@@ -702,17 +703,17 @@ class Plotter:
                                       swarm=main_swarm,
                                       plot_swarm=True,
                                       path=saving_path,
-                                      show_plot=False,
+                                      show_plot=show_graphs,
                                       title='nom' + title)
             Plotter.plot_trajectories(footbot_list=faulty_bots,
                                       swarm=main_swarm,
                                       plot_swarm=False,
                                       path=saving_path,
-                                      show_plot=False,
+                                      show_plot=show_graphs,
                                       title='fault' + title)
             Plotter.plot_faulty_robots(footbot_list=main_swarm.list_of_footbots,
                                        path=saving_path,
-                                       show_plot=False,
+                                       show_plot=show_graphs,
                                        title='num' + title)
         else:
             Plotter.plot_trajectories(footbot_list=nominal_bots,
@@ -896,7 +897,8 @@ class Plotter:
                                                            faulty_bots=faulty_bots,
                                                            saving_path=folder_path,
                                                            main_swarm=swarm,
-                                                           title=file.replace('.pkl', ''))
+                                                           title=file.replace('.pkl', ''),
+                                                           show_graphs=False)
             for image_file in listdir(folder_path):
                 image_path = join(folder_path, image_file)
                 img = Image.open(image_path)
@@ -905,6 +907,7 @@ class Plotter:
     @staticmethod
     def plot_from_json_cached_swarm(par_task_name: str,
                                     file_number: int,
+                                    title: str,
                                     show_all_graphs: bool = True):
         saving_graphs_file_path = Plotter.make_folder_from_json(par_task_name=par_task_name, file_number=file_number)
 
@@ -913,11 +916,12 @@ class Plotter:
 
         faulty_bots, nominal_bots = Plotter.divide_flocks(footbots_list=footbots_list)
 
-        Plotter.plot_common_features(nominal_bots=nominal_bots,
-                                     faulty_bots=faulty_bots,
-                                     main_swarm=main_swarm,
-                                     saving_graphs_file_path=saving_graphs_file_path,
-                                     show_all_graphs=show_all_graphs)
+        Plotter.plot_traj_and_fault_in_separate_window(nominal_bots=nominal_bots,
+                                                       faulty_bots=faulty_bots,
+                                                       saving_path=saving_graphs_file_path,
+                                                       main_swarm=main_swarm,
+                                                       title=title,
+                                                       show_graphs=show_all_graphs)
 
     @staticmethod
     def load_generic_swarm_from_json(par_task_name: str,
@@ -969,5 +973,8 @@ class Plotter:
 
 
 if __name__ == "__main__":
-    main_task_name = 'HOME'
-    Plotter.plot_all_cached_swarm_in_directory(task_name=main_task_name)
+    main_task_name = 'WARE'
+    Plotter.plot_from_json_cached_swarm(par_task_name=main_task_name,
+                                        file_number=2,
+                                        show_all_graphs=False,
+                                        title='WARE_6x6_10_percent_slowed_fault')

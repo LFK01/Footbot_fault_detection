@@ -294,9 +294,9 @@ class Parser:
         return json_data["LSTM_length"]
 
     @staticmethod
-    def read_down_sampling_size() -> int:
+    def read_timeseries_down_sampling() -> int:
         """
-        Method to retrieve the down_sampling size in the parameters file.
+        Method to retrieve the down_sampling size for the time series in the parameters file.
 
         Returns
         -------
@@ -306,7 +306,22 @@ class Parser:
 
         json_data = Parser.open_parameters_json_file()
 
-        return json_data["Down_sampling"]
+        return json_data["TimeSeries_Down_sampling"]
+
+    @staticmethod
+    def read_experiments_down_sampling() -> int:
+        """
+        Method to retrieve the down_sampling size of the experiment number in the parameters file.
+
+        Returns
+        -------
+        down_sampling : int
+            Value read in the file
+        """
+
+        json_data = Parser.open_parameters_json_file()
+
+        return json_data["Experiments_Down_sampling"]
 
     @staticmethod
     def read_area_splits() -> list[int]:
@@ -430,7 +445,7 @@ class Parser:
                     if isfile(join(path, 'homing_log_files', f))]
 
     @staticmethod
-    def read_cached_swarms_in_directory(experiment_name: str) -> list:
+    def read_cached_swarms_in_directory(experiment_name: str) -> list[str]:
         root = Parser.get_project_root()
         path = join(root, 'cached_files', 'cached_swarms')
         if experiment_name == 'WARE':
@@ -568,7 +583,7 @@ class Parser:
 
 
 if __name__ == "__main__":
-    not_done_files = Parser.read_not_done_files()
-    print(not [_ for _ in not_done_files[::2] if _ in not_done_files[1::2]])
-    print(not_done_files[::2], not_done_files[1::2])
+    main_root = Parser.get_project_root()
+    main_path = join(main_root, 'cached_files', 'cached_swarms')
+    Parser.remove_ds_store_from_generic_folder(main_path)
 

@@ -3,11 +3,11 @@
     "TIME_WINDOW": 10,
     "SEED": 123,
     "LSTM_length": 10,
-    "Down_sampling": 50,
+    "TimeSeries_Down_sampling": 20,
     "Preprocessing": "STD",
     "Validation": 0,
     "Splitting": {
-        "With validation": [0.7, 0.2, 0.1],
+        "With validation": [0.6, 0.2, 0.2],
         "No validation": [0.85, 0.15]
     },
     "Features": {
@@ -67,7 +67,7 @@
         },
         "WARE": {
             "1": "warehouse_5x5_20_percent_slowed_fault20211018_18_52.csv",
-            "2": "WARE_swarm_44bots_19-10-2021_15-02.pkl"
+            "2": "WARE_6x6_10_percent_slowed_faul.pkl"
         },
         "FLOC": {
             "0": "flocking_15_East_6_percent_rotating_fault_after_1500_gain_1000Mon_Oct_18_15-29-57_2021.csv"

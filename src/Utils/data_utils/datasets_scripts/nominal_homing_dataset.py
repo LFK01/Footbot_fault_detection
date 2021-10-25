@@ -63,7 +63,7 @@ def compute_parameters(par_x_length: int,
                        par_y_length: int,
                        par_initial_arena_size: int,
                        par_initial_bot_number: int,
-                       par_initial_exp_length : int,
+                       par_initial_exp_length: int,
                        par_initial_light_intensity: float):
     current_arena_size = par_x_length * par_y_length
     size_increase = current_arena_size / par_initial_arena_size

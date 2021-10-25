@@ -70,10 +70,10 @@ class DataWizard:
         # numpy concatenate creates an unique time series of all the experiments
         bot_dataset = GeneralDataset(
             bot_identifier=bot,
-            train_dataset=np.concatenate(bot_train_dataset, axis=-1),
-            target_train_dataset=np.concatenate(bot_train_target_dataset, axis=-1),
-            test_dataset=np.concatenate(bot_test_dataset, axis=-1),
-            target_test_dataset=np.concatenate(bot_test_target_dataset, axis=-1)
+            train_dataset=np.transpose(np.concatenate(bot_train_dataset, axis=-1)),
+            target_train_dataset=np.transpose(np.concatenate(bot_train_target_dataset, axis=-1)),
+            test_dataset=np.transpose(np.concatenate(bot_test_dataset, axis=-1)),
+            target_test_dataset=np.transpose(np.concatenate(bot_test_target_dataset, axis=-1))
         )
         return bot_dataset
 
@@ -123,12 +123,12 @@ class DataWizard:
 
         bot_dataset = TrValTeDataset(
             bot_identifier=bot,
-            train_dataset=np.concatenate(bot_train_dataset, axis=-1),
-            target_train_dataset=np.concatenate(bot_train_target_dataset, axis=-1),
-            validation_dataset=np.concatenate(bot_val_dataset, axis=-1),
-            target_validation_dataset=np.concatenate(bot_val_target_dataset, axis=-1),
-            test_dataset=np.concatenate(bot_test_dataset, axis=-1),
-            target_test_dataset=np.concatenate(bot_test_target_dataset, axis=-1)
+            train_dataset=np.transpose(np.concatenate(bot_train_dataset, axis=-1)),
+            target_train_dataset=np.transpose(np.concatenate(bot_train_target_dataset, axis=-1)),
+            validation_dataset=np.transpose(np.concatenate(bot_val_dataset, axis=-1)),
+            target_validation_dataset=np.transpose(np.concatenate(bot_val_target_dataset, axis=-1)),
+            test_dataset=np.transpose(np.concatenate(bot_test_dataset, axis=-1)),
+            target_test_dataset=np.transpose(np.concatenate(bot_test_target_dataset, axis=-1))
         )
         return bot_dataset
 

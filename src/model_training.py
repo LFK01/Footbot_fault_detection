@@ -30,7 +30,7 @@ def execute_single_bot_shuffled_training(task_name: str,
                                          feature_names_list: str,
                                          downsampling: int):
     with open(file_name, 'rb') as input_file:
-        data_wizard_datasets: list[GeneralDataset] = load(input_file)
+        data_wizard_datasets: GeneralDataset = load(input_file)
 
     model = ShuffledBotsGbModel(datasets=data_wizard_datasets,
                                 model_name='ShuffledGBoost')
@@ -44,7 +44,7 @@ def execute_single_bot_shuffled_training(task_name: str,
 
 def execute_training_feature_set_datasets(task_name: str):
     cached_dataset_directory_path = Parser.return_cached_dataset_directory_path(task_name)
-    parser_downsampling = Parser.read_down_sampling_size()
+    parser_downsampling = Parser.read_timeseries_down_sampling()
 
     graph_feature_names = ''
     for file in listdir(cached_dataset_directory_path):
@@ -63,5 +63,5 @@ def execute_training_feature_set_datasets(task_name: str):
 
 
 if __name__ == "__main__":
-    pass
+    execute_training_feature_set_datasets(task_name='WARE')
 
