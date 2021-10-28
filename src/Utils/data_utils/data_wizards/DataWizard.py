@@ -8,13 +8,11 @@ from src.Utils.data_utils.datasets_classes.GeneralDataset import GeneralDataset
 
 class DataWizard:
     def __init__(self,
-                 timesteps: int,
                  time_window: int,
                  experiments: list[Swarm],
                  feature_set_number: int,
                  down_sampling_steps: int = 1,
                  preprocessing_type: str = 'raw'):
-        self.timesteps: int = timesteps - 1
         self.time_window: int = time_window
         self.experiments: list[Swarm] = experiments
         self.feature_set_number = feature_set_number
@@ -198,6 +196,7 @@ class DataWizard:
             bot_dataset.append(retrieved_features)
             bot_target_dataset.append(exp.list_of_footbots[bot].fault_time_series[::down_sampling_steps])
 
+        # TODO, solve this issue
         # maybe due to downsampling or to speed like feature computation, bot features happen to have one less timestep
         # than its test timeseries, to deal with this we cut target timeseries to comply with train timeseries
         assert len(bot_dataset) == len(bot_target_dataset)

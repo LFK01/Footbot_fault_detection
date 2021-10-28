@@ -973,7 +973,7 @@ class Plotter:
 
 
 if __name__ == "__main__":
-    main_task_name = 'WARE'
+    main_task_name = 'DISP'
     Plotter.plot_from_json_cached_swarm(par_task_name=main_task_name,
                                         file_number=2,
                                         show_all_graphs=False,

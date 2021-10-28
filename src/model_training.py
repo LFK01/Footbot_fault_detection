@@ -63,5 +63,4 @@ def execute_training_feature_set_datasets(task_name: str):
 
 
 if __name__ == "__main__":
-    execute_training_feature_set_datasets(task_name='WARE')
-
+    execute_training_feature_set_datasets(task_name='DISP')

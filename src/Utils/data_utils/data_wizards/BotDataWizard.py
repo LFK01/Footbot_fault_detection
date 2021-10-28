@@ -15,14 +15,12 @@ class BotDataWizard(DataWizard):
     """
 
     def __init__(self,
-                 timesteps: int,
                  time_window: int,
                  experiments: list[Swarm],
                  feature_set_number: int,
                  perform_data_balancing: bool,
                  down_sampling_steps: int = 1):
-        super().__init__(timesteps=timesteps,
-                         time_window=time_window,
+        super().__init__(time_window=time_window,
                          experiments=experiments,
                          feature_set_number=feature_set_number,
                          down_sampling_steps=down_sampling_steps)
@@ -49,7 +47,8 @@ class BotDataWizard(DataWizard):
 
         max_bot_number = DataWizard.maximum_bot_number_in_experiment(experiment_list=experiments)
 
-        if Parser.read_validation_choice():
+        validation = bool(Parser.read_validation_choice())
+        if not validation:
             splitting = Parser.read_dataset_splittings()['No validation']
             for bot_index in range(max_bot_number):
                 print('Building feature vectors for bot:' + str(bot_index))
@@ -90,7 +89,7 @@ class BotDataWizard(DataWizard):
                     datasets.append(bot_dataset)
 
             if perform_data_balancing:
-                dataset = self.balance_dataset(datasets)
+                dataset = self.balance_train_test_dataset(datasets)
             else:
                 dataset = GeneralDataset(bot_identifier=0,
                                          train_dataset=np.concatenate(
@@ -152,7 +151,7 @@ class BotDataWizard(DataWizard):
                     )
                     datasets.append(bot_dataset)
             if perform_data_balancing:
-                dataset = self.balance_dataset(datasets)
+                dataset = self.balance_train_test_dataset(datasets)
             else:
                 dataset = TrValTeDataset(bot_identifier=0,
                                          train_dataset=np.concatenate(
@@ -192,7 +191,7 @@ class BotDataWizard(DataWizard):
                 self.dataset.test_dataset = scaler.fit_transform(self.dataset.test_dataset)
 
     @staticmethod
-    def balance_dataset(datasets_list: list[GeneralDataset]) -> GeneralDataset:
+    def balance_train_test_dataset(datasets_list: list[GeneralDataset]) -> GeneralDataset:
         # TODO balance train val test
         # concatenate all the train features and targets dataset in order to work on an unique time series
         concatenated_train_datasets = np.concatenate(
@@ -205,39 +204,23 @@ class BotDataWizard(DataWizard):
             [dataset.target_test_dataset for dataset in datasets_list], axis=0)
         min_label, max_label, labels_ratio = BotDataWizard.compute_labels_values(concatenated_target_train_datasets)
 
-        # check that features and targets match in size
-        assert concatenated_train_datasets.shape[0] == concatenated_target_train_datasets.shape[0]
-        # zip together two numpy arrays
-        stacked_train_dataset = np.column_stack((concatenated_train_datasets, concatenated_target_train_datasets))
-        # concatenates the two arrays of each class with the overweight array now being downsampled according to the
-        # labels ratio number
-        stacked_train_dataset = np.concatenate(
-            [[sample for sample in stacked_train_dataset if sample[-1] == max_label][::labels_ratio],
-             [sample for sample in stacked_train_dataset if sample[-1] == min_label]],
-            axis=0
+        concatenated_train_datasets, concatenated_target_train_datasets = BotDataWizard.stack_datasets_and_balance(
+            max_label=max_label,
+            min_label=min_label,
+            labels_ratio=labels_ratio,
+            concatenated_datasets=concatenated_train_datasets,
+            concatenated_target_datasets=concatenated_target_train_datasets
         )
-        # shuffles the arrays in order to have samples with different label scattered along the array
-        np.random.seed(Parser.read_seed())
-        np.random.shuffle(stacked_train_dataset)
-        # retrieves the features dataset from the stacked array
-        concatenated_train_datasets = stacked_train_dataset[..., :-1]
-        # retrieves the target dataset from the stacked array
-        concatenated_target_train_datasets = stacked_train_dataset[..., -1]
 
         min_label, max_label, labels_ratio = BotDataWizard.compute_labels_values(concatenated_target_test_datasets)
 
-        assert concatenated_test_datasets.shape[0] == concatenated_target_test_datasets.shape[0]
-        stacked_test_dataset = np.column_stack((concatenated_test_datasets, concatenated_target_test_datasets))
-        stacked_test_dataset = np.concatenate(
-            [[sample for sample in stacked_test_dataset if sample[-1] == max_label][::labels_ratio],
-             [sample for sample in stacked_test_dataset if sample[-1] == min_label]],
-            axis=0
+        concatenated_test_datasets, concatenated_target_test_datasets = BotDataWizard.stack_datasets_and_balance(
+            max_label=max_label,
+            min_label=min_label,
+            labels_ratio=labels_ratio,
+            concatenated_datasets=concatenated_test_datasets,
+            concatenated_target_datasets=concatenated_target_test_datasets
         )
-        np.random.seed(Parser.read_seed())
-        np.random.shuffle(stacked_test_dataset)
-
-        concatenated_test_datasets = stacked_test_dataset[..., :-1]
-        concatenated_target_test_datasets = stacked_test_dataset[..., -1]
         return GeneralDataset(bot_identifier=0,
                               train_dataset=concatenated_train_datasets,
                               target_train_dataset=concatenated_target_train_datasets,
@@ -257,3 +240,30 @@ class BotDataWizard(DataWizard):
         labels_ratio = int(labels_dict[max_label] / labels_dict[min_label])
 
         return min_label, max_label, labels_ratio
+
+    @staticmethod
+    def stack_datasets_and_balance(max_label: bool,
+                                   min_label: bool,
+                                   labels_ratio: int,
+                                   concatenated_datasets: np.ndarray,
+                                   concatenated_target_datasets: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+        # check that features and targets match in size
+        assert concatenated_datasets.shape[0] == concatenated_target_datasets.shape[0]
+        # zip together two numpy arrays
+        stacked_train_dataset = np.column_stack((concatenated_datasets, concatenated_target_datasets))
+        # concatenates the two arrays of each class with the overweight array now being downsampled according to the
+        # labels ratio number
+        stacked_train_dataset = np.concatenate(
+            [[sample for sample in stacked_train_dataset if sample[-1] == max_label][::labels_ratio],
+             [sample for sample in stacked_train_dataset if sample[-1] == min_label]],
+            axis=0
+        )
+        # shuffles the arrays in order to have samples with different label scattered along the array
+        np.random.seed(Parser.read_seed())
+        np.random.shuffle(stacked_train_dataset)
+        # retrieves the features dataset from the stacked array
+        return_concatenated_datasets = stacked_train_dataset[..., :-1]
+        # retrieves the target dataset from the stacked array
+        return_concatenated_target_datasets = stacked_train_dataset[..., -1]
+
+        return return_concatenated_datasets, return_concatenated_target_datasets

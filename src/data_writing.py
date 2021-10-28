@@ -1,7 +1,7 @@
 import pickle
 import random
 from datetime import datetime
-from os import listdir
+from os import listdir, sep
 from os.path import join
 from src.Utils.Parser import Parser
 from src.classes.Swarm import Swarm
@@ -15,33 +15,28 @@ def build_swarm_no_foraging_stats(task_name: str,
     neighborhood_radius = Parser.read_neighborhood_radius()
     time_window_size = Parser.read_time_window()
 
-    swarms_folder = Parser.return_cached_swarm_directory_path(experiment_name=task_name)
+    file_list = Parser.read_files_in_log_files_directory(experiment_name=task_name)
     random.seed(Parser.read_seed())
     done_files = 1
-    file_list = Parser.read_files_in_directory(experiment_name=task_name)
     random.shuffle(file_list)
     file_list = file_list[::experiments_number_down_sampling]
-    not_done_files = Parser.read_not_done_files()
     for file in file_list:
-        if file.split('/')[-1] in not_done_files:
-            print('Doing file {} out of {}: {}'.format(done_files, len(file_list), file.split('/')[-1]))
-            footbots_list = Parser.create_generic_swarm(task_name=task_name,
-                                                        filename=file,
-                                                        neighborhood_radius=neighborhood_radius,
-                                                        time_window_size=time_window_size)
+        print('Doing file {} out of {}: {}'.format(done_files, len(file_list), file.split(sep)[-1]))
+        footbots_list = Parser.create_generic_swarm(task_name=task_name,
+                                                    filename=file,
+                                                    neighborhood_radius=neighborhood_radius,
+                                                    time_window_size=time_window_size)
 
-            timesteps = Parser.retrieve_timesteps_series_from_dataframe(
-                df_footbot_positions=Parser.open_pandas_dataframe(filename=file,
-                                                                  task_name=task_name))
+        timesteps = Parser.retrieve_timesteps_series_from_dataframe(
+            df_footbot_positions=Parser.open_pandas_dataframe(filename=file,
+                                                              task_name=task_name))
 
-            swarm = Swarm(timesteps=timesteps,
-                          swarm=footbots_list)
+        swarm = Swarm(timesteps=timesteps,
+                      swarm=footbots_list)
 
-            save_swarm(swarm=swarm,
-                       file_name=file.split('/')[-1],
-                       task_name=task_name)
-        else:
-            print('-----------------AVOIDED SWARM-------------------')
+        save_swarm(swarm=swarm,
+                   file_name=file.split(sep)[-1],
+                   task_name=task_name)
         done_files += 1
 
 
@@ -80,11 +75,11 @@ def build_foraging_swarm(down_sampling: int):
 
     task_name = 'FORE'
     done_files = 0
-    file_list = Parser.read_files_in_directory(experiment_name=task_name)
+    file_list = Parser.read_files_in_log_files_directory(experiment_name=task_name)
     random.shuffle(file_list)
     file_list = file_list[::down_sampling]
     for file in file_list:
-        print('Doing file {} out of {}: {}'.format(done_files, len(file_list), file.split('/')[-1]))
+        print('Doing file {} out of {}: {}'.format(done_files, len(file_list), file.split(sep)[-1]))
         footbots_list = Parser.create_foraging_swarm(filename=file,
                                                      neighborhood_radius=neighborhood_radius,
                                                      time_window_size=time_window_size)
@@ -98,7 +93,7 @@ def build_foraging_swarm(down_sampling: int):
 
         save_swarm(swarm=swarm,
                    task_name='FORE',
-                   file_name=file.split('/')[-1])
+                   file_name=file.split(sep)[-1])
 
         done_files += 1
 
@@ -112,11 +107,9 @@ def build_dataset(feature_set_number: int,
     print('loaded file')
 
     down_sampling = Parser.read_timeseries_down_sampling()
-    timesteps = DataWizard.shortest_experiment_timesteps(experiment_list=experiment_list)
     time_window_size = Parser.read_time_window()
 
     data_wizard = BotDataWizard(
-        timesteps=timesteps,
         time_window=time_window_size,
         experiments=experiment_list,
         down_sampling_steps=down_sampling,
@@ -151,6 +144,6 @@ def build_feature_set_datasets(main_task_name: str,
 
 
 if __name__ == "__main__":
-    build_feature_set_datasets(main_task_name='WARE',
-                               experiments_downsampling=2,
-                               perform_data_balancing=True)
+    build_feature_set_datasets(main_task_name='DISP',
+                               perform_data_balancing=False,
+                               experiments_downsampling=1)

@@ -14,9 +14,10 @@ class ShuffledBotsGbModel(ShuffledBotsScikitModel):
                                            n_estimators=200,
                                            n_iter_no_change=5,
                                            learning_rate=0.1,
-                                           max_depth=5,
+                                           max_depth=4,
                                            random_state=seed,
-                                           verbose=2)
+                                           verbose=2,
+                                           tol=1e-3)
         super(ShuffledBotsGbModel, self).__init__(model=model,
                                                   datasets=datasets,
                                                   model_name=model_name)

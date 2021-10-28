@@ -1,10 +1,9 @@
 import pickle
 import random
 from os.path import join
-from os import listdir
+from os import listdir, sep
 from src.Utils.Parser import Parser
 from src.Utils.data_utils.data_wizards.BotDataWizard import BotDataWizard
-from src.Utils.data_utils.data_wizards.DataWizard import DataWizard
 
 
 class PickleDataWizard:
@@ -24,17 +23,18 @@ class PickleDataWizard:
         experiment_list = []
         root = Parser.get_project_root()
         cached_swarms_path = join(root, 'cached_files', 'cached_swarms')
+
         for folder in listdir(cached_swarms_path):
             print('Working in folder: {}'.format(folder))
             swarm_path = join(cached_swarms_path, folder)
+
             for cached_swarm_file in listdir(swarm_path):
                 with open(join(swarm_path, cached_swarm_file), 'rb') as f:
                     cached_swarm = pickle.load(file=f)
                 print('Loaded swarm: {}'.format(cached_swarm_file))
                 experiment_list.append(cached_swarm)
-            timesteps = DataWizard.shortest_experiment_timesteps(experiment_list=experiment_list)
-            wizard = BotDataWizard(timesteps=timesteps,
-                                   time_window=self.time_window,
+
+            wizard = BotDataWizard(time_window=self.time_window,
                                    experiments=experiment_list,
                                    down_sampling_steps=self.down_sampling_steps,
                                    feature_set_number=feature_set_number,
@@ -62,14 +62,14 @@ class PickleDataWizard:
 
         random.shuffle(cached_swarm_list)
         cached_swarm_list = cached_swarm_list[::experiments_downsampling]
+
         for cached_swarm_file in cached_swarm_list:
             with open(join(swarm_path, cached_swarm_file), 'rb') as f:
                 cached_swarm = pickle.load(file=f)
-            print('Loaded swarm: {}'.format(cached_swarm_file))
+            print('Loaded swarm: {}'.format(cached_swarm_file.split(sep)[-1]))
             experiment_list.append(cached_swarm)
-        timesteps = DataWizard.shortest_experiment_timesteps(experiment_list=experiment_list)
-        wizard = BotDataWizard(timesteps=timesteps,
-                               time_window=self.time_window,
+
+        wizard = BotDataWizard(time_window=self.time_window,
                                experiments=experiment_list,
                                down_sampling_steps=self.down_sampling_steps,
                                feature_set_number=feature_set_number,
@@ -79,11 +79,18 @@ class PickleDataWizard:
         print('Computed Dataset')
 
         dataset_path = Parser.return_cached_dataset_directory_path(experiment_name=task_name)
-        filename = join(dataset_path,
-                        '{}_{}exp_features_set{}_{}downsampled.pkl'.format(task_name,
-                                                                           len(cached_swarm_list),
-                                                                           feature_set_number,
-                                                                           self.down_sampling_steps))
+        if perform_data_balancing:
+            filename = join(dataset_path,
+                            '{}_{}exp_features_set{}_{}downsampled_balanced.pkl'.format(task_name,
+                                                                                        len(cached_swarm_list),
+                                                                                        feature_set_number,
+                                                                                        self.down_sampling_steps))
+        else:
+            filename = join(dataset_path,
+                            '{}_{}exp_features_set{}_{}downsampled_UNbalanced.pkl'.format(task_name,
+                                                                                          len(cached_swarm_list),
+                                                                                          feature_set_number,
+                                                                                          self.down_sampling_steps))
         with open(filename, 'wb') as output_file:
             pickle.dump(datasets, output_file)
-        print('saved ' + filename)
+        print('saved ' + filename.split(sep)[-1])

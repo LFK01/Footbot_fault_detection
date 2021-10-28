@@ -422,7 +422,7 @@ class Parser:
             dump(json_data, f, ensure_ascii=False, indent=4)
 
     @staticmethod
-    def read_files_in_directory(experiment_name: str) -> list:
+    def read_files_in_log_files_directory(experiment_name: str) -> list:
         root = Parser.get_project_root()
         path = join(root, 'log_files')
         if experiment_name == 'WARE':
@@ -584,6 +584,5 @@ class Parser:
 
 if __name__ == "__main__":
     main_root = Parser.get_project_root()
-    main_path = join(main_root, 'cached_files', 'cached_swarms')
+    main_path = join(main_root, 'cached_files', 'cached_datasets', 'dispersion_balanced_datasets')
     Parser.remove_ds_store_from_generic_folder(main_path)
-
