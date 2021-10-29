@@ -125,7 +125,7 @@ def build_dataset(feature_set_number: int,
         pickle.dump(data_wizard_datasets, output_file)
 
 
-def build_feature_set_datasets(main_task_name: str,
+def build_feature_set_datasets(task_name: str,
                                experiments_downsampling,
                                perform_data_balancing: bool):
     f_numbers = [1, 2, 3]
@@ -136,14 +136,14 @@ def build_feature_set_datasets(main_task_name: str,
                                      down_sampling_steps=timeseries_down_sampling)
 
     for main_feature_set_number in f_numbers:
-        print('Building feature set {} of task {}'.format(main_feature_set_number, main_task_name))
-        pickle_wizard.save_bot_train_test_dataset_specific_swarm(task_name=main_task_name,
+        print('Building feature set {} of task {}'.format(main_feature_set_number, task_name))
+        pickle_wizard.save_bot_train_test_dataset_specific_swarm(task_name=task_name,
                                                                  feature_set_number=main_feature_set_number,
                                                                  experiments_downsampling=experiments_downsampling,
                                                                  perform_data_balancing=perform_data_balancing)
 
 
 if __name__ == "__main__":
-    build_feature_set_datasets(main_task_name='DISP',
-                               perform_data_balancing=False,
-                               experiments_downsampling=1)
+    build_feature_set_datasets(task_name='FLOC',
+                               experiments_downsampling=1,
+                               perform_data_balancing=True)

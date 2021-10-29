@@ -5,8 +5,8 @@ from xml.etree import ElementTree
 from xml.etree.ElementTree import Element
 
 from src.Utils.Parser import Parser
+from src.data_writing import build_foraging_swarm, build_feature_set_datasets
 from src.model_training import execute_training_feature_set_datasets
-
 
 def modify_foraging_xml_file(par_element_tree: ElementTree.ElementTree,
                              par_root: Element,
@@ -174,4 +174,9 @@ def create_nominal_foraging_csv_logs():
 
 
 if __name__ == '__main__':
-    execute_training_feature_set_datasets(task_name='FORE')
+    main_task_name = 'FORE'
+    build_foraging_swarm(down_sampling=1)
+    build_feature_set_datasets(task_name=main_task_name,
+                               experiments_downsampling=1,
+                               perform_data_balancing=True)
+    execute_training_feature_set_datasets(task_name=main_task_name)

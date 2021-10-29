@@ -5,6 +5,7 @@ from xml.etree import ElementTree
 from xml.etree.ElementTree import Element
 
 from src.Utils.Parser import Parser
+from src.data_writing import build_swarm_no_foraging_stats, build_feature_set_datasets
 from src.model_training import execute_training_feature_set_datasets
 
 
@@ -126,4 +127,10 @@ def create_nominal_dispersion_csv_logs():
 
 
 if __name__ == '__main__':
-    execute_training_feature_set_datasets(task_name='DISP')
+    main_task_name = 'DISP'
+    build_swarm_no_foraging_stats(task_name=main_task_name,
+                                  experiments_number_down_sampling=1)
+    build_feature_set_datasets(task_name=main_task_name,
+                               experiments_downsampling=1,
+                               perform_data_balancing=True)
+    execute_training_feature_set_datasets(task_name=main_task_name)

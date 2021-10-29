@@ -1,11 +1,10 @@
-import os
-
 import pandas as pd
 import numpy as np
 from json import load, dump
-from os import listdir
+from os import listdir, walk, remove
 from os.path import isfile, join, exists
 from pathlib import Path
+from typing import Tuple, List, Dict
 from src.classes.FootBot import FootBot
 
 
@@ -63,7 +62,7 @@ class Parser:
         return df_footbot_positions
 
     @staticmethod
-    def retrieve_dataframe_info(df_footbot_positions: pd.DataFrame) -> tuple[list[int], int, int, np.ndarray, dict]:
+    def retrieve_dataframe_info(df_footbot_positions: pd.DataFrame) -> Tuple[List[int], int, int, np.ndarray, dict]:
         # retrieve all the ids of the bot
         footbots_unique_ids = df_footbot_positions['ID'].unique().astype(int)
         number_of_robots = len(footbots_unique_ids)
@@ -94,7 +93,7 @@ class Parser:
     def create_generic_swarm(task_name: str,
                              filename: str,
                              neighborhood_radius: float,
-                             time_window_size: int) -> list[FootBot]:
+                             time_window_size: int) -> List[FootBot]:
         """
         Method to parse the positions file and return the list of footbots.
 
@@ -150,7 +149,7 @@ class Parser:
         return footbot_swarm
 
     @staticmethod
-    def create_foraging_swarm(filename: str, neighborhood_radius: float, time_window_size: int) -> list[FootBot]:
+    def create_foraging_swarm(filename: str, neighborhood_radius: float, time_window_size: int) -> List[FootBot]:
         # list to store the robots of the swarm
         footbot_swarm = []
 
@@ -324,7 +323,7 @@ class Parser:
         return json_data["Experiments_Down_sampling"]
 
     @staticmethod
-    def read_area_splits() -> list[int]:
+    def read_area_splits() -> List[int]:
         """
         Method to retrieve the list of area splits in the parameters file.
 
@@ -338,7 +337,7 @@ class Parser:
         return json_data["Area_partitions"]
 
     @staticmethod
-    def read_features_set(feature_set_number: int) -> list[str]:
+    def read_features_set(feature_set_number: int) -> List[str]:
         """
         Method to retrieve the list of features to use in the dataset in the parameters file.
 
@@ -356,7 +355,25 @@ class Parser:
             return json_data['Features']['Set3']
 
     @staticmethod
-    def read_dataset_splittings() -> dict[str, list[float]]:
+    def read_features_names(feature_set_number: int) -> List[str]:
+        """
+        Method to retrieve the list of features to use in the computation of feature importance.
+
+        Returns
+        -------
+        feature_list: list[str]
+        """
+        json_data = Parser.open_parameters_json_file()
+
+        if feature_set_number == 1:
+            return json_data['Features_for_importance']['Set1']
+        elif feature_set_number == 2:
+            return json_data['Features_for_importance']['Set2']
+        elif feature_set_number == 3:
+            return json_data['Features_for_importance']['Set3']
+
+    @staticmethod
+    def read_dataset_splittings() -> Dict[str, List[float]]:
         """
         Method to retrieve the list of splitting values to use in the building of dataset.
 
@@ -384,7 +401,7 @@ class Parser:
         return json_data["Validation"]
 
     @staticmethod
-    def read_not_done_files() -> list[str]:
+    def read_not_done_files() -> List[str]:
         """
         Method to check if the validation set has to be built or not.
 
@@ -412,7 +429,7 @@ class Parser:
         return json_data["Preprocessing"]
 
     @staticmethod
-    def write_json_file_names(file_names: list[str], task: str) -> None:
+    def write_json_file_names(file_names: List[str], task: str) -> None:
         root = Parser.get_project_root()
         path = join(root, 'txt_files')
         json_data = Parser.open_parameters_json_file()
@@ -445,7 +462,7 @@ class Parser:
                     if isfile(join(path, 'homing_log_files', f))]
 
     @staticmethod
-    def read_cached_swarms_in_directory(experiment_name: str) -> list[str]:
+    def read_cached_swarms_in_directory(experiment_name: str) -> List[str]:
         root = Parser.get_project_root()
         path = join(root, 'cached_files', 'cached_swarms')
         if experiment_name == 'WARE':
@@ -525,32 +542,32 @@ class Parser:
         if task_name == 'FLOC':
             path = join(path, 'flocking_log_files')
             if exists(join(path, '.DS_store')):
-                os.remove(join(path, '.DS_store'))
+                remove(join(path, '.DS_store'))
                 print('REMOVED .DS_store')
         elif task_name == 'FORE':
             path = join(path, 'foraging_log_files')
             if exists(join(path, '.DS_store')):
-                os.remove(join(path, '.DS_store'))
+                remove(join(path, '.DS_store'))
                 print('REMOVED .DS_store')
         elif task_name == 'DIFF':
             path = join(path, 'diffusion_log_files')
             if exists(join(path, '.DS_store')):
-                os.remove(join(path, '.DS_store'))
+                remove(join(path, '.DS_store'))
                 print('REMOVED .DS_store')
         elif task_name == 'DISP':
             path = join(path, 'dispersion_log_files')
             if exists(join(path, '.DS_store')):
-                os.remove(join(path, '.DS_store'))
+                remove(join(path, '.DS_store'))
                 print('REMOVED .DS_store')
         elif task_name == 'HOME':
             path = join(path, 'homing_log_files')
             if exists(join(path, '.DS_store')):
-                os.remove(join(path, '.DS_store'))
+                remove(join(path, '.DS_store'))
                 print('REMOVED .DS_store')
         elif task_name == 'WARE':
             path = join(path, 'warehouse_log_files')
             if exists(join(path, '.DS_Store')):
-                os.remove(join(path, '.DS_store'))
+                remove(join(path, '.DS_store'))
                 print('REMOVED .DS_store')
 
     @staticmethod
@@ -575,14 +592,12 @@ class Parser:
 
     @staticmethod
     def remove_ds_store_from_generic_folder(folder_path):
-        for subdir, dirs, files in os.walk(folder_path):
+        for subdir, dirs, files in walk(folder_path):
             for file_name in files:
                 if '.DS_Store' in file_name:
-                    os.remove(join(subdir, file_name))
+                    remove(join(subdir, file_name))
                     print('Removed' + file_name)
 
 
 if __name__ == "__main__":
-    main_root = Parser.get_project_root()
-    main_path = join(main_root, 'cached_files', 'cached_datasets', 'dispersion_balanced_datasets')
-    Parser.remove_ds_store_from_generic_folder(main_path)
+    print('funziona')

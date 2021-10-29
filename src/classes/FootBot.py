@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.stats import entropy
+from typing import List
 
 from src.classes.AreaPartition import AreaPartition
 
@@ -271,7 +272,7 @@ class FootBot:
         self.cumulative_distance_from_centroid_time_series = np.asarray(tmp)
 
     def compute_area_coverage(self,
-                              area_subdivisions: list[list[AreaPartition]]):
+                              area_subdivisions: List[List[AreaPartition]]):
         self.initialize_area_partitions(area_subdivisions=area_subdivisions)
 
         area_coverage = []
@@ -279,7 +280,7 @@ class FootBot:
             area_coverage.append(self.compute_coverage_percentage(area_partitions=area_subdivision))
         self.area_coverage = np.asarray(area_coverage)
 
-    def initialize_area_partitions(self, area_subdivisions: list[list[AreaPartition]]):
+    def initialize_area_partitions(self, area_subdivisions: List[List[AreaPartition]]):
         for area_subdivision in area_subdivisions:
             area_partitions_list = []
             for area in area_subdivision:
@@ -289,7 +290,7 @@ class FootBot:
                                                           top_bound=area.top_bound))
             self.area_partitions.append(area_partitions_list)
 
-    def compute_coverage_percentage(self, area_partitions: list[AreaPartition]) -> np.ndarray:
+    def compute_coverage_percentage(self, area_partitions: List[AreaPartition]) -> np.ndarray:
         area_coverage = []
 
         positions_index = 0

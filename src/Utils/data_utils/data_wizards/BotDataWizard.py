@@ -1,6 +1,7 @@
 import random
 import numpy as np
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from typing import List, Tuple
 
 from src.Utils.data_utils.datasets_classes.GeneralDataset import GeneralDataset
 from src.Utils.data_utils.datasets_classes.TrValTeDataset import TrValTeDataset
@@ -16,7 +17,7 @@ class BotDataWizard(DataWizard):
 
     def __init__(self,
                  time_window: int,
-                 experiments: list[Swarm],
+                 experiments: List[Swarm],
                  feature_set_number: int,
                  perform_data_balancing: bool,
                  down_sampling_steps: int = 1):
@@ -36,7 +37,7 @@ class BotDataWizard(DataWizard):
         print('BotDataWizard transposed and normalized datasets')
 
     def create_balanced_bot_train_test_set(self,
-                                           experiments: list[Swarm],
+                                           experiments: List[Swarm],
                                            feature_set_number: int,
                                            perform_data_balancing: bool,
                                            randomization: bool = False) -> GeneralDataset:
@@ -88,10 +89,13 @@ class BotDataWizard(DataWizard):
                                                                              down_sampling_steps)
                     datasets.append(bot_dataset)
 
+            feature_names = Parser.read_features_names(feature_set_number=feature_set_number)
             if perform_data_balancing:
-                dataset = self.balance_train_test_dataset(datasets)
+                dataset = self.balance_train_test_dataset(datasets,
+                                                          feature_names=feature_names)
             else:
                 dataset = GeneralDataset(bot_identifier=0,
+                                         feature_names=feature_names,
                                          train_dataset=np.concatenate(
                                              [dataset.train_dataset for dataset in datasets], axis=0),
                                          target_train_dataset=np.concatenate(
@@ -150,10 +154,14 @@ class BotDataWizard(DataWizard):
                         down_sampling_steps=self.down_sampling_steps
                     )
                     datasets.append(bot_dataset)
+
+            feature_names = Parser.read_features_names(feature_set_number=feature_set_number)
             if perform_data_balancing:
-                dataset = self.balance_train_test_dataset(datasets)
+                dataset = self.balance_train_test_dataset(datasets,
+                                                          feature_names=feature_names)
             else:
                 dataset = TrValTeDataset(bot_identifier=0,
+                                         feature_names=feature_names,
                                          train_dataset=np.concatenate(
                                              [dataset.train_dataset for dataset in datasets], axis=0),
                                          target_train_dataset=np.concatenate(
@@ -191,7 +199,8 @@ class BotDataWizard(DataWizard):
                 self.dataset.test_dataset = scaler.fit_transform(self.dataset.test_dataset)
 
     @staticmethod
-    def balance_train_test_dataset(datasets_list: list[GeneralDataset]) -> GeneralDataset:
+    def balance_train_test_dataset(datasets_list: List[GeneralDataset],
+                                   feature_names: List[str]) -> GeneralDataset:
         # TODO balance train val test
         # concatenate all the train features and targets dataset in order to work on an unique time series
         concatenated_train_datasets = np.concatenate(
@@ -222,6 +231,7 @@ class BotDataWizard(DataWizard):
             concatenated_target_datasets=concatenated_target_test_datasets
         )
         return GeneralDataset(bot_identifier=0,
+                              feature_names=feature_names,
                               train_dataset=concatenated_train_datasets,
                               target_train_dataset=concatenated_target_train_datasets,
                               test_dataset=concatenated_test_datasets,
@@ -246,7 +256,7 @@ class BotDataWizard(DataWizard):
                                    min_label: bool,
                                    labels_ratio: int,
                                    concatenated_datasets: np.ndarray,
-                                   concatenated_target_datasets: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+                                   concatenated_target_datasets: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         # check that features and targets match in size
         assert concatenated_datasets.shape[0] == concatenated_target_datasets.shape[0]
         # zip together two numpy arrays

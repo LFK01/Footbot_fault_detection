@@ -3,6 +3,7 @@ from os.path import join, exists
 from os import makedirs, listdir
 from datetime import datetime
 from PIL import Image
+from typing import List, Tuple
 
 import matplotlib.pyplot as plt
 from src.classes.FootBot import FootBot
@@ -22,7 +23,7 @@ class Plotter:
         pass
 
     @staticmethod
-    def plot_trajectories(footbot_list: list[FootBot],
+    def plot_trajectories(footbot_list: List[FootBot],
                           swarm: Swarm,
                           plot_swarm: bool,
                           path: str = "",
@@ -70,7 +71,7 @@ class Plotter:
         plt.close(fig)
 
     @staticmethod
-    def plot_trajectory_entropy(footbot_list: list[FootBot],
+    def plot_trajectory_entropy(footbot_list: List[FootBot],
                                 path: str = "",
                                 title: str = 'Entropy for each bot',
                                 show_plot: bool = True) -> None:
@@ -102,7 +103,7 @@ class Plotter:
         plt.close(fig)
 
     @staticmethod
-    def plot_state_time_series(footbot_list: list[FootBot],
+    def plot_state_time_series(footbot_list: List[FootBot],
                                path: str = "",
                                title: str = "State for each bot",
                                show_plot: bool = True) -> None:
@@ -137,7 +138,7 @@ class Plotter:
         plt.close(fig)
 
     @staticmethod
-    def plot_time_rested_time_series(footbot_list: list[FootBot],
+    def plot_time_rested_time_series(footbot_list: List[FootBot],
                                      path: str = "",
                                      title: str = "Rested Time for each bot",
                                      show_plot: bool = True) -> None:
@@ -169,7 +170,7 @@ class Plotter:
         plt.close(fig)
 
     @staticmethod
-    def plot_has_food_time_series(footbot_list: list[FootBot],
+    def plot_has_food_time_series(footbot_list: List[FootBot],
                                   path: str = "",
                                   title: str = "Has food info for each bot",
                                   show_plot: bool = True) -> None:
@@ -201,7 +202,7 @@ class Plotter:
         plt.close(fig)
 
     @staticmethod
-    def plot_total_food_time_series(footbot_list: list[FootBot],
+    def plot_total_food_time_series(footbot_list: List[FootBot],
                                     path: str = "",
                                     title: str = "Collected food for each bot",
                                     show_plot: bool = True) -> None:
@@ -233,7 +234,7 @@ class Plotter:
         plt.close(fig)
 
     @staticmethod
-    def plot_time_searching_for_nest_time_series(footbot_list: list[FootBot],
+    def plot_time_searching_for_nest_time_series(footbot_list: List[FootBot],
                                                  path: str = "",
                                                  title: str = "Time to search space in nest",
                                                  show_plot: bool = True) -> None:
@@ -265,7 +266,7 @@ class Plotter:
         plt.close(fig)
 
     @staticmethod
-    def plot_exploring_unsuccessfully_time_series(footbot_list: list[FootBot],
+    def plot_exploring_unsuccessfully_time_series(footbot_list: List[FootBot],
                                                   path: str = "",
                                                   title: str = "Time to search space in nest",
                                                   show_plot: bool = True) -> None:
@@ -297,7 +298,7 @@ class Plotter:
         plt.close(fig)
 
     @staticmethod
-    def plot_speeds(footbot_list: list[FootBot],
+    def plot_speeds(footbot_list: List[FootBot],
                     path: str = "",
                     title: str = 'Instantaneous Traversed Distance for each bot',
                     show_plot: bool = True) -> None:
@@ -329,7 +330,7 @@ class Plotter:
         plt.close(fig)
 
     @staticmethod
-    def plot_cumulative_traversed_distance(footbot_list: list[FootBot],
+    def plot_cumulative_traversed_distance(footbot_list: List[FootBot],
                                            path: str = "",
                                            title: str = 'Cumulative Traversed Distance for each bot',
                                            show_plot: bool = True) -> None:
@@ -361,7 +362,7 @@ class Plotter:
         plt.close(fig)
 
     @staticmethod
-    def plot_neighbors(footbot_list: list[FootBot],
+    def plot_neighbors(footbot_list: List[FootBot],
                        path: str = "",
                        title: str = 'Number of Neighbors for each bot',
                        show_plot: bool = True) -> None:
@@ -393,7 +394,7 @@ class Plotter:
         plt.close(fig)
 
     @staticmethod
-    def plot_faulty_robots(footbot_list: list[FootBot],
+    def plot_faulty_robots(footbot_list: List[FootBot],
                            path: str = "",
                            title: str = "Number of faulty bots",
                            show_plot: bool = True) -> None:
@@ -429,7 +430,7 @@ class Plotter:
         plt.close(fig)
 
     @staticmethod
-    def plot_swarm_cohesion(footbot_list: list[FootBot],
+    def plot_swarm_cohesion(footbot_list: List[FootBot],
                             path: str = "",
                             title: str = "Average distance from all bots for each bot",
                             show_plot: bool = True) -> None:
@@ -438,7 +439,7 @@ class Plotter:
 
         Parameters
         ----------
-        footbot_list : list[FootBot]
+        footbot_list : List[FootBot]
             List of FootBot instances
         path: str
             Additional string to specify where to save the plot
@@ -492,7 +493,7 @@ class Plotter:
         plt.close(fig)
 
     @staticmethod
-    def plot_distances_from_centroid(footbot_list: list[FootBot],
+    def plot_distances_from_centroid(footbot_list: List[FootBot],
                                      path: str = "",
                                      title: str = "Distance from centroid for each bot",
                                      show_plot: bool = True) -> None:
@@ -533,7 +534,7 @@ class Plotter:
         plt.close(fig)
 
     @staticmethod
-    def plot_footbot_area_coverage(footbot_list: list[FootBot],
+    def plot_footbot_area_coverage(footbot_list: List[FootBot],
                                    path: str = "",
                                    additional_title_string: str = "",
                                    show_plot: bool = True) -> None:
@@ -644,7 +645,7 @@ class Plotter:
         return saving_graphs_file_path
 
     @staticmethod
-    def divide_flocks(footbots_list: list[FootBot]) -> tuple[list[FootBot], list[FootBot]]:
+    def divide_flocks(footbots_list: List[FootBot]) -> Tuple[List[FootBot], List[FootBot]]:
         faulty_bots = [bot for bot in footbots_list if any(bot.fault_time_series)]
         nominal_bots = [bot for bot in footbots_list if not any(bot.fault_time_series)]
 
@@ -691,8 +692,8 @@ class Plotter:
                                     swarm=footbots_list)
 
     @staticmethod
-    def plot_traj_and_fault_in_separate_window(nominal_bots: list[FootBot],
-                                               faulty_bots: list[FootBot],
+    def plot_traj_and_fault_in_separate_window(nominal_bots: List[FootBot],
+                                               faulty_bots: List[FootBot],
                                                saving_path: str,
                                                main_swarm: Swarm,
                                                show_graphs: bool,
@@ -731,8 +732,8 @@ class Plotter:
                                        show_plot=False)
 
     @staticmethod
-    def plot_common_features(nominal_bots: list[FootBot],
-                             faulty_bots: list[FootBot],
+    def plot_common_features(nominal_bots: List[FootBot],
+                             faulty_bots: List[FootBot],
                              main_swarm: Swarm,
                              saving_graphs_file_path,
                              show_all_graphs: bool = True):
@@ -807,8 +808,8 @@ class Plotter:
                                    show_plot=show_all_graphs)
 
     @staticmethod
-    def plot_foraging_features(nominal_bots: list[FootBot],
-                               faulty_bots: list[FootBot],
+    def plot_foraging_features(nominal_bots: List[FootBot],
+                               faulty_bots: List[FootBot],
                                saving_graphs_file_path,
                                show_all_graphs: bool = True):
         Plotter.plot_exploring_unsuccessfully_time_series(footbot_list=nominal_bots,
@@ -925,7 +926,7 @@ class Plotter:
 
     @staticmethod
     def load_generic_swarm_from_json(par_task_name: str,
-                                     file_number: int) -> tuple[list[FootBot], Swarm]:
+                                     file_number: int) -> Tuple[List[FootBot], Swarm]:
         filename = Parser.read_filename(task_name=par_task_name,
                                         file_number=file_number)
         path = Parser.return_cached_swarm_directory_path(experiment_name=par_task_name)

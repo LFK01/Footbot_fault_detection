@@ -8,7 +8,9 @@ from src.Utils.Parser import Parser
 from nominal_homing_dataset import modify_homing_xml_file, compute_parameters
 
 
-def create_fault_homing_csv_logs():
+def create_fault_homing_csv_logs(file_id: str,
+                                 idx_begin: int,
+                                 idx_end: int):
     # open xml file
     xml_file = ElementTree.parse('/Users/lucianofranchin/Documents/Github_repos/'
                                  'argos3-examples/experiments/footbot_homing.argos')
@@ -23,11 +25,11 @@ def create_fault_homing_csv_logs():
     fault_timesteps = [0, 500, 1000, 2500]
 
     # variables to modify simulation parameters
-    arena_dimensions = [5, 7, 9, 11]
+    arena_dimensions = [10, 12, 14, 18]
     initial_arena_size = arena_dimensions[0] ** 2
-    initial_bot_number = 9
-    initial_light_intensity = 4.0
-    initial_exp_length = 200
+    initial_bot_number = 36
+    initial_light_intensity = 6.0
+    initial_exp_length = 800
 
     print('Doing Fault')
     seeds = random.sample(range(1000000), (len(arena_dimensions) ** 2)
@@ -35,7 +37,7 @@ def create_fault_homing_csv_logs():
                           * len(fault_timesteps)
                           * single_bot_fault_repetitions)
     counter = 0
-    for x_length in arena_dimensions:
+    for x_length in arena_dimensions[idx_begin:idx_end]:
         for y_length in arena_dimensions:
             print('Doing arena {}x{}'.format(x_length, y_length))
             current_bot_number, current_exp_length, current_light_intensity = compute_parameters(
@@ -50,7 +52,8 @@ def create_fault_homing_csv_logs():
                 print('Doing fault timestep: ' + str(fault_timestep))
                 for i in range(single_bot_fault_repetitions):
                     print('Doing rep: {} out of {}'.format(i+1, single_bot_fault_repetitions))
-                    modify_homing_xml_file(par_element_tree=xml_file,
+                    modify_homing_xml_file(file_id=file_id,
+                                           par_element_tree=xml_file,
                                            par_root=root,
                                            par_x_length=x_length,
                                            par_y_length=y_length,
@@ -60,7 +63,7 @@ def create_fault_homing_csv_logs():
                                            par_random_seed=seeds[i])
 
                     os.chdir('/Users/lucianofranchin/Documents/Github_repos/argos3-examples/')
-                    s_proc = subprocess.Popen('argos3 -c experiments/homing_execution.argos',
+                    s_proc = subprocess.Popen('argos3 -c experiments/homing_execution' + file_id + '.argos',
                                               stdin=subprocess.PIPE,
                                               shell=True,
                                               text=True)
@@ -77,7 +80,7 @@ def create_fault_homing_csv_logs():
 
     seeds = random.sample(range(1000000), (len(arena_dimensions) ** 2) * len(fault_modules) * len(fault_timesteps))
     counter = 0
-    for x_length in arena_dimensions:
+    for x_length in arena_dimensions[idx_begin:idx_end]:
         for y_length in arena_dimensions:
             current_bot_number, current_exp_length, current_light_intensity = compute_parameters(
                 par_x_length=x_length,
@@ -89,7 +92,8 @@ def create_fault_homing_csv_logs():
             )
             for fault_module in fault_modules:
                 for fault_timestep in fault_timesteps:
-                    modify_homing_xml_file(par_element_tree=xml_file,
+                    modify_homing_xml_file(file_id=file_id,
+                                           par_element_tree=xml_file,
                                            par_root=root,
                                            par_x_length=x_length,
                                            par_y_length=y_length,
@@ -99,7 +103,7 @@ def create_fault_homing_csv_logs():
                                            par_random_seed=seeds[counter])
 
                     os.chdir('/Users/lucianofranchin/Documents/Github_repos/argos3-examples/')
-                    s_proc = subprocess.Popen('argos3 -c experiments/homing_execution.argos',
+                    s_proc = subprocess.Popen('argos3 -c experiments/homing_execution' + file_id + '.argos',
                                               stdin=subprocess.PIPE,
                                               shell=True,
                                               text=True)
@@ -116,4 +120,6 @@ def create_fault_homing_csv_logs():
 
 
 if __name__ == '__main__':
-    create_fault_homing_csv_logs()
+    create_fault_homing_csv_logs(file_id='p0',
+                                 idx_begin=0,
+                                 idx_end=1)

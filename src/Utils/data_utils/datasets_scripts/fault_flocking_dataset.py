@@ -3,6 +3,7 @@ import random
 import subprocess
 from xml.etree import ElementTree
 from xml.etree.ElementTree import Element
+from typing import List
 
 from src.Utils.Parser import Parser
 
@@ -22,14 +23,14 @@ def create_fault_flocking_csv_logs():
     single_bot_fault_repetitions = 4
     # integer numbers to compute the percentage of robots that are non-nominal
     fault_modules = [10, 5, 3]
-    fault_timesteps: list[int] = [0, 500, 1500, 4000]
+    fault_timesteps: List[int] = [0, 500, 1500, 4000]
 
     # open xml file
     xml_file_element = ElementTree.parse('/Users/lucianofranchin/Documents/Github_repos/'
                                          'argos3-examples/experiments/flocking.argos')
     xml_root = xml_file_element.getroot()
     # fault experiments, single bot faults are repeated more times since they are more likely to appear
-    random_seeds: list[int] = random.sample(range(0, 1000), single_bot_fault_repetitions)
+    random_seeds: List[int] = random.sample(range(0, 1000), single_bot_fault_repetitions)
     for i in range(single_bot_fault_repetitions):
         for position in positions_dict.keys():
             execute_fault_flocking_simulation_command(par_xml_file=xml_file_element,
@@ -84,7 +85,7 @@ def execute_fault_flocking_simulation_command(par_xml_file: ElementTree,
                                               par_position: str,
                                               par_experiment_bot_quantity: int,
                                               par_random_seed: int,
-                                              par_fault_timesteps: list[int],
+                                              par_fault_timesteps: List[int],
                                               par_fault_module: int):
     modify_fault_flocking_xml_file(par_element_tree=par_xml_file,
                                    par_root=par_root,

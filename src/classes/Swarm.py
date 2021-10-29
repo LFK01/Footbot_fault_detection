@@ -1,4 +1,5 @@
 import numpy as np
+from typing import List
 
 from src.Utils.Parser import Parser
 from src.classes.FootBot import FootBot
@@ -10,7 +11,7 @@ class Swarm:
     Class that collects all the robots in the swarm and computes the features of the cluster
     """
 
-    def __init__(self, timesteps: np.ndarray, swarm: list[FootBot]):
+    def __init__(self, timesteps: np.ndarray, swarm: List[FootBot]):
         self.timesteps = timesteps
         self.list_of_footbots = swarm
         self.trajectory = self.compute_cluster_trajectory()

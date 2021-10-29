@@ -1,4 +1,5 @@
 import numpy as np
+from typing import List
 from src.Utils.Parser import Parser
 from src.classes.Swarm import Swarm
 from src.classes.FootBot import FootBot
@@ -9,30 +10,30 @@ from src.Utils.data_utils.datasets_classes.GeneralDataset import GeneralDataset
 class DataWizard:
     def __init__(self,
                  time_window: int,
-                 experiments: list[Swarm],
+                 experiments: List[Swarm],
                  feature_set_number: int,
                  down_sampling_steps: int = 1,
                  preprocessing_type: str = 'raw'):
         self.time_window: int = time_window
-        self.experiments: list[Swarm] = experiments
+        self.experiments: List[Swarm] = experiments
         self.feature_set_number = feature_set_number
         self.down_sampling_steps = down_sampling_steps
         self.preprocessing_type = preprocessing_type
 
     @staticmethod
-    def shortest_experiment_timesteps(experiment_list: list[Swarm]) -> int:
+    def shortest_experiment_timesteps(experiment_list: List[Swarm]) -> int:
         return min(
             experiment.list_of_footbots[0].number_of_timesteps for experiment in experiment_list
         )
 
     @staticmethod
-    def maximum_bot_number_in_experiment(experiment_list: list[Swarm]) -> int:
+    def maximum_bot_number_in_experiment(experiment_list: List[Swarm]) -> int:
         return max([len(exp.list_of_footbots) for exp in experiment_list])
 
     @staticmethod
     def slice_train_test_experiments(bot: int,
-                                     train_experiments: list[Swarm],
-                                     test_experiments: list[Swarm],
+                                     train_experiments: List[Swarm],
+                                     test_experiments: List[Swarm],
                                      feature_set_number: int,
                                      down_sampling_steps: int = 1) -> GeneralDataset:
 
@@ -68,6 +69,7 @@ class DataWizard:
         # numpy concatenate creates an unique time series of all the experiments
         bot_dataset = GeneralDataset(
             bot_identifier=bot,
+            feature_names=Parser.read_features_names(feature_set_number=feature_set_number),
             train_dataset=np.transpose(np.concatenate(bot_train_dataset, axis=-1)),
             target_train_dataset=np.transpose(np.concatenate(bot_train_target_dataset, axis=-1)),
             test_dataset=np.transpose(np.concatenate(bot_test_dataset, axis=-1)),
@@ -77,9 +79,9 @@ class DataWizard:
 
     @staticmethod
     def slice_train_val_test_experiments(bot: int,
-                                         train_experiments: list[Swarm],
-                                         validation_experiments: list[Swarm],
-                                         test_experiments: list[Swarm],
+                                         train_experiments: List[Swarm],
+                                         validation_experiments: List[Swarm],
+                                         test_experiments: List[Swarm],
                                          feature_set_number: int,
                                          down_sampling_steps: int = 1) -> TrValTeDataset:
 
@@ -121,6 +123,7 @@ class DataWizard:
 
         bot_dataset = TrValTeDataset(
             bot_identifier=bot,
+            feature_names=Parser.read_features_names(feature_set_number=feature_set_number),
             train_dataset=np.transpose(np.concatenate(bot_train_dataset, axis=-1)),
             target_train_dataset=np.transpose(np.concatenate(bot_train_target_dataset, axis=-1)),
             validation_dataset=np.transpose(np.concatenate(bot_val_dataset, axis=-1)),
@@ -134,7 +137,7 @@ class DataWizard:
     def retrieve_bot_features(bot: FootBot,
                               swarm: Swarm,
                               feature_set_number: int,
-                              down_sampling_steps: int) -> list[np.ndarray]:
+                              down_sampling_steps: int) -> List[np.ndarray]:
 
         features_list = Parser.read_features_set(feature_set_number=feature_set_number)
 
@@ -181,7 +184,7 @@ class DataWizard:
 
     @staticmethod
     def retrieve_features_and_target(bot: int,
-                                     experiments: list[Swarm],
+                                     experiments: List[Swarm],
                                      feature_set_number: int,
                                      down_sampling_steps: int = 1):
         bot_dataset = []

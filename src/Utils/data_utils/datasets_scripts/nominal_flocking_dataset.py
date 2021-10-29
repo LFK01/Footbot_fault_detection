@@ -3,8 +3,10 @@ import random
 import subprocess
 from xml.etree import ElementTree
 from xml.etree.ElementTree import Element
+from typing import List
 
 from src.Utils.Parser import Parser
+from src.data_writing import build_swarm_no_foraging_stats, build_feature_set_datasets
 from src.model_training import execute_training_feature_set_datasets
 
 
@@ -29,7 +31,7 @@ def create_nominal_flocking_csv_logs():
 
     # nominal experiments should be repeated more times with different seed in order to depict
     # a realistic scenario
-    random_seeds: list[int] = random.sample(range(0, 1000), nominal_exp_repetitions)
+    random_seeds: List[int] = random.sample(range(0, 1000), nominal_exp_repetitions)
     for i in range(nominal_exp_repetitions):
         for position in positions_dict.keys():
             modify_nominal_flocking_xml_file(par_element_tree=xml_file_element,
@@ -74,4 +76,10 @@ def modify_nominal_flocking_xml_file(par_element_tree: ElementTree.ElementTree,
 
 
 if __name__ == "__main__":
-    create_nominal_flocking_csv_logs()
+    main_task_name = 'FLOC'
+    build_swarm_no_foraging_stats(task_name=main_task_name,
+                                  experiments_number_down_sampling=1)
+    build_feature_set_datasets(task_name=main_task_name,
+                               experiments_downsampling=1,
+                               perform_data_balancing=True)
+    execute_training_feature_set_datasets(task_name=main_task_name)

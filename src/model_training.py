@@ -1,6 +1,7 @@
 from os import listdir
 from os.path import join
 from pickle import load
+from typing import List
 
 from src.Utils.Parser import Parser
 from src.Utils.data_utils.datasets_classes.GeneralDataset import GeneralDataset
@@ -12,7 +13,7 @@ def execute_single_bot_ordered_training(file_name: str,
                                         feature_names_list: str,
                                         downsampling: int):
     with open(file_name, 'rb') as input_file:
-        data_wizard_datasets: list[GeneralDataset] = load(input_file)
+        data_wizard_datasets: List[GeneralDataset] = load(input_file)
 
     for bot_dataset in data_wizard_datasets:
         model = SingleBotGbModel(model_name='GBoost')
@@ -37,9 +38,9 @@ def execute_single_bot_shuffled_training(task_name: str,
 
     model.train()
 
-    model.compute_test_performance(task_name=task_name,
-                                   downsampling=downsampling,
-                                   features=feature_names_list)
+    model.compute_test_performance_default_model(task_name=task_name,
+                                                 downsampling=downsampling,
+                                                 features=feature_names_list)
 
 
 def execute_training_feature_set_datasets(task_name: str):
@@ -63,4 +64,4 @@ def execute_training_feature_set_datasets(task_name: str):
 
 
 if __name__ == "__main__":
-    execute_training_feature_set_datasets(task_name='DISP')
+    execute_training_feature_set_datasets(task_name='FLOC')

@@ -10,6 +10,7 @@ from src.model_training import execute_training_feature_set_datasets
 
 
 def modify_homing_xml_file(par_element_tree: ElementTree.ElementTree,
+                           file_id: str,
                            par_root: Element,
                            par_x_length: int,
                            par_y_length: int,
@@ -56,7 +57,7 @@ def modify_homing_xml_file(par_element_tree: ElementTree.ElementTree,
             par_root.remove(element_iterator)
 
     par_element_tree.write('/Users/lucianofranchin/Documents/Github_repos/'
-                           'argos3-examples/experiments/homing_execution.argos')
+                           'argos3-examples/experiments/homing_execution' + file_id + '.argos')
 
 
 def compute_parameters(par_x_length: int,
@@ -74,7 +75,7 @@ def compute_parameters(par_x_length: int,
     return current_bot_number, current_exp_length, current_light_intensity
 
 
-def create_nominal_homing_csv_logs():
+def create_nominal_homing_csv_logs(file_id: str):
     # open xml file
     xml_file = ElementTree.parse('/Users/lucianofranchin/Documents/Github_repos/'
                                  'argos3-examples/experiments/footbot_homing.argos')
@@ -83,14 +84,14 @@ def create_nominal_homing_csv_logs():
     random.seed(Parser.read_seed())
 
     # variables to manage the simulation execution
-    nominal_exp_repetitions = 4
+    nominal_exp_repetitions = 2
 
     # variables to modify simulation parameters
-    arena_dimensions = [5, 7, 9, 10]
+    arena_dimensions = [10, 12, 14, 18]
     initial_arena_size = arena_dimensions[0] ** 2
-    initial_bot_number = 9
-    initial_exp_length = 200
-    initial_light_intensity = 5.0
+    initial_bot_number = 36
+    initial_light_intensity = 6.0
+    initial_exp_length = 800
 
     print('Doing Nominal')
     for x_length in arena_dimensions:
@@ -109,7 +110,8 @@ def create_nominal_homing_csv_logs():
 
             for i in range(nominal_exp_repetitions):
                 print('Doing nominal rep: {} out of {}'.format(i + 1, nominal_exp_repetitions))
-                modify_homing_xml_file(par_element_tree=xml_file,
+                modify_homing_xml_file(file_id=file_id,
+                                       par_element_tree=xml_file,
                                        par_root=root,
                                        par_x_length=x_length,
                                        par_y_length=y_length,
@@ -119,7 +121,7 @@ def create_nominal_homing_csv_logs():
                                        par_random_seed=seeds[i])
 
                 os.chdir('/Users/lucianofranchin/Documents/Github_repos/argos3-examples/')
-                subproc = subprocess.Popen('argos3 -c experiments/homing_execution.argos',
+                subproc = subprocess.Popen('argos3 -c experiments/homing_execution' + file_id + '.argos',
                                            stdin=subprocess.PIPE,
                                            shell=True,
                                            text=True)
@@ -131,4 +133,10 @@ def create_nominal_homing_csv_logs():
 
 
 if __name__ == '__main__':
-    pass
+    main_task_name = 'HOME'
+    build_swarm_no_foraging_stats(task_name=main_task_name,
+                                  experiments_number_down_sampling=1)
+    build_feature_set_datasets(task_name=main_task_name,
+                               experiments_downsampling=1,
+                               perform_data_balancing=True)
+    execute_training_feature_set_datasets(task_name=main_task_name)
