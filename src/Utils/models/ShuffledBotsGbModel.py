@@ -12,9 +12,10 @@ class ShuffledBotsGbModel(ShuffledBotsScikitModel):
         seed = Parser.read_seed()
         model = GradientBoostingClassifier(loss='exponential',
                                            n_estimators=200,
+                                           max_features='sqrt',
                                            n_iter_no_change=5,
                                            learning_rate=0.1,
-                                           max_depth=4,
+                                           max_depth=3,
                                            random_state=seed,
                                            verbose=2,
                                            tol=1e-3)

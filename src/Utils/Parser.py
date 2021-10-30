@@ -600,4 +600,4 @@ class Parser:
 
 
 if __name__ == "__main__":
-    print('funziona')
+    Parser.remove_ds_store_from_generic_folder(Parser.get_project_root())

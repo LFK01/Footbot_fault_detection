@@ -1,5 +1,5 @@
 import random
-from os import chdir, sep, getcwd
+from os import chdir, sep
 from os.path import join
 import subprocess
 from xml.etree import ElementTree

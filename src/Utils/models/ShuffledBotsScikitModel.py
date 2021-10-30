@@ -3,6 +3,7 @@ import pickle
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from os import listdir, mkdir
 from os.path import join
 from datetime import datetime
 
@@ -54,8 +55,8 @@ class ShuffledBotsScikitModel:
         plt.title(title)
         title = title.replace(" + ", "")
         title = title.replace(" ", "_")
-        path = join(Parser.return_performance_image_directory_path(task_name), title)
-        plt.savefig(path)
+        saving_images_path = join(Parser.return_performance_image_directory_path(task_name), title)
+        plt.savefig(saving_images_path)
 
         PrecisionRecallDisplay.from_estimator(estimator=self.model,
                                               X=self.datasets.test_dataset,
@@ -68,21 +69,29 @@ class ShuffledBotsScikitModel:
         plt.title(title)
         title = title.replace(" + ", "")
         title = title.replace(" ", "_")
-        path = join(Parser.return_performance_image_directory_path(task_name), title)
-        plt.savefig(path)
+        saving_images_path = join(Parser.return_performance_image_directory_path(task_name), title)
+        plt.savefig(saving_images_path)
 
         prec_result = precision_score(y_true=self.datasets.target_test_dataset, y_pred=test_prediction)
         rec_result = recall_score(y_true=self.datasets.target_test_dataset, y_pred=test_prediction)
         f1_result = f1_score(y_true=self.datasets.target_test_dataset, y_pred=test_prediction)
 
-        print('& {:.4} & {:.4} & {:.4} & {:.4} \\\\'.format(score,
-                                                            prec_result,
-                                                            rec_result,
-                                                            f1_result))
-        print('All bots shuffled Mean Accuracy score: ' + str(score))
-        print('All bots shuffled Precision: ' + str(prec_result))
-        print('All bots shuffled Recall: ' + str(rec_result))
-        print('All bots shuffled F1 Score: ' + str(f1_result))
+        output_log = 'Model: {} DownSampling: {} FeatureSet: {} \n'.format(self.model_name, downsampling, features)
+        output_log += '& {:.4} & {:.4} & {:.4} & {:.4} \\\\ \n'.format(score, prec_result, rec_result, f1_result)
+        output_log += 'All bots shuffled Mean Accuracy score: {} \n'.format(score)
+        output_log += 'All bots shuffled Precision: {} \n'.format(prec_result)
+        output_log += 'All bots shuffled Recall: {} \n'.format(rec_result)
+        output_log += 'All bots shuffled F1 Score: {} \n'.format(f1_result)
+        print(output_log)
+
+        training_log_files_path = join(Parser.get_project_root(), 'txt_files')
+        if task_name + '_training_logs' not in listdir(training_log_files_path):
+            mkdir(join(training_log_files_path, task_name + '_training_logs'))
+        training_log_files_path = join(training_log_files_path, task_name + '_training_logs')
+
+        file_path = join(training_log_files_path, 'training_log' + datetime.now().strftime('%d-%m-%Y_%H-%M') + '.txt')
+        with open(file_path, 'a+') as output_file:
+            output_file.write(output_log)
 
         feature_importance = permutation_importance(self.model,
                                                     X=self.datasets.test_dataset,
@@ -99,9 +108,8 @@ class ShuffledBotsScikitModel:
         fig.tight_layout()
         title = title.replace(' + ', '')
         title = title.replace(' ', '_')
-        path = join(Parser.return_performance_image_directory_path(task_name), title)
-        plt.savefig(path)
-
+        saving_images_path = join(Parser.return_performance_image_directory_path(task_name), title)
+        plt.savefig(saving_images_path)
 
     def shuffle_datasets(self):
         assert len(self.datasets.train_dataset) == len(self.datasets.target_train_dataset)
