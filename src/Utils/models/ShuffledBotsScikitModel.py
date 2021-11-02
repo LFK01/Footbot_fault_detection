@@ -25,7 +25,6 @@ class ShuffledBotsScikitModel:
         self.model = model
 
         np.random.seed(Parser.read_seed())
-        self.shuffle_datasets()
 
     def train(self):
         self.model.fit(X=self.datasets.train_dataset, y=self.datasets.target_train_dataset)
@@ -40,7 +39,8 @@ class ShuffledBotsScikitModel:
     def compute_test_performance_default_model(self,
                                                task_name: str,
                                                downsampling: int,
-                                               features: str):
+                                               features: str,
+                                               filename_date: str):
         test_prediction = self.model.predict(X=self.datasets.test_dataset)
 
         score = self.model.score(X=self.datasets.test_dataset,
@@ -89,7 +89,7 @@ class ShuffledBotsScikitModel:
             mkdir(join(training_log_files_path, task_name + '_training_logs'))
         training_log_files_path = join(training_log_files_path, task_name + '_training_logs')
 
-        file_path = join(training_log_files_path, 'training_log' + datetime.now().strftime('%d-%m-%Y_%H-%M') + '.txt')
+        file_path = join(training_log_files_path, 'training_log' + filename_date + '.txt')
         with open(file_path, 'a+') as output_file:
             output_file.write(output_log)
 
@@ -110,14 +110,3 @@ class ShuffledBotsScikitModel:
         title = title.replace(' ', '_')
         saving_images_path = join(Parser.return_performance_image_directory_path(task_name), title)
         plt.savefig(saving_images_path)
-
-    def shuffle_datasets(self):
-        assert len(self.datasets.train_dataset) == len(self.datasets.target_train_dataset)
-        permutation = np.random.permutation(len(self.datasets.train_dataset))
-        self.datasets.train_dataset = self.datasets.train_dataset[permutation]
-        self.datasets.target_train_dataset = self.datasets.target_train_dataset[permutation]
-
-        assert len(self.datasets.test_dataset) == len(self.datasets.target_test_dataset)
-        permutation = np.random.permutation(len(self.datasets.test_dataset))
-        self.datasets.test_dataset = self.datasets.test_dataset[permutation]
-        self.datasets.target_test_dataset = self.datasets.target_test_dataset[permutation]
