@@ -1,5 +1,6 @@
 import random
 import numpy as np
+from sklearn.base import TransformerMixin
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from typing import List, Tuple
 
@@ -180,23 +181,65 @@ class BotDataWizard(DataWizard):
         if Parser.read_validation_choice():
             if Parser.read_preprocessing_type() == 'STD':
                 scaler = StandardScaler()
-                self.dataset.train_dataset = scaler.fit_transform(self.dataset.train_dataset)
-                self.dataset.validation_dataset = scaler.fit_transform(self.dataset.validation_dataset)
-                self.dataset.test_dataset = scaler.fit_transform(self.dataset.test_dataset)
+                self.dataset.train_dataset = BotDataWizard.normalize_single_feature(
+                    dataset=self.dataset.train_dataset,
+                    scaler=scaler
+                )
+                self.dataset.validation_dataset = BotDataWizard.normalize_single_feature(
+                    dataset=self.dataset.validation_dataset,
+                    scaler=scaler
+                )
+                self.dataset.test_dataset = BotDataWizard.normalize_single_feature(
+                    dataset=self.dataset.test_dataset,
+                    scaler=scaler
+                )
             else:
                 scaler = MinMaxScaler(feature_range=(0, 1))
-                self.dataset.train_dataset = scaler.fit_transform(self.dataset.train_dataset)
-                self.dataset.validation_dataset = scaler.fit_transform(self.dataset.validation_dataset)
-                self.dataset.test_dataset = scaler.fit_transform(self.dataset.test_dataset)
+                self.dataset.train_dataset = BotDataWizard.normalize_single_feature(
+                    dataset=self.dataset.train_dataset,
+                    scaler=scaler
+                )
+                self.dataset.validation_dataset = BotDataWizard.normalize_single_feature(
+                    dataset=self.dataset.validation_dataset,
+                    scaler=scaler
+                )
+                self.dataset.test_dataset = BotDataWizard.normalize_single_feature(
+                    dataset=self.dataset.validation_dataset,
+                    scaler=scaler
+                )
         else:
             if Parser.read_preprocessing_type() == 'STD':
                 scaler = StandardScaler()
-                self.dataset.train_dataset = scaler.fit_transform(self.dataset.train_dataset)
-                self.dataset.test_dataset = scaler.fit_transform(self.dataset.test_dataset)
+                self.dataset.train_dataset = BotDataWizard.normalize_single_feature(
+                    dataset=self.dataset.train_dataset,
+                    scaler=scaler
+                )
+                self.dataset.test_dataset = BotDataWizard.normalize_single_feature(
+                    dataset=self.dataset.test_dataset,
+                    scaler=scaler
+                )
             else:
                 scaler = MinMaxScaler(feature_range=(0, 1))
-                self.dataset.train_dataset = scaler.fit_transform(self.dataset.train_dataset)
-                self.dataset.test_dataset = scaler.fit_transform(self.dataset.test_dataset)
+                self.dataset.train_dataset = BotDataWizard.normalize_single_feature(
+                    dataset=self.dataset.train_dataset,
+                    scaler=scaler
+                )
+                self.dataset.test_dataset = BotDataWizard.normalize_single_feature(
+                    dataset=self.dataset.test_dataset,
+                    scaler=scaler
+                )
+
+    @staticmethod
+    def normalize_single_feature(dataset: np.ndarray,
+                                 scaler: TransformerMixin):
+        standardized_dataset = []
+        for feature_index in range(dataset.shape[-1]):
+            # the slicing at the end of fit_transform is needed to delete the last dimension added by reshape(-1, 1)
+            standardized_dataset.append(
+                scaler.fit_transform(dataset[..., feature_index].reshape(-1, 1))[..., 0]
+            )
+        # transposition is necessary because the stacking done in the for cycle features and timesteps gets reversed
+        return np.asarray(standardized_dataset).transpose()
 
     @staticmethod
     def balance_train_test_dataset(datasets_list: List[GeneralDataset],
