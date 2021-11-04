@@ -4,6 +4,8 @@ from os.path import join
 from os import listdir, sep
 from src.Utils.Parser import Parser
 from src.Utils.data_utils.data_wizards.BotDataWizard import BotDataWizard
+from src.Utils.Plotter import Plotter
+from src.classes.Swarm import Swarm
 
 
 class PickleDataWizard:
@@ -53,6 +55,7 @@ class PickleDataWizard:
                                                    task_name: str,
                                                    feature_set_number: int,
                                                    experiments_downsampling: int,
+                                                   useless_bot_deletion_factor: int,
                                                    perform_data_balancing: bool):
         experiment_list = []
         random.seed(Parser.read_seed())
@@ -67,6 +70,8 @@ class PickleDataWizard:
             with open(join(swarm_path, cached_swarm_file), 'rb') as f:
                 cached_swarm = pickle.load(file=f)
             print('Loaded swarm: {}'.format(cached_swarm_file.split(sep)[-1]))
+            cached_swarm = PickleDataWizard.delete_useless_bots(swarm=cached_swarm,
+                                                                useless_bot_deletion_factor=useless_bot_deletion_factor)
             experiment_list.append(cached_swarm)
 
         wizard = BotDataWizard(time_window=self.time_window,
@@ -94,3 +99,18 @@ class PickleDataWizard:
         with open(filename, 'wb') as output_file:
             pickle.dump(datasets, output_file)
         print('saved ' + filename.split(sep)[-1])
+
+    @staticmethod
+    def delete_useless_bots(swarm: Swarm,
+                            useless_bot_deletion_factor: int):
+        faulty_bots, nominal_bots = Plotter.divide_flocks(footbots_list=swarm.list_of_footbots)
+        if not faulty_bots:
+            random.seed(Parser.read_seed())
+            random.shuffle(swarm.list_of_footbots)
+            swarm.list_of_footbots = swarm.list_of_footbots[::useless_bot_deletion_factor]
+        else:
+            faulty_nominal_ratio = int(len(nominal_bots)/len(faulty_bots))
+            swarm.list_of_footbots = []
+            swarm.list_of_footbots.extend(nominal_bots[::faulty_nominal_ratio])
+            swarm.list_of_footbots.extend(faulty_bots)
+        return swarm
