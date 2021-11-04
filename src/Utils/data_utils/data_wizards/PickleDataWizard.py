@@ -55,6 +55,7 @@ class PickleDataWizard:
                                                    task_name: str,
                                                    feature_set_number: int,
                                                    experiments_downsampling: int,
+                                                   delete_useless_bots: bool,
                                                    useless_bot_deletion_factor: int,
                                                    perform_data_balancing: bool):
         experiment_list = []
@@ -70,8 +71,9 @@ class PickleDataWizard:
             with open(join(swarm_path, cached_swarm_file), 'rb') as f:
                 cached_swarm = pickle.load(file=f)
             print('Loaded swarm: {}'.format(cached_swarm_file.split(sep)[-1]))
-            cached_swarm = PickleDataWizard.delete_useless_bots(swarm=cached_swarm,
-                                                                useless_bot_deletion_factor=useless_bot_deletion_factor)
+            if delete_useless_bots:
+                cached_swarm = PickleDataWizard.delete_useless_bots(swarm=cached_swarm,
+                                                                    useless_bot_deletion_factor=useless_bot_deletion_factor)
             experiment_list.append(cached_swarm)
 
         wizard = BotDataWizard(time_window=self.time_window,

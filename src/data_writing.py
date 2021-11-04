@@ -127,6 +127,7 @@ def build_dataset(feature_set_number: int,
 
 def build_feature_set_datasets(task_name: str,
                                experiments_downsampling,
+                               delete_useless_bots: bool,
                                useless_bot_deletion_factor: int,
                                perform_data_balancing: bool):
     f_numbers = [1, 2, 3]
@@ -141,12 +142,10 @@ def build_feature_set_datasets(task_name: str,
         pickle_wizard.save_bot_train_test_dataset_specific_swarm(task_name=task_name,
                                                                  feature_set_number=main_feature_set_number,
                                                                  experiments_downsampling=experiments_downsampling,
+                                                                 delete_useless_bots=delete_useless_bots,
                                                                  useless_bot_deletion_factor=useless_bot_deletion_factor,
                                                                  perform_data_balancing=perform_data_balancing)
 
 
 if __name__ == "__main__":
-    build_feature_set_datasets(task_name='FLOC',
-                               experiments_downsampling=1,
-                               useless_bot_deletion_factor=4,
-                               perform_data_balancing=True)
+    pass

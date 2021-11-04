@@ -79,6 +79,7 @@ if __name__ == "__main__":
     main_task_name = 'FLOC'
     build_feature_set_datasets(task_name=main_task_name,
                                experiments_downsampling=1,
+                               delete_useless_bots=False,
                                useless_bot_deletion_factor=1,
                                perform_data_balancing=True)
     execute_training_feature_set_datasets(task_name=main_task_name)

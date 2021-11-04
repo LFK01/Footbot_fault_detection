@@ -128,8 +128,3 @@ def create_nominal_dispersion_csv_logs():
 
 if __name__ == '__main__':
     main_task_name = 'DISP'
-    build_feature_set_datasets(task_name=main_task_name,
-                               experiments_downsampling=1,
-                               useless_bot_deletion_factor=6,
-                               perform_data_balancing=True)
-    execute_training_feature_set_datasets(task_name=main_task_name)
