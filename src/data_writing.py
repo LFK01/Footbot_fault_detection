@@ -148,4 +148,9 @@ def build_feature_set_datasets(task_name: str,
 
 
 if __name__ == "__main__":
-    pass
+    main_task_name = 'FLOC'
+    build_feature_set_datasets(task_name=main_task_name,
+                               experiments_downsampling=1,
+                               delete_useless_bots=True,
+                               useless_bot_deletion_factor=4,
+                               perform_data_balancing=True)

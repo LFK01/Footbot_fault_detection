@@ -883,7 +883,8 @@ class Plotter:
                                        saving_graphs_file_path=saving_graphs_file_path)
 
     @staticmethod
-    def plot_all_cached_swarm_in_directory(task_name: str):
+    def plot_all_cached_swarm_in_directory(task_name: str,
+                                           show_images_in_new_window: bool):
         folder = Parser.return_cached_swarm_directory_path(experiment_name=task_name)
         root = Parser.get_project_root()
         images_path = join(root, 'images')
@@ -900,10 +901,11 @@ class Plotter:
                                                            main_swarm=swarm,
                                                            title=file.replace('.pkl', ''),
                                                            show_graphs=False)
-            for image_file in listdir(folder_path):
-                image_path = join(folder_path, image_file)
-                img = Image.open(image_path)
-                img.show()
+            if show_images_in_new_window:
+                for image_file in listdir(folder_path):
+                    image_path = join(folder_path, image_file)
+                    img = Image.open(image_path)
+                    img.show()
 
     @staticmethod
     def plot_from_json_cached_swarm(par_task_name: str,
@@ -975,7 +977,8 @@ class Plotter:
 
 if __name__ == "__main__":
     main_task_name = 'DISP'
-    Plotter.plot_from_json_cached_swarm(par_task_name=main_task_name,
-                                        file_number=2,
-                                        show_all_graphs=False,
-                                        title='WARE_6x6_10_percent_slowed_fault')
+    Plotter.plot_all_cached_swarm_in_directory(task_name=main_task_name,
+                                               show_images_in_new_window=False)
+    main_task_name = 'HOME'
+    Plotter.plot_all_cached_swarm_in_directory(task_name=main_task_name,
+                                               show_images_in_new_window=False)
