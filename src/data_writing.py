@@ -98,7 +98,7 @@ def build_foraging_swarm(down_sampling: int):
         done_files += 1
 
 
-def build_dataset(feature_set_number: int,
+def build_dataset(feature_set_name: str,
                   perform_data_balancing: bool):
     with open('../cached_files/cached_swarms/149_experiments_15_bots.pkl',
               'rb') as input_file:
@@ -113,7 +113,7 @@ def build_dataset(feature_set_number: int,
         time_window=time_window_size,
         experiments=experiment_list,
         down_sampling_steps=down_sampling,
-        feature_set_number=feature_set_number,
+        feature_set_name=feature_set_name,
         perform_data_balancing=perform_data_balancing)
 
     data_wizard_datasets = data_wizard.dataset
@@ -129,28 +129,28 @@ def build_feature_set_datasets(task_name: str,
                                experiments_downsampling,
                                delete_useless_bots: bool,
                                useless_bot_deletion_factor: int,
-                               perform_data_balancing: bool):
-    f_numbers = [1, 2, 3]
+                               perform_data_balancing: bool) -> dict[str, float]:
+    feature_sets_dict = Parser.return_feature_sets_dict()
     timeseries_down_sampling = Parser.read_timeseries_down_sampling()
     time_window_size = Parser.read_time_window()
 
     pickle_wizard = PickleDataWizard(time_window=time_window_size,
                                      down_sampling_steps=timeseries_down_sampling)
-
-    for main_feature_set_number in f_numbers:
-        print('Building feature set {} of task {}'.format(main_feature_set_number, task_name))
+    delta_times_dict = {}
+    for main_feature_set_name in feature_sets_dict.keys():
+        time_start = datetime.now()
+        print('Building feature {} of task {}'.format(main_feature_set_name, task_name))
         pickle_wizard.save_bot_train_test_dataset_specific_swarm(task_name=task_name,
-                                                                 feature_set_number=main_feature_set_number,
+                                                                 feature_set_name=main_feature_set_name,
                                                                  experiments_downsampling=experiments_downsampling,
                                                                  delete_useless_bots=delete_useless_bots,
                                                                  useless_bot_deletion_factor=useless_bot_deletion_factor,
                                                                  perform_data_balancing=perform_data_balancing)
+        time_end = datetime.now()
+        delta_times_dict[main_feature_set_name] = (time_end - time_start).total_seconds()
+
+    return delta_times_dict
 
 
 if __name__ == "__main__":
-    main_task_name = 'FLOC'
-    build_feature_set_datasets(task_name=main_task_name,
-                               experiments_downsampling=1,
-                               delete_useless_bots=True,
-                               useless_bot_deletion_factor=4,
-                               perform_data_balancing=True)
+    pass

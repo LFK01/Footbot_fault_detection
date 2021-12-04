@@ -77,9 +77,12 @@ def modify_nominal_flocking_xml_file(par_element_tree: ElementTree.ElementTree,
 
 if __name__ == "__main__":
     main_task_name = 'FLOC'
-    build_feature_set_datasets(task_name=main_task_name,
-                               experiments_downsampling=1,
-                               delete_useless_bots=False,
-                               useless_bot_deletion_factor=1,
-                               perform_data_balancing=True)
-    execute_training_feature_set_datasets(task_name=main_task_name)
+    delta_times_dict = build_feature_set_datasets(task_name=main_task_name,
+                                                  experiments_downsampling=1,
+                                                  delete_useless_bots=False,
+                                                  useless_bot_deletion_factor=1,
+                                                  perform_data_balancing=True)
+    Parser.write_delta_times_dict_on_json_file(task_name=main_task_name,
+                                               delta_times_dict=delta_times_dict)
+    execute_training_feature_set_datasets(task_name=main_task_name,
+                                          delta_times_dict=delta_times_dict)

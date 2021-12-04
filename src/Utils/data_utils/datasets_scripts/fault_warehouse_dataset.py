@@ -186,10 +186,6 @@ def create_fault_warehouse_csv_logs(file_id: str,
 
 
 if __name__ == '__main__':
-    # print(getcwd())
-    # path = join('C:', sep, 'Users', 'Luciano', 'source', 'repos', 'LFK01', 'Configuration_files')
-    # print(path)
-    # chdir(path)
     create_fault_warehouse_csv_logs(file_id='p0',
                                     idx_begin=0,
                                     idx_end=1)

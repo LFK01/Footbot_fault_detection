@@ -1,7 +1,9 @@
+import json
+
 import pandas as pd
 import numpy as np
 from json import load, dump
-from os import listdir, walk, remove
+from os import listdir, walk, remove, mkdir
 from os.path import isfile, join, exists
 from pathlib import Path
 from typing import Tuple, List, Dict
@@ -25,7 +27,7 @@ class Parser:
         return Path(__file__).parent.parent.parent
 
     @staticmethod
-    def open_parameters_json_file() -> dict:
+    def open_parameters_json_file() -> Dict:
         # open file
         root = Parser.get_project_root()
         path = join(root, 'txt_files', 'parameters_and_settings.json')
@@ -62,7 +64,7 @@ class Parser:
         return df_footbot_positions
 
     @staticmethod
-    def retrieve_dataframe_info(df_footbot_positions: pd.DataFrame) -> Tuple[List[int], int, int, np.ndarray, dict]:
+    def retrieve_dataframe_info(df_footbot_positions: pd.DataFrame) -> Tuple[List[int], int, int, np.ndarray, Dict]:
         # retrieve all the ids of the bot
         footbots_unique_ids = df_footbot_positions['ID'].unique().astype(int)
         number_of_robots = len(footbots_unique_ids)
@@ -139,8 +141,7 @@ class Parser:
                                   timesteps=timesteps,
                                   all_robots_positions=np.asarray(
                                       [all_robots_positions[key] for key in all_robots_positions.keys()
-                                       if int(key) != footbot_id]
-                                  ),
+                                       if int(key) != footbot_id]),
                                   fault_time_series=faults)
 
             # save new FootBot instance in the swarm
@@ -337,7 +338,20 @@ class Parser:
         return json_data["Area_partitions"]
 
     @staticmethod
-    def read_features_set(feature_set_number: int) -> List[str]:
+    def return_feature_sets_dict() -> Dict:
+        """
+        Method to retrieve the list of features to use in the dataset in the parameters file.
+
+        Returns
+        -------
+        feature_list: dict
+        """
+        json_data = Parser.open_parameters_json_file()
+
+        return json_data['Features']
+
+    @staticmethod
+    def read_features_set(feature_set_name: str) -> List[str]:
         """
         Method to retrieve the list of features to use in the dataset in the parameters file.
 
@@ -347,15 +361,10 @@ class Parser:
         """
         json_data = Parser.open_parameters_json_file()
 
-        if feature_set_number == 1:
-            return json_data['Features']['Set1']
-        elif feature_set_number == 2:
-            return json_data['Features']['Set2']
-        elif feature_set_number == 3:
-            return json_data['Features']['Set3']
+        return json_data['Features'][feature_set_name]
 
     @staticmethod
-    def read_features_names(feature_set_number: int) -> List[str]:
+    def read_features_names(feature_set_name: str) -> List[str]:
         """
         Method to retrieve the list of features to use in the computation of feature importance.
 
@@ -365,12 +374,7 @@ class Parser:
         """
         json_data = Parser.open_parameters_json_file()
 
-        if feature_set_number == 1:
-            return json_data['Features_for_importance']['Set1']
-        elif feature_set_number == 2:
-            return json_data['Features_for_importance']['Set2']
-        elif feature_set_number == 3:
-            return json_data['Features_for_importance']['Set3']
+        return json_data['Features_for_importance'][feature_set_name]
 
     @staticmethod
     def read_dataset_splittings() -> Dict[str, List[float]]:
@@ -597,6 +601,16 @@ class Parser:
                 if '.DS_Store' in file_name:
                     remove(join(subdir, file_name))
                     print('Removed' + file_name)
+
+    @staticmethod
+    def write_delta_times_dict_on_json_file(task_name:str,
+                                            delta_times_dict: Dict[str, float]):
+        root = Parser.get_project_root()
+        if not exists(join(root, 'txt_files', task_name + '_training_logs')):
+            mkdir(join(root, 'txt_files', task_name + '_training_logs'))
+        json_file_directory = join(root, 'txt_files', task_name + '_training_logs')
+        with open(join(json_file_directory, 'delta_times_dict.json'), 'w') as output_file:
+            json.dump(delta_times_dict, output_file)
 
 
 if __name__ == "__main__":

@@ -38,9 +38,10 @@ class ShuffledBotsScikitModel:
 
     def compute_test_performance_default_model(self,
                                                task_name: str,
-                                               downsampling: int,
-                                               features: str,
-                                               filename_date: str):
+                                               feature_set_name: str,
+                                               filename_date: str,
+                                               training_time: float,
+                                               feature_set_building_time: float):
         test_prediction = self.model.predict(X=self.datasets.test_dataset)
 
         score = self.model.score(X=self.datasets.test_dataset,
@@ -49,9 +50,7 @@ class ShuffledBotsScikitModel:
         ConfusionMatrixDisplay.from_estimator(estimator=self.model,
                                               X=self.datasets.test_dataset,
                                               y=self.datasets.target_test_dataset)
-        title = 'All bots Shuffled Conf Matrix ' + self.model_name + ' Downsampl x' \
-                + str(downsampling) + ' ' \
-                + features
+        title = 'Confusion Matrix ' + feature_set_name
         plt.title(title)
         title = title.replace(" + ", "")
         title = title.replace(" ", "_")
@@ -63,25 +62,29 @@ class ShuffledBotsScikitModel:
                                               y=self.datasets.target_test_dataset,
                                               name=self.model_name)
 
-        title = 'All bots shuffled Prec Rec Curve ' + self.model_name + ' Downsampl' \
-                + str(downsampling) + ' ' \
-                + features
+        title = 'Precision Recall Curve ' + feature_set_name
         plt.title(title)
         title = title.replace(" + ", "")
         title = title.replace(" ", "_")
         saving_images_path = join(Parser.return_performance_image_directory_path(task_name), title)
         plt.savefig(saving_images_path)
+        plt.close()
 
         prec_result = precision_score(y_true=self.datasets.target_test_dataset, y_pred=test_prediction)
         rec_result = recall_score(y_true=self.datasets.target_test_dataset, y_pred=test_prediction)
         f1_result = f1_score(y_true=self.datasets.target_test_dataset, y_pred=test_prediction)
 
-        output_log = 'Model: {} DownSampling: {} FeatureSet: {} \n'.format(self.model_name, downsampling, features)
-        output_log += '& {:.4} & {:.4} & {:.4} & {:.4} \\\\ \n'.format(score, prec_result, rec_result, f1_result)
-        output_log += 'All bots shuffled Mean Accuracy score: {} \n'.format(score)
-        output_log += 'All bots shuffled Precision: {} \n'.format(prec_result)
-        output_log += 'All bots shuffled Recall: {} \n'.format(rec_result)
-        output_log += 'All bots shuffled F1 Score: {} \n'.format(f1_result)
+        total_time = feature_set_building_time + training_time
+        output_log = 'FeatureSet: {} \n'.format(feature_set_name)
+        output_log += 'Mean Accuracy score: {} \n'.format(score)
+        output_log += 'Precision: {} \n'.format(prec_result)
+        output_log += 'Recall: {} \n'.format(rec_result)
+        output_log += 'F1 Score: {} \n'.format(f1_result)
+        output_log += 'Feature Set Building time + Training Time: {} + {} = {} s\n'.format(feature_set_building_time,
+                                                                                           training_time,
+                                                                                           total_time)
+        output_log += '& {:.4} & {:.4} & {:.4} & {:.4} & {} s \\\\ \n'.format(score, prec_result, rec_result,
+                                                                              f1_result, total_time)
         print(output_log)
 
         training_log_files_path = join(Parser.get_project_root(), 'txt_files')
@@ -102,11 +105,12 @@ class ShuffledBotsScikitModel:
 
         fig, ax = plt.subplots()
         model_importances.plot.bar(yerr=feature_importance.importances_std, ax=ax)
-        title = 'Feature importances using permutation n_feats_' + str(len(self.datasets.feature_names))
+        title = 'Feature Permutation Importance ' + feature_set_name
         ax.set_title(title)
-        ax.set_ylabel('Mean accuracy decrease')
+        ax.set_ylabel('Mean Accuracy Decrease')
         fig.tight_layout()
         title = title.replace(' + ', '')
         title = title.replace(' ', '_')
         saving_images_path = join(Parser.return_performance_image_directory_path(task_name), title)
         plt.savefig(saving_images_path)
+        plt.close(fig=fig)

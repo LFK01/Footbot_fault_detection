@@ -19,17 +19,17 @@ class BotDataWizard(DataWizard):
     def __init__(self,
                  time_window: int,
                  experiments: List[Swarm],
-                 feature_set_number: int,
+                 feature_set_name: str,
                  perform_data_balancing: bool,
                  down_sampling_steps: int = 1):
         super().__init__(time_window=time_window,
                          experiments=experiments,
-                         feature_set_number=feature_set_number,
+                         feature_set_name=feature_set_name,
                          down_sampling_steps=down_sampling_steps)
 
         self.dataset: GeneralDataset = self.create_balanced_bot_train_test_set(
             experiments=experiments,
-            feature_set_number=self.feature_set_number,
+            feature_set_name=self.feature_set_name,
             perform_data_balancing=perform_data_balancing
         )
         print('BotDataWizard finished creating balanced datasets_classes')
@@ -39,7 +39,7 @@ class BotDataWizard(DataWizard):
 
     def create_balanced_bot_train_test_set(self,
                                            experiments: List[Swarm],
-                                           feature_set_number: int,
+                                           feature_set_name: str,
                                            perform_data_balancing: bool,
                                            randomization: bool = False) -> GeneralDataset:
 
@@ -85,12 +85,12 @@ class BotDataWizard(DataWizard):
                     bot_dataset = BotDataWizard.slice_train_test_experiments(bot=bot_index,
                                                                              train_experiments=train_experiments,
                                                                              test_experiments=test_experiments,
-                                                                             feature_set_number=feature_set_number,
+                                                                             feature_set_name=feature_set_name,
                                                                              down_sampling_steps=self.
                                                                              down_sampling_steps)
                     datasets.append(bot_dataset)
 
-            feature_names = Parser.read_features_names(feature_set_number=feature_set_number)
+            feature_names = Parser.read_features_names(feature_set_name=feature_set_name)
             if perform_data_balancing:
                 dataset = self.balance_train_test_dataset(datasets,
                                                           feature_names=feature_names)
@@ -151,12 +151,12 @@ class BotDataWizard(DataWizard):
                         train_experiments=train_experiments,
                         validation_experiments=validation_experiments,
                         test_experiments=test_experiments,
-                        feature_set_number=feature_set_number,
+                        feature_set_name=feature_set_name,
                         down_sampling_steps=self.down_sampling_steps
                     )
                     datasets.append(bot_dataset)
 
-            feature_names = Parser.read_features_names(feature_set_number=feature_set_number)
+            feature_names = Parser.read_features_names(feature_set_name=feature_set_name)
             if perform_data_balancing:
                 dataset = self.balance_train_test_dataset(datasets,
                                                           feature_names=feature_names)
@@ -181,8 +181,6 @@ class BotDataWizard(DataWizard):
         if Parser.read_validation_choice():
             if Parser.read_preprocessing_type() == 'STD':
                 scaler = StandardScaler()
-                before_array = self.dataset.train_dataset
-                after_array = scaler.fit_transform(self.dataset.train_dataset)
                 self.dataset.train_dataset = scaler.fit_transform(self.dataset.train_dataset)
                 self.dataset.validation_dataset = scaler.fit_transform(self.dataset.validation_dataset)
                 self.dataset.test_dataset = scaler.fit_transform(self.dataset.test_dataset)
@@ -194,8 +192,6 @@ class BotDataWizard(DataWizard):
         else:
             if Parser.read_preprocessing_type() == 'STD':
                 scaler = StandardScaler()
-                before_array = self.dataset.train_dataset
-                after_array = scaler.fit_transform(self.dataset.train_dataset)
                 self.dataset.train_dataset = scaler.fit_transform(self.dataset.train_dataset)
                 self.dataset.test_dataset = scaler.fit_transform(self.dataset.test_dataset)
             else:
@@ -207,7 +203,6 @@ class BotDataWizard(DataWizard):
     def normalize_single_feature(dataset: np.ndarray,
                                  scaler: TransformerMixin):
         standardized_dataset = []
-        array_before = dataset
         for feature_index in range(dataset.shape[-1]):
             # the slicing at the end of fit_transform is needed to delete the last dimension added by reshape(-1, 1)
             standardized_dataset.append(

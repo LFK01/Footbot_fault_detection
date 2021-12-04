@@ -71,10 +71,10 @@ class Swarm:
         return area_coverage
 
     def compute_area_partitions(self):
-        left_bound = np.min(self.list_of_footbots[0].swarm_robots_positions[..., 0])
-        right_bound = np.max(self.list_of_footbots[0].swarm_robots_positions[..., 0])
-        low_bound = np.min(self.list_of_footbots[0].swarm_robots_positions[..., 1])
-        top_bound = np.max(self.list_of_footbots[0].swarm_robots_positions[..., 1])
+        left_bound = min([np.min(bot.single_robot_positions[..., 0]) for bot in self.list_of_footbots])
+        right_bound = max([np.max(bot.single_robot_positions[..., 0]) for bot in self.list_of_footbots])
+        low_bound = min([np.min(bot.single_robot_positions[..., 1]) for bot in self.list_of_footbots])
+        top_bound = max([np.max(bot.single_robot_positions[..., 1]) for bot in self.list_of_footbots])
 
         area_partitions = []
 

@@ -10,7 +10,7 @@ class ShuffledBotsGbModel(ShuffledBotsScikitModel):
                  datasets: GeneralDataset,
                  model_name: str = 'ShuffledGBoost'):
         seed = Parser.read_seed()
-        model = GradientBoostingClassifier(loss='exponential',
+        model = GradientBoostingClassifier(loss='deviance',
                                            n_estimators=500,
                                            max_features='sqrt',
                                            n_iter_no_change=5,

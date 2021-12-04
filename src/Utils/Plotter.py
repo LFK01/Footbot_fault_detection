@@ -1,3 +1,4 @@
+import os
 import pickle
 from os.path import join, exists
 from os import makedirs, listdir
@@ -26,6 +27,10 @@ class Plotter:
     def plot_trajectories(footbot_list: List[FootBot],
                           swarm: Swarm,
                           plot_swarm: bool,
+                          min_x: float,
+                          min_y: float,
+                          max_x: float,
+                          max_y: float,
                           path: str = "",
                           title: str = "Trajectory of each bot and centroid of cluster",
                           show_plot: bool = True) -> None:
@@ -48,7 +53,7 @@ class Plotter:
             Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
 
-        fig = plt.figure()
+        fig = plt.figure(figsize=(8, 8), dpi=80)
         for bot in footbot_list:
             plt.scatter(
                 [pos[0] for pos in bot.single_robot_positions],
@@ -60,10 +65,12 @@ class Plotter:
                 [pos[1] for pos in swarm.trajectory],
                 facecolors='none', edgecolors='r', s=0.2, label='swarm'
             )
+        plt.xlim([min_x-1, max_x+1])
+        plt.ylim([min_y-1, max_y+1])
         plt.xlabel("X")
         plt.ylabel("Y")
         plt.title(title)
-        plt.legend(loc="upper right", markerscale=18)
+        # plt.legend(loc="upper right", markerscale=18)
         path = join(path, title.replace(" ", "_"))
         plt.savefig(path)
         if show_plot:
@@ -90,8 +97,8 @@ class Plotter:
             Boolean parameter to decide if the plot has to be shown during execution or only saved
         """
         fig = plt.figure()
-        for bot in footbot_list:
-            plt.plot(bot.positions_entropy, alpha=0.5)
+        for bot in footbot_list[::4]:
+            plt.plot(bot.positions_entropy[:3000], alpha=0.5)
         plt.xlabel("Timestep")
         plt.ylabel("Entropy")
         plt.title(title)
@@ -320,7 +327,7 @@ class Plotter:
         for bot in footbot_list:
             plt.plot(bot.speed_time_series)
         plt.xlabel("Timestep")
-        plt.ylabel("Traversed Distance")
+        plt.ylabel("Speed")
         plt.title(title)
         if path != "":
             path += "/"
@@ -464,7 +471,7 @@ class Plotter:
     @staticmethod
     def plot_swarm_speed(footbot_list: Swarm,
                          path: str = "",
-                         title: str = "Instantaneous Traversed Distance of the cluster",
+                         title: str = "Swarm Speed",
                          show_plot: bool = True):
         """
         Method to plot trajectory of swarm. Shows the plot.
@@ -495,7 +502,7 @@ class Plotter:
     @staticmethod
     def plot_distances_from_centroid(footbot_list: List[FootBot],
                                      path: str = "",
-                                     title: str = "Distance from centroid for each bot",
+                                     additional_title_string: str = "",
                                      show_plot: bool = True) -> None:
         """
         Method to plot distances from centroid. Shows the plot.
@@ -506,7 +513,7 @@ class Plotter:
             List of FootBot instances
         path: str
             Additional string to specify where to save the plot
-        title: str
+        additional_title_string: str
             Title that shows on the pyplot graph
         show_plot: bool
             Boolean parameter to decide if the plot has to be shown during execution or only saved
@@ -516,15 +523,21 @@ class Plotter:
             plt.plot(bot.distance_from_centroid_time_series)
         plt.xlabel("Timestep")
         plt.ylabel("Distance from Centroid")
-        plt.title("Distance from centroid for each bot")
-        plt.show()
+        title = additional_title_string + " Distance from centroid for each bot"
+        plt.title(title)
+        if path != "":
+            path += "/"
+        plt.savefig(path + title.replace(" ", "_"))
+        if show_plot:
+            plt.show()
         plt.close(fig)
 
         fig = plt.figure()
         for bot in footbot_list:
             plt.plot(bot.cumulative_distance_from_centroid_time_series)
         plt.xlabel("Timestep")
-        plt.ylabel("Distance from Centroid")
+        plt.ylabel("Cumulative Distance from Centroid")
+        title = additional_title_string + " Cumulative Distance from centroid"
         plt.title(title)
         if path != "":
             path += "/"
@@ -561,8 +574,8 @@ class Plotter:
             plt.ylabel("Coverage Percentage")
             plt.ylim((-0.1, 1.1))
             title = additional_title_string + " Single Bot Area Coverage with " \
-                                            + str(area_splits[percentage_index] ** 2) \
-                                            + " subdivisions"
+                    + str(area_splits[percentage_index] ** 2) \
+                    + " subdivisions"
             plt.title(title)
             if path != "":
                 path += "/"
@@ -578,8 +591,8 @@ class Plotter:
             plt.xlabel("Timestep")
             plt.ylabel("Coverage Speed")
             title = additional_title_string + " Single Bot Area Coverage Speed with " \
-                                            + str(area_splits[percentage_index] ** 2) \
-                                            + " subdivisions"
+                    + str(area_splits[percentage_index] ** 2) \
+                    + " subdivisions"
             plt.title(title)
             if path != "":
                 path += "/"
@@ -621,6 +634,41 @@ class Plotter:
             if show_plot:
                 plt.show()
             plt.close(fig)
+
+    @staticmethod
+    def plot_speed_neighbors_position_entr(main_swarm: Swarm,
+                                           saving_path: str,
+                                           bot_index: int,
+                                           show_plot: bool = True) -> None:
+        """
+        Method to plot 3 timeseries together. Shows the plot.
+
+        Parameters
+        ----------
+        bot_index: int
+            index of the bot to plot its timeseries
+        main_swarm: Swarm
+            Swarm of all the bots to plot the cumulative area coverage
+        saving_path: str
+            Additional string to specify where to save the plot
+        show_plot: bool
+            Boolean parameter to decide if the plot has to be shown during execution or only saved
+        """
+        title = 'Bot {} multivariate timeseries'.format(bot_index)
+        fig, (ax1, ax2, ax3) = plt.subplots(3)
+        fig.suptitle(title)
+        ax1.plot(main_swarm.list_of_footbots[bot_index].speed_time_series)
+        ax1.set_ylabel('Speed')
+        ax2.plot(main_swarm.list_of_footbots[bot_index].neighbors_time_series)
+        ax2.set_ylabel('Neighbors')
+        ax3.plot(main_swarm.list_of_footbots[bot_index].positions_entropy)
+        ax3.set_xlabel('Timestep')
+        ax3.set_ylabel('Entropy')
+
+        plt.savefig(join(saving_path, title.strip().replace(" ", "_") + '_bot{}'.format(bot_index)))
+        if show_plot:
+            plt.show()
+        plt.close(fig)
 
     @staticmethod
     def make_folder_from_json(par_task_name: str, file_number: int) -> str:
@@ -698,18 +746,25 @@ class Plotter:
                                                main_swarm: Swarm,
                                                show_graphs: bool,
                                                title: str = None):
+        min_x = min([min(bot.single_robot_positions[0]) for bot in main_swarm.list_of_footbots])
+        min_y = min([min(bot.single_robot_positions[1]) for bot in main_swarm.list_of_footbots])
+        max_x = max([max(bot.single_robot_positions[0]) for bot in main_swarm.list_of_footbots])
+        max_y = max([max(bot.single_robot_positions[1]) for bot in main_swarm.list_of_footbots])
+        # min_x=min_x, min_y=min_y, max_x=max_x, max_y=max_y,
         print('Plotting trajectories')
         if title is not None:
             Plotter.plot_trajectories(footbot_list=nominal_bots,
                                       swarm=main_swarm,
                                       plot_swarm=True,
                                       path=saving_path,
+                                      min_x=min_x, min_y=min_y, max_x=max_x, max_y=max_y,
                                       show_plot=show_graphs,
                                       title='nom' + title)
             Plotter.plot_trajectories(footbot_list=faulty_bots,
                                       swarm=main_swarm,
                                       plot_swarm=False,
                                       path=saving_path,
+                                      min_x=min_x, min_y=min_y, max_x=max_x, max_y=max_y,
                                       show_plot=show_graphs,
                                       title='fault' + title)
             Plotter.plot_faulty_robots(footbot_list=main_swarm.list_of_footbots,
@@ -721,15 +776,32 @@ class Plotter:
                                       swarm=main_swarm,
                                       plot_swarm=True,
                                       path=saving_path,
+                                      min_x=min_x, min_y=min_y, max_x=max_x, max_y=max_y,
                                       show_plot=False)
             Plotter.plot_trajectories(footbot_list=faulty_bots,
                                       swarm=main_swarm,
                                       plot_swarm=False,
                                       path=saving_path,
+                                      min_x=min_x, min_y=min_y, max_x=max_x, max_y=max_y,
                                       show_plot=False)
             Plotter.plot_faulty_robots(footbot_list=main_swarm.list_of_footbots,
                                        path=saving_path,
                                        show_plot=False)
+
+    @staticmethod
+    def plot_uinv_multiv_ts(saving_path: str,
+                            main_swarm: Swarm,
+                            show_graphs: bool):
+        print('Plotting univ multiv ts')
+        for bot in range(len(main_swarm.list_of_footbots)):
+            Plotter.plot_speeds(footbot_list=[main_swarm.list_of_footbots[bot]],
+                                path=saving_path,
+                                title='Bot {} speed'.format(bot),
+                                show_plot=show_graphs)
+            Plotter.plot_speed_neighbors_position_entr(main_swarm=main_swarm,
+                                                       bot_index=bot,
+                                                       saving_path=saving_path,
+                                                       show_plot=show_graphs)
 
     @staticmethod
     def plot_common_features(nominal_bots: List[FootBot],
@@ -737,15 +809,27 @@ class Plotter:
                              main_swarm: Swarm,
                              saving_graphs_file_path,
                              show_all_graphs: bool = True):
+        min_x = min([min(bot.single_robot_positions[..., 0]) for bot in main_swarm.list_of_footbots])
+        min_y = min([min(bot.single_robot_positions[..., 1]) for bot in main_swarm.list_of_footbots])
+        max_x = max([max(bot.single_robot_positions[..., 0]) for bot in main_swarm.list_of_footbots])
+        max_y = max([max(bot.single_robot_positions[..., 1]) for bot in main_swarm.list_of_footbots])
         Plotter.plot_trajectories(footbot_list=nominal_bots,
                                   swarm=main_swarm,
-                                  plot_swarm=False,
+                                  plot_swarm=True,
+                                  min_x=min_x,
+                                  min_y=min_y,
+                                  max_x=max_x,
+                                  max_y=max_y,
                                   path=saving_graphs_file_path,
                                   title="Nominal Bots Trajectories",
                                   show_plot=show_all_graphs)
         Plotter.plot_trajectories(footbot_list=faulty_bots,
                                   swarm=main_swarm,
-                                  plot_swarm=False,
+                                  plot_swarm=True,
+                                  min_x=min_x,
+                                  min_y=min_y,
+                                  max_x=max_x,
+                                  max_y=max_y,
                                   path=saving_graphs_file_path,
                                   title="Fault Bots Trajectories",
                                   show_plot=show_all_graphs)
@@ -784,7 +868,14 @@ class Plotter:
         Plotter.plot_swarm_area_coverage(main_swarm=main_swarm,
                                          path=saving_graphs_file_path,
                                          show_plot=show_all_graphs)
-
+        Plotter.plot_distances_from_centroid(footbot_list=nominal_bots,
+                                             path=saving_graphs_file_path,
+                                             additional_title_string="Nominal",
+                                             show_plot=show_all_graphs)
+        Plotter.plot_distances_from_centroid(footbot_list=faulty_bots,
+                                             path=saving_graphs_file_path,
+                                             additional_title_string="Fault",
+                                             show_plot=show_all_graphs)
         Plotter.plot_swarm_cohesion(footbot_list=nominal_bots,
                                     path=saving_graphs_file_path,
                                     title="Nominal Average Distance from all Bots for each bot",
@@ -801,7 +892,9 @@ class Plotter:
                                path=saving_graphs_file_path,
                                title="Fault Bots Neighbors",
                                show_plot=show_all_graphs)
-
+        Plotter.plot_swarm_speed(footbot_list=main_swarm,
+                                 path=saving_graphs_file_path,
+                                 show_plot=False)
         Plotter.plot_faulty_robots(footbot_list=main_swarm.list_of_footbots,
                                    path=saving_graphs_file_path,
                                    title="Number of Faulty Bots",
@@ -880,7 +973,8 @@ class Plotter:
 
         Plotter.plot_foraging_features(nominal_bots=nominal_bots,
                                        faulty_bots=faulty_bots,
-                                       saving_graphs_file_path=saving_graphs_file_path)
+                                       saving_graphs_file_path=saving_graphs_file_path,
+                                       show_all_graphs=show_all_graphs)
 
     @staticmethod
     def plot_all_cached_swarm_in_directory(task_name: str,
@@ -927,6 +1021,19 @@ class Plotter:
                                                        show_graphs=show_all_graphs)
 
     @staticmethod
+    def load_and_plot_univ_multiv_ts_from_json(par_task_name: str,
+                                               file_number: int,
+                                               show_all_graphs: bool = True):
+        saving_graphs_file_path = Plotter.make_folder_from_json(par_task_name=par_task_name, file_number=file_number)
+
+        footbots_list, main_swarm = Plotter.load_generic_swarm_from_json(par_task_name=par_task_name,
+                                                                         file_number=file_number)
+
+        Plotter.plot_uinv_multiv_ts(saving_path=saving_graphs_file_path,
+                                    main_swarm=main_swarm,
+                                    show_graphs=show_all_graphs)
+
+    @staticmethod
     def load_generic_swarm_from_json(par_task_name: str,
                                      file_number: int) -> Tuple[List[FootBot], Swarm]:
         filename = Parser.read_filename(task_name=par_task_name,
@@ -955,30 +1062,8 @@ class Plotter:
                                      saving_graphs_file_path=saving_graphs_file_path,
                                      show_all_graphs=show_all_graphs)
 
-    @staticmethod
-    def plot_model_performances():
-        x_values = [0, 1, 2, 3, 4, 5]
-        y_values = [0.8700, 0.9840, 0.7904, 0.9994, 0.9920, 0.8335]
-        bot_labels = ['Bot 0', 'Bot 1', 'Bot 3', 'Bot 4', 'Bot 7', 'Bot 8']
-
-        plt.figure()
-        plt.scatter(x=x_values, y=y_values, label='single bot', alpha=0.7)
-        for x_val, y_val in zip(x_values, y_values):
-            plt.text(x_val + 0.03, y_val + 0.03, str(y_val)[:4])
-        plt.xticks(ticks=x_values, labels=bot_labels)
-        plt.axis([-0.5, 5.5, -0.1, 1.1])
-        plt.ylabel("Performance")
-        plt.title("Gradient Boosting Performance")
-        plt.hlines(0.9427457141610229, xmin=0, xmax=5, color='r', linestyles='dashed', label='merged bots')
-        plt.text(5, 0.97, str(0.94))
-        plt.legend()
-        plt.show()
-
 
 if __name__ == "__main__":
-    main_task_name = 'DISP'
-    Plotter.plot_all_cached_swarm_in_directory(task_name=main_task_name,
-                                               show_images_in_new_window=False)
-    main_task_name = 'HOME'
-    Plotter.plot_all_cached_swarm_in_directory(task_name=main_task_name,
-                                               show_images_in_new_window=False)
+    Plotter.main_dispersion(par_task_name='FORE',
+                            file_number=0,
+                            show_all_graphs=False)

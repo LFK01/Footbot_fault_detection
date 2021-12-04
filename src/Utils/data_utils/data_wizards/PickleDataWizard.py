@@ -20,7 +20,7 @@ class PickleDataWizard:
         self.down_sampling_steps = down_sampling_steps
 
     def save_bot_train_test_dataset_all_swarms(self,
-                                               feature_set_number: int,
+                                               feature_set_name: str,
                                                perform_data_balancing: bool):
         experiment_list = []
         root = Parser.get_project_root()
@@ -39,7 +39,7 @@ class PickleDataWizard:
             wizard = BotDataWizard(time_window=self.time_window,
                                    experiments=experiment_list,
                                    down_sampling_steps=self.down_sampling_steps,
-                                   feature_set_number=feature_set_number,
+                                   feature_set_name=feature_set_name,
                                    perform_data_balancing=perform_data_balancing)
 
             datasets = wizard.dataset
@@ -53,7 +53,7 @@ class PickleDataWizard:
 
     def save_bot_train_test_dataset_specific_swarm(self,
                                                    task_name: str,
-                                                   feature_set_number: int,
+                                                   feature_set_name: str,
                                                    experiments_downsampling: int,
                                                    delete_useless_bots: bool,
                                                    useless_bot_deletion_factor: int,
@@ -79,7 +79,7 @@ class PickleDataWizard:
         wizard = BotDataWizard(time_window=self.time_window,
                                experiments=experiment_list,
                                down_sampling_steps=self.down_sampling_steps,
-                               feature_set_number=feature_set_number,
+                               feature_set_name=feature_set_name,
                                perform_data_balancing=perform_data_balancing)
 
         datasets = wizard.dataset
@@ -88,16 +88,16 @@ class PickleDataWizard:
         dataset_path = Parser.return_cached_dataset_directory_path(experiment_name=task_name)
         if perform_data_balancing:
             filename = join(dataset_path,
-                            '{}_{}exp_features_set{}_{}downsampled_balanced.pkl'.format(task_name,
-                                                                                        len(cached_swarm_list),
-                                                                                        feature_set_number,
-                                                                                        self.down_sampling_steps))
+                            '{}_{}exp_features_{}_{}downsampled_balanced.pkl'.format(task_name,
+                                                                                     len(cached_swarm_list),
+                                                                                     feature_set_name,
+                                                                                     self.down_sampling_steps))
         else:
             filename = join(dataset_path,
-                            '{}_{}exp_features_set{}_{}downsampled_UNbalanced.pkl'.format(task_name,
-                                                                                          len(cached_swarm_list),
-                                                                                          feature_set_number,
-                                                                                          self.down_sampling_steps))
+                            '{}_{}exp_features_{}_{}downsampled_UNbalanced.pkl'.format(task_name,
+                                                                                       len(cached_swarm_list),
+                                                                                       feature_set_name,
+                                                                                       self.down_sampling_steps))
         with open(filename, 'wb') as output_file:
             pickle.dump(datasets, output_file)
         print('saved ' + filename.split(sep)[-1])
