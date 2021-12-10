@@ -5,6 +5,7 @@ from os import makedirs, listdir
 from datetime import datetime
 from PIL import Image
 from typing import List, Tuple
+from statistics import mean
 
 import matplotlib.pyplot as plt
 from src.classes.FootBot import FootBot
@@ -1110,6 +1111,65 @@ class Plotter:
             plt.show()
             plt.close(fig)
 
+    @staticmethod
+    def plot_construction_times_against_performances():
+        performance_dict = Parser.open_time_performance_json_file()
+        construction_dict = Parser.open_dataset_construction_times_json_file()
+        for task in performance_dict.keys():
+            feature_sets = []
+            feature_sets_sizes = []
+            train_times = []
+            data_times = []
+            construction_times = []
+            F1_scores = []
+            for feature_set in performance_dict[task].keys():
+                feature_sets.append(feature_set)
+                feature_sets_sizes.append(Parser.compute_feature_set_size(feature_set_name=feature_set))
+                construction_times.append(mean(construction_dict[task][feature_set]))
+                data_times.append(performance_dict[task][feature_set]['Data_time'])
+                train_times.append(performance_dict[task][feature_set]['Train_time'])
+                F1_scores.append(performance_dict[task][feature_set]['F1'])
+            data_ordered_by_size = sorted(zip(feature_sets,
+                                              feature_sets_sizes,
+                                              construction_times,
+                                              data_times,
+                                              train_times,
+                                              F1_scores), key=lambda x: x[1])
+
+            title = '{} Performance'.format(task)
+            fig, ax = plt.subplots(figsize=(8, 8))
+
+            # Tweak spacing to prevent clipping of tick-labels
+            plt.subplots_adjust(bottom=0.30)
+            plt.xticks(ticks=range(len(data_ordered_by_size)),
+                       labels=[_[0] for _ in data_ordered_by_size],
+                       rotation=90)
+
+            # Twin the x-axis twice to make independent y-axes.
+            axes = [ax, ax.twinx()]
+            axes[1].set_ylim(0, 1)
+
+            axes[0].bar(x=range(len(data_ordered_by_size)),
+                        height=[_[2] for _ in data_ordered_by_size])
+            y_offset = [_[2] for _ in data_ordered_by_size]
+            axes[0].bar(x=range(len(data_ordered_by_size)),
+                        height=[_[3] for _ in data_ordered_by_size],
+                        bottom=y_offset)
+            y_offset = [_[2] + _[3] for _ in data_ordered_by_size]
+            axes[0].bar(x=range(len(data_ordered_by_size)),
+                        height=[_[4] for _ in data_ordered_by_size],
+                        bottom=y_offset)
+            axes[0].set_ylabel('Dataset Time')
+
+            axes[1].plot([_[5] for _ in data_ordered_by_size],
+                         marker='.',
+                         linestyle='-')
+            axes[1].set_ylabel('F1 Score')
+
+            plt.title(title)
+            plt.show()
+            plt.close()
+
 
 if __name__ == "__main__":
-    Plotter.plot_time_performanca_comparison_graphs()
+    Plotter.plot_construction_times_against_performances()
