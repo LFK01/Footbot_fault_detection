@@ -700,7 +700,9 @@ class Plotter:
         return faulty_bots, nominal_bots
 
     @staticmethod
-    def build_generic_swarm(par_task_name: str, file_number: int):
+    def build_generic_swarm(par_task_name: str,
+                            feature_set_features_list: List[str],
+                            file_number: int):
         neighborhood_radius = Parser.read_neighborhood_radius()
         time_window_size = Parser.read_time_window()
         file = Parser.read_filename(task_name=par_task_name, file_number=file_number)
@@ -709,14 +711,18 @@ class Plotter:
                                                               task_name=par_task_name)
         )
         footbots_list = Parser.create_generic_swarm(task_name=par_task_name,
+                                                    feature_set_features_list=feature_set_features_list,
                                                     filename=file,
                                                     neighborhood_radius=neighborhood_radius,
                                                     time_window_size=time_window_size)
         return footbots_list, Swarm(timesteps=timesteps,
+                                    feature_set_features_list=feature_set_features_list,
                                     swarm=footbots_list)
 
     @staticmethod
-    def build_foraging_swarm(par_task_name: str, file_number: int):
+    def build_foraging_swarm(par_task_name: str,
+                             feature_set_features_list: List[str],
+                             file_number: int):
         neighborhood_radius = Parser.read_neighborhood_radius()
         time_window_size = Parser.read_time_window()
         file = Parser.read_filename(task_name=par_task_name, file_number=file_number)
@@ -726,6 +732,7 @@ class Plotter:
         )
 
         footbots_list = Parser.create_foraging_swarm(filename=file,
+                                                     feature_set_features_list=feature_set_features_list,
                                                      neighborhood_radius=neighborhood_radius,
                                                      time_window_size=time_window_size)
         root = Parser.get_project_root()
@@ -737,6 +744,7 @@ class Plotter:
             pickle.dump(footbots_list, output_file)
 
         return footbots_list, Swarm(timesteps=timesteps,
+                                    feature_set_features_list=feature_set_features_list,
                                     swarm=footbots_list)
 
     @staticmethod
@@ -956,11 +964,13 @@ class Plotter:
 
     @staticmethod
     def main_foraging(par_task_name: str,
+                      feature_set_features_list: List[str],
                       file_number: int,
                       show_all_graphs: bool = True):
         saving_graphs_file_path = Plotter.make_folder_from_json(par_task_name=par_task_name, file_number=file_number)
 
         footbots_list, main_swarm = Plotter.build_foraging_swarm(par_task_name=par_task_name,
+                                                                 feature_set_features_list=feature_set_features_list,
                                                                  file_number=file_number)
 
         faulty_bots, nominal_bots = Plotter.divide_flocks(footbots_list=footbots_list)
@@ -1047,11 +1057,13 @@ class Plotter:
 
     @staticmethod
     def main_dispersion(par_task_name: str,
+                        feature_set_features_list: List[str],
                         file_number: int,
                         show_all_graphs: bool = True):
         saving_graphs_file_path = Plotter.make_folder_from_json(par_task_name=par_task_name, file_number=file_number)
 
         footbots_list, main_swarm = Plotter.build_generic_swarm(par_task_name=par_task_name,
+                                                                feature_set_features_list=feature_set_features_list,
                                                                 file_number=file_number)
 
         faulty_bots, nominal_bots = Plotter.divide_flocks(footbots_list=footbots_list)
@@ -1062,8 +1074,42 @@ class Plotter:
                                      saving_graphs_file_path=saving_graphs_file_path,
                                      show_all_graphs=show_all_graphs)
 
+    @staticmethod
+    def plot_time_performanca_comparison_graphs():
+        data_dict = Parser.open_time_performance_json_file()
+        for task in data_dict.keys():
+            feature_sets = []
+            feature_sets_sizes = []
+            train_times = []
+            data_times = []
+            F1_scores = []
+            for feature_set in data_dict[task].keys():
+                feature_sets.append(feature_set)
+                feature_sets_sizes.append(Parser.compute_feature_set_size(feature_set_name=feature_set))
+                train_times.append(data_dict[task][feature_set]['Train_time'])
+                data_times.append(data_dict[task][feature_set]['Data_time'])
+                F1_scores.append(data_dict[task][feature_set]['F1'])
+            data_ordered_by_size = sorted(zip(feature_sets,
+                                              feature_sets_sizes,
+                                              train_times,
+                                              data_times,
+                                              F1_scores), key=lambda x: x[1])
+            title = '{} Performances'.format(task)
+            fig, (ax1, ax2, ax3) = plt.subplots(3, figsize=(15, 15))
+            fig.suptitle(title)
+            ax1.plot([_[2] for _ in data_ordered_by_size])
+            ax1.set_ylabel('Train seconds')
+            ax2.plot([_[3] for _ in data_ordered_by_size])
+            ax2.set_ylabel('Dataset Seconds')
+            ax3.plot([_[4] for _ in data_ordered_by_size])
+            ax3.set_ylabel('F1')
+            plt.xticks(ticks=range(len(feature_sets)),
+                       labels=[_[0] for _ in data_ordered_by_size],
+                       rotation='vertical')
+
+            plt.show()
+            plt.close(fig)
+
 
 if __name__ == "__main__":
-    Plotter.main_dispersion(par_task_name='FORE',
-                            file_number=0,
-                            show_all_graphs=False)
+    Plotter.plot_time_performanca_comparison_graphs()

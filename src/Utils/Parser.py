@@ -3,6 +3,7 @@ import json
 import pandas as pd
 import numpy as np
 from json import load, dump
+from datetime import timedelta
 from os import listdir, walk, remove, mkdir
 from os.path import isfile, join, exists
 from pathlib import Path
@@ -35,6 +36,34 @@ class Parser:
         data = load(json_file)
 
         return data
+
+    @staticmethod
+    def open_time_performance_json_file() -> Dict:
+        # open file
+        root = Parser.get_project_root()
+        path = join(root, 'txt_files', 'TrainingValues.json')
+        json_file = open(path)
+        data = load(json_file)
+
+        return data
+
+    @staticmethod
+    def open_dataset_construction_times_json_file() -> Dict:
+        # open file
+        root = Parser.get_project_root()
+        path = join(root, 'txt_files', 'Dataset_construction_times.json')
+        json_file = open(path)
+        data = load(json_file)
+
+        return data
+
+    @staticmethod
+    def dump_dataset_construction_times_json_file(json_data):
+        # open file
+        root = Parser.get_project_root()
+        path = join(root, 'txt_files', 'Dataset_construction_times.json')
+        with open(path, 'w', encoding='utf-8') as f:
+            dump(json_data, f, ensure_ascii=False, indent=4)
 
     @staticmethod
     def open_pandas_dataframe(filename: str,
@@ -95,7 +124,8 @@ class Parser:
     def create_generic_swarm(task_name: str,
                              filename: str,
                              neighborhood_radius: float,
-                             time_window_size: int) -> List[FootBot]:
+                             time_window_size: int,
+                             feature_set_features_list: List[str]) -> List[FootBot]:
         """
         Method to parse the positions file and return the list of footbots.
 
@@ -109,6 +139,8 @@ class Parser:
             Float value which specifies the maximum distance allowed to identify a robot in the neighborhood
         time_window_size : int
             Integer value to identify the maximum number of timesteps to be considered in a window of time
+        feature_set_features_list: list[str]
+
         Returns
         -------
         swarm : list[FootBot]
@@ -133,6 +165,7 @@ class Parser:
 
             # create new FootBot instance
             new_footbot = FootBot(identifier=footbot_id,
+                                  feature_set_features_list=feature_set_features_list,
                                   number_of_robots=number_of_robots,
                                   number_of_timesteps=number_of_timesteps,
                                   neighborhood_radius=neighborhood_radius,
@@ -150,7 +183,10 @@ class Parser:
         return footbot_swarm
 
     @staticmethod
-    def create_foraging_swarm(filename: str, neighborhood_radius: float, time_window_size: int) -> List[FootBot]:
+    def create_foraging_swarm(filename: str,
+                              feature_set_features_list: List[str],
+                              neighborhood_radius: float,
+                              time_window_size: int) -> List[FootBot]:
         # list to store the robots of the swarm
         footbot_swarm = []
 
@@ -191,6 +227,7 @@ class Parser:
 
             # create new FootBot instance
             new_footbot = FootBot(identifier=footbot_id,
+                                  feature_set_features_list=feature_set_features_list,
                                   timesteps=timesteps,
                                   number_of_robots=number_of_robots,
                                   number_of_timesteps=number_of_timesteps,
@@ -344,7 +381,7 @@ class Parser:
 
         Returns
         -------
-        feature_list: dict
+        feature_list: Dict
         """
         json_data = Parser.open_parameters_json_file()
 
@@ -383,7 +420,7 @@ class Parser:
 
         Returns
         -------
-        splitting_dict: dict[str, list[float]]
+        splitting_dict: Dict[str, list[float]]
         """
 
         json_data = Parser.open_parameters_json_file()
@@ -603,7 +640,7 @@ class Parser:
                     print('Removed' + file_name)
 
     @staticmethod
-    def write_delta_times_dict_on_json_file(task_name:str,
+    def write_delta_times_dict_on_json_file(task_name: str,
                                             delta_times_dict: Dict[str, float]):
         root = Parser.get_project_root()
         if not exists(join(root, 'txt_files', task_name + '_training_logs')):
@@ -611,6 +648,19 @@ class Parser:
         json_file_directory = join(root, 'txt_files', task_name + '_training_logs')
         with open(join(json_file_directory, 'delta_times_dict.json'), 'w') as output_file:
             json.dump(delta_times_dict, output_file)
+
+    @staticmethod
+    def compute_feature_set_size(feature_set_name: str):
+        json_file = Parser.open_parameters_json_file()
+        return len(json_file['Features_for_importance'][feature_set_name])
+
+    @staticmethod
+    def save_swarm_construction_time(task_name: str,
+                                     feature_set_name: str,
+                                     construction_times: List[float]):
+        json_file = Parser.open_dataset_construction_times_json_file()
+        json_file[task_name][feature_set_name] = construction_times
+        Parser.dump_dataset_construction_times_json_file(json_file)
 
 
 if __name__ == "__main__":

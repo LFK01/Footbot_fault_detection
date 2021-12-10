@@ -3,10 +3,10 @@ import random
 import subprocess
 from xml.etree import ElementTree
 from xml.etree.ElementTree import Element
-from typing import List
+from typing import List, Dict
 
 from src.Utils.Parser import Parser
-from src.data_writing import build_swarm_no_foraging_stats, build_feature_set_datasets
+from src.data_writing import build_swarm_no_foraging_stats, build_foraging_swarm, build_feature_set_datasets
 from src.model_training import execute_training_feature_set_datasets
 
 
@@ -54,7 +54,7 @@ def create_nominal_flocking_csv_logs():
 
 def modify_nominal_flocking_xml_file(par_element_tree: ElementTree.ElementTree,
                                      par_root: Element,
-                                     par_positions: dict,
+                                     par_positions: Dict,
                                      par_position: str,
                                      par_bot_quantity: int,
                                      par_random_seed: int):
@@ -76,13 +76,23 @@ def modify_nominal_flocking_xml_file(par_element_tree: ElementTree.ElementTree,
 
 
 if __name__ == "__main__":
-    main_task_name = 'FLOC'
-    delta_times_dict = build_feature_set_datasets(task_name=main_task_name,
-                                                  experiments_downsampling=1,
-                                                  delete_useless_bots=False,
-                                                  useless_bot_deletion_factor=1,
-                                                  perform_data_balancing=True)
-    Parser.write_delta_times_dict_on_json_file(task_name=main_task_name,
-                                               delta_times_dict=delta_times_dict)
-    execute_training_feature_set_datasets(task_name=main_task_name,
-                                          delta_times_dict=delta_times_dict)
+    for feature_set_name in Parser.return_feature_sets_dict().keys():
+        main_task_name = 'FLOC'
+        build_swarm_no_foraging_stats(task_name=main_task_name,
+                                        do_swarm_saving=False,
+                                      feature_set_name=feature_set_name,
+                                      feature_set_feature_list=Parser.
+                                      read_features_set(feature_set_name=feature_set_name),
+                                      experiments_number_down_sampling=50)
+        main_task_name = 'WARE'
+        build_swarm_no_foraging_stats(task_name=main_task_name,
+                                      do_swarm_saving=False,
+                                      feature_set_name=feature_set_name,
+                                      feature_set_feature_list=Parser.
+                                      read_features_set(feature_set_name=feature_set_name),
+                                      experiments_number_down_sampling=40)
+        build_foraging_swarm(feature_set_name=feature_set_name,
+                             do_swarm_saving=False,
+                             feature_set_feature_list=Parser.
+                             read_features_set(feature_set_name=feature_set_name),
+                             down_sampling=80)

@@ -11,18 +11,26 @@ class Swarm:
     Class that collects all the robots in the swarm and computes the features of the cluster
     """
 
-    def __init__(self, timesteps: np.ndarray, swarm: List[FootBot]):
+    def __init__(self,
+                 feature_set_features_list: List[str],
+                 timesteps: np.ndarray,
+                 swarm: List[FootBot]):
         self.timesteps = timesteps
         self.list_of_footbots = swarm
         self.trajectory = self.compute_cluster_trajectory()
         self.speed_time_series = [0.0]
         self.area_partitions = self.compute_area_partitions()
-        self.area_coverage = self.compute_area_coverage()
+        if 'global_features' in feature_set_features_list:
+            self.area_coverage = self.compute_area_coverage()
 
-        self.compute_cluster_speed()
-        self.compute_distances_from_centroid()
-        self.compute_single_bots_area_coverage()
-        self.compute_single_bots_coverage_speed()
+        if 'swarm_speed' in feature_set_features_list:
+            self.compute_cluster_speed()
+        if 'distance_from_centroid_time_series' in feature_set_features_list:
+            self.compute_distances_from_centroid()
+        if 'area_coverage' in feature_set_features_list:
+            self.compute_single_bots_area_coverage()
+        if 'coverage_speed' in feature_set_features_list:
+            self.compute_single_bots_coverage_speed()
 
     def compute_cluster_trajectory(self) -> np.ndarray:
         all_bot_trajectory = np.asarray([bot.single_robot_positions for bot in self.list_of_footbots])

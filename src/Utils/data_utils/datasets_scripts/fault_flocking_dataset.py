@@ -1,6 +1,7 @@
 import os
 import random
 import subprocess
+from typing import Tuple, List, Dict
 from xml.etree import ElementTree
 from xml.etree.ElementTree import Element
 from typing import List
@@ -58,7 +59,7 @@ def create_fault_flocking_csv_logs():
 
 def modify_fault_flocking_xml_file(par_element_tree: ElementTree.ElementTree,
                                    par_root: Element,
-                                   par_positions: dict,
+                                   par_positions: Dict,
                                    par_position: str,
                                    par_bot_quantity: int,
                                    par_random_seed: int):
@@ -81,7 +82,7 @@ def modify_fault_flocking_xml_file(par_element_tree: ElementTree.ElementTree,
 
 def execute_fault_flocking_simulation_command(par_xml_file: ElementTree,
                                               par_root: Element,
-                                              par_positions: dict,
+                                              par_positions: Dict,
                                               par_position: str,
                                               par_experiment_bot_quantity: int,
                                               par_random_seed: int,

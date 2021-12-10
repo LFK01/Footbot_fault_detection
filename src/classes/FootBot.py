@@ -65,7 +65,9 @@ class FootBot:
             Method to compute the average distance of the bot from all the other bots for each timestep
         """
 
-    def __init__(self, identifier: int,
+    def __init__(self,
+                 feature_set_features_list: List[str],
+                 identifier: int,
                  number_of_robots: int,
                  number_of_timesteps: int,
                  neighborhood_radius: float,
@@ -86,6 +88,7 @@ class FootBot:
 
             Parameters
             ----------
+            feature_set_features_list: List[str]
             identifier: int
                 Numerical identifier for the robot
             number_of_robots: int
@@ -140,12 +143,19 @@ class FootBot:
 
         self.fault_time_series: np.ndarray = fault_time_series
 
-        self.compute_neighbors()
-        self.compute_swarm_cohesion()
-        self.compute_speed()
-        self.compute_trajectory_entropy()
-        self.compute_directions()
-        self.compute_cumulative_speed()
+        if 'neighbors_time_series' in feature_set_features_list:
+            self.compute_neighbors()
+        if 'swarm_cohesion_time_series' in feature_set_features_list:
+            self.compute_swarm_cohesion()
+        if 'speed_time_series' in feature_set_features_list:
+            self.compute_speed()
+        if 'positions_entropy' in feature_set_features_list:
+            self.compute_trajectory_entropy()
+        if 'direction_time_series' in feature_set_features_list:
+            self.compute_directions()
+        if 'cumulative_speed' in feature_set_features_list:
+            self.compute_speed()
+            self.compute_cumulative_speed()
 
     def compute_speed(self) -> None:
         """
